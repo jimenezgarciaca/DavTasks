@@ -12,19 +12,6 @@ plugins {
     alias(libs.plugins.redacted)
 }
 
-val generateTestConfig by tasks.registering {
-    val schemas = layout.projectDirectory.dir("schemas").asFile.invariantSeparatorsPath
-    val out = layout.buildDirectory.dir("generated/testConfig")
-    inputs.property("schemas", schemas)
-    outputs.dir(out)
-    doLast {
-        out.get().file("org/tasks/data/TestConfig.kt").asFile.apply {
-            parentFile.mkdirs()
-            writeText("package org.tasks.data\n\ninternal const val SCHEMA_DIR = \"$schemas\"\n")
-        }
-    }
-}
-
 kotlin {
     applyDefaultHierarchyTemplate()
     androidTarget {
@@ -38,8 +25,6 @@ kotlin {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(libs.versions.jdk.get()))
         }
     }
-    iosArm64()
-    iosSimulatorArm64()
     sourceSets {
         commonMain.dependencies {
             api(libs.androidx.room3)
@@ -51,20 +36,8 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
-        val nonAndroidTest by creating {
-            dependsOn(commonTest.get())
-            kotlin.srcDir(generateTestConfig)
-            dependencies {
-                implementation(libs.androidx.room3.testing)
-            }
-        }
-        jvmTest.get().dependsOn(nonAndroidTest)
-        iosTest.get().dependsOn(nonAndroidTest)
     }
     task("testClasses")
-}
-tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest>().configureEach {
-    device.set(providers.gradleProperty("ios.simulator").orElse("booted"))
 }
 android {
     namespace = "org.tasks.data"
@@ -113,6 +86,4 @@ room3 {
 dependencies {
     add("kspAndroid", libs.androidx.room3.compiler)
     add("kspJvm", libs.androidx.room3.compiler)
-    add("kspIosArm64", libs.androidx.room3.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
 }

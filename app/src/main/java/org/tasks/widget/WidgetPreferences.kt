@@ -3,7 +3,6 @@ package org.tasks.widget
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.todoroo.astrid.core.SortHelper
-import com.todoroo.astrid.service.Upgrader.Companion.getLegacyColor
 import org.tasks.R
 import org.tasks.extensions.Context.isNightMode
 import org.tasks.preferences.Preferences
@@ -150,8 +149,7 @@ class WidgetPreferences(
             if (color != 0) {
                 return color
             }
-            val index = getInt(R.string.p_widget_color, -1)
-            color = context.getColor(getLegacyColor(index, org.tasks.kmp.R.color.blue_500))
+            color = context.getColor(org.tasks.kmp.R.color.blue_500)
             setInt(R.string.p_widget_color_v2, color)
             return color
         }
@@ -214,21 +212,6 @@ class WidgetPreferences(
 
     private fun setString(resId: Int, value: String) {
         preferences.setString(getKey(resId), value)
-    }
-
-    fun maintainExistingConfiguration() {
-        val rowOpacity = getInt(R.string.p_widget_opacity, 100)
-        setInt(R.string.p_widget_header_opacity, rowOpacity)
-        setInt(R.string.p_widget_footer_opacity, rowOpacity)
-        val showDueDate = getBoolean(R.string.p_widget_show_due_date, true)
-        setString(
-            R.string.p_widget_due_date_position,
-            if (showDueDate) "1" else "2"
-        ) // below or hidden
-        setBoolean(R.string.p_widget_show_dividers, false) // no dividers
-        setBoolean(R.string.p_widget_show_menu, false) // no menu
-        setString(R.string.p_widget_spacing, "1") // compact
-        setBoolean(R.string.p_widget_show_description, false) // no description
     }
 
     override var sortMode: Int

@@ -36,16 +36,6 @@ class BackupsViewModel @Inject constructor(
         private set
     var backupsEnabled by mutableStateOf(preferences.getBoolean(R.string.p_backups_enabled, true))
         private set
-    var driveBackupEnabled by mutableStateOf(false)
-        private set
-    var driveAccountSummary by mutableStateOf("")
-        private set
-    var driveAccountEnabled by mutableStateOf(false)
-        private set
-    var lastDriveBackupSummary by mutableStateOf("")
-        private set
-    var showDriveBackupWarning by mutableStateOf(false)
-        private set
     var androidBackupEnabled by mutableStateOf(
         preferences.getBoolean(R.string.p_backups_android_backup_enabled, true)
     )
@@ -68,7 +58,6 @@ class BackupsViewModel @Inject constructor(
             R.string.p_backups_android_backup_enabled, true,
         )
         ignoreWarnings = preferences.getBoolean(R.string.p_backups_ignore_warnings, false)
-        refreshDriveState(preferencesViewModel)
         refreshWarnings(preferencesViewModel)
         preferencesViewModel.updateBackups()
     }
@@ -76,13 +65,6 @@ class BackupsViewModel @Inject constructor(
     fun updateBackupsEnabled(enabled: Boolean) {
         preferences.setBoolean(R.string.p_backups_enabled, enabled)
         backupsEnabled = enabled
-    }
-
-    fun disableDriveBackup(preferencesViewModel: PreferencesViewModel) {
-        preferences.remove(R.string.p_backups_drive_last)
-        preferences.remove(R.string.p_google_drive_backup_account)
-        preferencesViewModel.updateDriveBackup()
-        refreshDriveState(preferencesViewModel)
     }
 
     fun updateAndroidBackup(enabled: Boolean, preferencesViewModel: PreferencesViewModel) {
@@ -110,29 +92,15 @@ class BackupsViewModel @Inject constructor(
         )
     }
 
-    fun refreshDriveState(preferencesViewModel: PreferencesViewModel) {
-        val account = preferencesViewModel.driveAccount
-        driveBackupEnabled = account != null
-        driveAccountEnabled = account != null
-        driveAccountSummary = account?.takeIf { it.isNotBlank() }
-            ?: context.getString(R.string.none)
-    }
-
     fun refreshWarnings(preferencesViewModel: PreferencesViewModel) {
         refreshBackupDirectory(preferencesViewModel)
         refreshLocalBackupSummary(preferencesViewModel.lastBackup.value, preferencesViewModel)
-        refreshDriveBackupSummary(preferencesViewModel.lastDriveBackup.value, preferencesViewModel)
         refreshAndroidBackupSummary(preferencesViewModel.lastAndroidBackup.value, preferencesViewModel)
     }
 
     fun refreshLocalBackupSummary(timestamp: Long?, preferencesViewModel: PreferencesViewModel) {
         viewModelScope.launch { lastBackupSummary = formatLastBackup(timestamp) }
         showLocalBackupWarning = preferences.showBackupWarnings() && preferencesViewModel.staleLocalBackup
-    }
-
-    fun refreshDriveBackupSummary(timestamp: Long?, preferencesViewModel: PreferencesViewModel) {
-        viewModelScope.launch { lastDriveBackupSummary = formatLastBackup(timestamp) }
-        showDriveBackupWarning = preferences.showBackupWarnings() && preferencesViewModel.staleRemoteBackup
     }
 
     fun refreshAndroidBackupSummary(timestamp: Long? = null, preferencesViewModel: PreferencesViewModel) {

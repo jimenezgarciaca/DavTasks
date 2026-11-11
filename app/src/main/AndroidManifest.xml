@@ -61,28 +61,12 @@
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-  <!-- **************************************** -->
-  <!-- google task sync and google drive upload -->
-  <!-- **************************************** -->
-  <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
-  <uses-permission android:name="com.google.android.googleapps.permission.GOOGLE_AUTH"/>
-
   <!-- ****************************** -->
   <!-- Check DAVx5/EteSync sync state -->
   <!-- ****************************** -->
   <uses-permission android:name="android.permission.READ_SYNC_STATS" />
 
-  <!-- ******************************** -->
-  <!-- Microsoft Authentication Library -->
-  <!-- ******************************** -->
-
   <uses-permission android:name="android.permission.GET_ACCOUNTS" tools:node="remove" />
-  <uses-feature
-      android:name="android.hardware.nfc"
-      android:required="false" />
-  <uses-feature
-      android:name="android.hardware.usb.host"
-      android:required="false" />
 
   <!-- ****************************************** -->
   <!-- Exclude OpenTasks and jtxBoard permissions -->
@@ -351,12 +335,6 @@
           android:value="androidx.startup"
           tools:node="remove" />
     </provider>
-
-    <provider
-      android:authorities="${applicationId}.tasksprovider"
-      android:exported="true"
-      android:name="com.todoroo.astrid.provider.Astrid2TaskProvider"
-      android:readPermission="${applicationId}.permission.READ_TASKS"/>
 
     <provider
       android:authorities="${applicationId}"

@@ -82,7 +82,6 @@ androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstall
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 androidx-room3 = { module = "androidx.room3:room3-runtime", version.ref = "room" }
 androidx-room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room" }
-androidx-room3-testing = { module = "androidx.room3:room3-testing", version.ref = "room" }
 androidx-sqlite = { module = "androidx.sqlite:sqlite-bundled", version = "2.7.1" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test" }

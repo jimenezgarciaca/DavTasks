@@ -80,7 +80,6 @@ class DebugViewModel @Inject constructor(
             preferences.installDate,
             currentTimeMillis() - TimeUnit.DAYS.toMillis(14),
         )
-        preferences.setBoolean(R.string.p_just_updated, true)
         preferences.setBoolean(R.string.p_local_list_banner_dismissed, false)
         preferences.warnAlarmsDisabled = true
         preferences.warnNotificationsDisabled = true

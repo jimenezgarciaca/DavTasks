@@ -40,7 +40,6 @@ open class NotificationsViewModel(
         QUIET_HOURS_END,
     }
 
-    val showTroubleshooting: Boolean = platformConfiguration.supportsNotificationTroubleshooting
     val showSystemNotificationSettings: Boolean =
         platformConfiguration.supportsSystemNotificationSettings
     val showOngoingNotifications: Boolean = platformConfiguration.supportsOngoingNotifications

@@ -2,7 +2,6 @@
 
 package com.todoroo.astrid.service
 
-import org.tasks.R
 import org.tasks.data.entity.Alarm
 import org.tasks.data.entity.Alarm.Companion.whenDue
 import org.tasks.data.entity.Alarm.Companion.whenOverdue
@@ -10,23 +9,8 @@ import org.tasks.data.entity.Alarm.Companion.whenStarted
 import org.tasks.data.entity.Task.Companion.NOTIFY_AFTER_DEADLINE
 import org.tasks.data.entity.Task.Companion.NOTIFY_AT_DEADLINE
 import org.tasks.data.entity.Task.Companion.NOTIFY_AT_START
-import org.tasks.preferences.Preferences
-import javax.inject.Inject
 
-class Upgrade_14_11 @Inject constructor(
-    private val preferences: Preferences,
-) {
-    internal suspend fun migrateDefaultAlarms() {
-        val flags = preferences
-            .getStringSet(
-                R.string.p_default_reminders_key,
-                hashSetOf(NOTIFY_AT_DEADLINE.toString(), NOTIFY_AFTER_DEADLINE.toString())
-            )
-            .mapNotNull { it.toIntOrNull() }
-            .fold(0) { acc, flag -> acc or flag }
-        preferences.setDefaultAlarms(fromLegacyFlags(flags))
-    }
-
+class Upgrade_14_11 {
     companion object {
         const val VERSION = 141100
 

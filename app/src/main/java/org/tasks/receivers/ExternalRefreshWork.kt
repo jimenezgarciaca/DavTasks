@@ -6,7 +6,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.todoroo.astrid.provider.Astrid2TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.tasks.R
@@ -37,7 +36,6 @@ class ExternalRefreshWork @AssistedInject constructor(
         try {
             val cr = context.contentResolver
             cr.notifyChange(TasksContentProvider.CONTENT_URI, null)
-            cr.notifyChange(Astrid2TaskProvider.CONTENT_URI, null)
         } catch (e: Exception) {
             Timber.e(e)
         }

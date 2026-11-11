@@ -26,7 +26,6 @@ import org.tasks.R
 import org.tasks.compose.settings.NotificationsContent
 import org.tasks.extensions.Context.is24HourFormat
 import org.tasks.extensions.Context.openChannelNotificationSettings
-import org.tasks.extensions.Context.openUri
 import org.tasks.preferences.BasePreferences
 import org.tasks.themes.TasksSettingsTheme
 import org.tasks.themes.Theme
@@ -79,7 +78,6 @@ class Notifications : Fragment() {
             NotificationsContent(
                 viewModel = viewModel,
                 is24HourFormat = requireContext().is24HourFormat,
-                openUri = { context?.openUri(it) },
                 onBatteryOptimization = {
                     startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                 },

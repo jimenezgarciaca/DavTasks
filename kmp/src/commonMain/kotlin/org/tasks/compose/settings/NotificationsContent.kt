@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.tasks.TasksUrls
 import org.tasks.compose.pickers.TimePickerDialog
 import org.tasks.viewmodel.NotificationsViewModel
 import org.tasks.viewmodel.NotificationsViewModel.TimePickerTarget
@@ -22,7 +21,6 @@ import org.tasks.viewmodel.NotificationsViewModel.TimePickerTarget
 fun NotificationsContent(
     viewModel: NotificationsViewModel,
     is24HourFormat: Boolean,
-    openUri: (String) -> Unit,
     onBatteryOptimization: (() -> Unit)? = null,
     onCompletionSound: (() -> Unit)? = null,
     onMoreSettings: (() -> Unit)? = null,
@@ -44,7 +42,6 @@ fun NotificationsContent(
     NotificationsScreen(
         is24HourFormat = is24HourFormat,
         isCurrentlyQuietHours = viewModel.isCurrentlyQuietHours,
-        showTroubleshooting = viewModel.showTroubleshooting,
         showBatteryOptimization = viewModel.showBatteryOptimization,
         showNotificationsEnabled = viewModel.showNotificationsEnabled,
         showCompletionSound = viewModel.showCompletionSound,
@@ -67,7 +64,6 @@ fun NotificationsContent(
         quietHoursEnabled = settings.quietHoursEnabled,
         quietHoursStart = settings.quietHoursStart,
         quietHoursEnd = settings.quietHoursEnd,
-        onTroubleshooting = { openUri(TasksUrls.NOTIFICATIONS) },
         onBatteryOptimization = { onBatteryOptimization?.invoke() },
         onNotificationsEnabled = { viewModel.updateNotificationsEnabled(it) },
         onCompletionSound = { onCompletionSound?.invoke() },

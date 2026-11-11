@@ -12,11 +12,7 @@
   <string name="tasks_org">Tasks.org</string>
   <string name="microsoft">Microsoft To&#xA0;Do</string>
 
-  <string name="url_davx5">https://tasks.org/davx5</string>
-  <string name="url_tasker">https://tasks.org/help/tasker</string>
-  <string name="url_filters">https://tasks.org/filters</string>
-  <string name="url_backups">https://tasks.org/backups</string>
-  <string name="url_troubleshoot_intents">https://tasks.org/intents</string>
+  <string name="url_davx5">https://manual.davx5.com/tasks_notes.html</string>
 
   <string name="p_date_shortcut_morning">date_shortcut_morning</string>
   <string name="p_date_shortcut_afternoon">date_shortcut_afternoon</string>
@@ -27,7 +23,6 @@
 
   <string name="p_attachment_dir">custom_files_dir</string>
   <string name="p_backup_dir">p_backup_dir</string>
-  <string name="p_google_drive_backup_account">p_google_drive_backup_account</string>
   <!-- boolean : whether to enable quiet hours or not -->
   <string name="p_rmd_enable_quiet">enable_qhours</string>
 
@@ -109,7 +104,6 @@
   <string name="p_default_hideUntil_key">p_def_hide</string>
 
   <!-- default reminders setting (corresponds to reminder flags) -->
-  <string name="p_default_reminders_key">p_def_reminders_v2</string>
   <string name="p_default_alarms">p_default_alarms</string>
   <string name="p_default_location_reminder_key">p_def_location_reminders</string>
   <string name="p_location_update_interval">p_location_update_interval</string>
@@ -279,12 +273,10 @@
   <string name="p_auto_dismiss_datetime_edit_screen">auto_dismiss_datetime_edit_screen</string>
   <string name="p_auto_dismiss_datetime_list_screen">auto_dismiss_datetime_list_screen</string>
   <string name="p_auto_dismiss_datetime_widget">auto_dismiss_datetime_widget</string>
-  <string name="p_just_updated">just_updated</string>
   <string name="p_backups_enabled">backups_enabled</string>
   <string name="p_backups_ignore_warnings">backups_ignore_warnings</string>
   <string name="p_backups_android_backup_enabled">backups_android_backup_enabled</string>
   <string name="p_backups_android_backup_last">backups_android_backup_last</string>
-  <string name="p_backups_drive_last">backups_drive_last</string>
   <string name="p_current_version">cv</string>
   <string name="p_install_version">install_version</string>
   <string name="p_install_date">install_date</string>

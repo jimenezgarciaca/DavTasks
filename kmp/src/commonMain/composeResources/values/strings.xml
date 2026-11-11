@@ -41,7 +41,7 @@
     <string name="filter">Filter</string>
     <string name="add_account">Add account</string>
     <string name="continue_without_sync">Continue without sync</string>
-    <string name="returning_user_import_backup">Import Tasks.org backup</string>
+    <string name="returning_user_import_backup">Import backup</string>
     <string name="caldav_selection_description">Synchronization based on open internet standards</string>
     <string name="davx5_selection_description">Synchronize your tasks with the DAVx⁵ app</string>
     <string name="decsync_selection_description">File-based synchronization</string>
@@ -146,7 +146,7 @@
     <string name="metadata_move">Move</string>
     <string name="metadata_not_supported">This server doesn't support tag metadata sync</string>
 
-    <string name="works_with_tasks">Works with Tasks.org</string>
+    <string name="works_with_tasks">Works with DavTasks</string>
     <string name="works_with_tasks_description">Apps, sync services, and integrations</string>
     <string name="works_with_sync">Sync apps</string>
     <string name="works_with_servers">Self-hosting</string>
@@ -169,7 +169,7 @@
     <string name="works_with_todoagenda_description">Calendar and task home screen widget</string>
     <string name="works_with_tasker_description">Create tasks and trigger list notifications from your automations</string>
     <string name="works_with_content_provider">Content provider API</string>
-    <string name="works_with_content_provider_description">Read and write Tasks.org data from your own app</string>
+    <string name="works_with_content_provider_description">Read and write DavTasks data from your own app</string>
     <string name="done">Done</string>
     <string name="annual">Annual</string>
     <string name="monthly">Monthly</string>
@@ -373,8 +373,6 @@
     <string name="menu_discard_changes">Discard changes</string>
     <string name="more_options">More options</string>
     <string name="quiet_hours_in_effect">Quiet hours are in effect</string>
-    <string name="troubleshooting">Troubleshooting</string>
-    <string name="notification_troubleshooting_summary">Tap here if you are having trouble with notifications</string>
     <string name="disable_battery_optimizations">Disable battery optimizations</string>
     <string name="notification_disable_battery_optimizations_description">Battery optimizations may delay notifications</string>
     <string name="completion_sound">Play completion sound</string>
@@ -385,7 +383,7 @@
     <string name="bundle_notifications">Bundle notifications</string>
     <string name="bundle_notifications_summary">Combine multiple notifications into one</string>
     <string name="EPr_voiceRemindersEnabled_title">Voice reminders</string>
-    <string name="EPr_voiceRemindersEnabled_desc_enabled">Tasks will speak task names during task reminders</string>
+    <string name="EPr_voiceRemindersEnabled_desc_enabled">DavTasks will speak task names during task reminders</string>
     <string name="more_settings">More settings</string>
     <string name="more_notification_settings_summary">Ringtone, vibrations, and more</string>
     <string name="default_reminder">All day tasks</string>
@@ -459,7 +457,6 @@
     <string name="settings_localization">Localization</string>
     <string name="theme">Theme</string>
     <string name="theme_dynamic">Dynamic</string>
-    <string name="translations">Contribute translations</string>
     <string name="widget_open_list">Open list</string>
     <string name="theme_light">Light</string>
     <string name="theme_black">Black</string>

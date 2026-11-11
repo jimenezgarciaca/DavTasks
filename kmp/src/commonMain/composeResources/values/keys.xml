@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tasks_org" translatable="false">Tasks.org</string>
-    <string name="url_translations" translatable="false">https://tasks.org/translations</string>
     <string name="caldav" translatable="false">CalDAV</string>
     <string name="davx5" translatable="false">DAVx⁵</string>
     <string name="ksync" translatable="false">kSync</string>

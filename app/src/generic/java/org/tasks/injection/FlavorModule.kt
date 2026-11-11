@@ -24,7 +24,6 @@ class FlavorModule {
         supportsCalendarEvents = true,
         appStore = AppStore.FDROID,
         supportsWidgets = true,
-        supportsNotificationTroubleshooting = true,
         supportsSystemNotificationSettings = true,
         supportsOngoingNotifications = AndroidUtilities.preUpsideDownCake(),
         supportsBundledNotifications = true,

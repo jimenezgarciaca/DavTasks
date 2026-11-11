@@ -9,12 +9,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.tasks.BuildConfig
 import org.tasks.R
-import org.tasks.caldav.FileStorage
 import org.tasks.data.OpenTaskDao
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.db.Database
 import org.tasks.data.db.setBundledDriver
-import org.tasks.db.Migrations
 import org.tasks.jobs.WorkManager
 import org.tasks.jobs.WorkManagerImpl
 import org.tasks.kmp.createDataStore
@@ -32,7 +30,6 @@ internal class ProductionModule {
     fun getAppDatabase(
         @ApplicationContext context: Context,
         preferences: Preferences,
-        fileStorage: FileStorage,
     ): Database {
         val databaseFile = context.getDatabasePath(Database.NAME)
         val builder = Room
@@ -40,7 +37,6 @@ internal class ProductionModule {
                 context = context,
                 name = databaseFile.absolutePath
             )
-            .addMigrations(*Migrations.migrations(context, fileStorage))
             .addCallback(Database.CALLBACK)
             .setBundledDriver()
         if (!BuildConfig.DEBUG || !preferences.getBoolean(R.string.p_crash_main_queries, false)) {

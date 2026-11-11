@@ -18,7 +18,6 @@ import org.tasks.backup.BackupConstants
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.date.DateTimeUtils.newDateTime
-import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -29,7 +28,6 @@ class PreferencesViewModel @Inject constructor(
     private val caldavDao: CaldavDao,
 ) : ViewModel() {
     val lastBackup = MutableLiveData<Long?>()
-    val lastDriveBackup = MutableLiveData<Long?>()
     val lastAndroidBackup = MutableLiveData<Long>()
     val caldavAccounts: Flow<List<CaldavAccount>>
         get() = caldavDao.watchAccounts()
@@ -43,7 +41,7 @@ class PreferencesViewModel @Inject constructor(
         get() = isStale(lastBackup.value)
 
     val staleRemoteBackup: Boolean
-        get() = isStale(lastDriveBackup.value) && isStale(lastAndroidBackup.value)
+        get() = isStale(lastAndroidBackup.value)
 
     val usingPrivateStorage: Boolean
         get() = preferences.backupDirectory.let { backupDir ->
@@ -57,17 +55,6 @@ class PreferencesViewModel @Inject constructor(
                 }
             return backupDirStr.startsWith(Uri.fromFile(context.filesDir).toString())
         }
-
-    // DavTasks no incluye la copia de seguridad en Google Drive.
-    val driveAccount: String?
-        get() = null
-
-    suspend fun tasksAccount(): CaldavAccount? =
-        caldavDao.getAccounts(CaldavAccount.TYPE_TASKS).firstOrNull()
-
-    fun updateDriveBackup() {
-        lastDriveBackup.value = -1L
-    }
 
     fun updateLocalBackup() = viewModelScope.launch {
         val uri = preferences.backupDirectory
@@ -98,7 +85,6 @@ class PreferencesViewModel @Inject constructor(
 
     fun updateBackups() {
         updateLocalBackup()
-        updateDriveBackup()
         updateAndroidBackup()
     }
 }

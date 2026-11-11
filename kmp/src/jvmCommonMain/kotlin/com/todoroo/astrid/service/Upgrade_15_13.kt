@@ -9,13 +9,10 @@ import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.CaldavCalendar
-import org.tasks.service.Upgrade
 
 class Upgrade_15_13(
     private val caldavDao: CaldavDao,
-) : Upgrade {
-    override suspend fun run() = canonicalizeUrls()
-
+) {
     suspend fun canonicalizeUrls() {
         val accounts = caldavDao.getAccounts(TYPE_CALDAV, TYPE_TASKS)
         val accountUrls = accounts.mapNotNullTo(mutableSetOf()) { it.url }

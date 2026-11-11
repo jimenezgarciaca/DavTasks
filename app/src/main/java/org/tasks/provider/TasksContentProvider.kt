@@ -6,30 +6,21 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
-import org.tasks.data.entity.Task
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import org.tasks.BuildConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import org.tasks.analytics.AnalyticsEvents
-import org.tasks.analytics.Firebase
 import org.tasks.data.ContentProviderDaoBlocking
+import org.tasks.data.entity.Task
 
 @Deprecated("See CONTENT_PROVIDER.md")
 class TasksContentProvider : ContentProvider() {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface TasksContentProviderEntryPoint {
         val contentProviderDao: ContentProviderDaoBlocking
-        val firebase: Firebase
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? = null
@@ -40,27 +31,17 @@ class TasksContentProvider : ContentProvider() {
             selection: String?,
             selectionArgs: Array<out String>?,
             sortOrder: String?): Cursor? {
-        val hilt = hilt()
-        logUse(
-            when (URI_MATCHER.match(uri)) {
-                URI_TODO_AGENDA -> "todo_agenda"
-                URI_TASKS -> "tasks"
-                URI_LISTS -> "lists"
-                URI_GOOGLE_TASK_LISTS -> "google_task_lists"
-                else -> "unknown"
-            }
-        )
+        val dao = hilt().contentProviderDao
         return when (URI_MATCHER.match(uri)) {
-            URI_TODO_AGENDA -> hilt.contentProviderDao.rawQuery(
+            URI_TODO_AGENDA -> dao.rawQuery(
                 SupportSQLiteQueryBuilder
                     .builder(TODO_AGENDA_TABLES)
                     .selection(selection, selectionArgs)
                     .create()
                     .sql
             )
-            URI_TASKS -> hilt.contentProviderDao.getTasks()
-            URI_LISTS -> hilt.contentProviderDao.getLists()
-            URI_GOOGLE_TASK_LISTS -> null
+            URI_TASKS -> dao.getTasks()
+            URI_LISTS -> dao.getLists()
             else -> throw IllegalStateException("Unrecognized URI: $uri")
         }
     }
@@ -77,19 +58,6 @@ class TasksContentProvider : ContentProvider() {
 
     override fun getType(uri: Uri): String? = null
 
-    private fun logUse(collection: String) {
-        val caller = runCatching { callingPackage }.getOrNull() ?: "unknown"
-        val analytics = hilt().firebase
-        scope.launch {
-            analytics.logEventOncePerDay(
-                event = AnalyticsEvents.CONTENT_PROVIDER_TASKS,
-                dedupeBy = caller,
-                AnalyticsEvents.PARAM_PACKAGE to caller,
-                AnalyticsEvents.PARAM_COLLECTION to collection,
-            )
-        }
-    }
-
     private fun hilt() =
             EntryPointAccessors.fromApplication(
                     context!!.applicationContext,
@@ -101,20 +69,16 @@ class TasksContentProvider : ContentProvider() {
                 LEFT JOIN caldav_tasks ON cd_task = _id
                 LEFT JOIN caldav_lists ON cdl_uuid = cd_calendar"""
         private const val AUTHORITY = BuildConfig.APPLICATION_ID
-        private const val PURE_CALENDAR_WIDGET = "org.tasks.tasksprovider"
         @JvmField val CONTENT_URI: Uri = Uri.parse("content://$AUTHORITY")
         const val URI_TASKS = 1
         const val URI_OPEN_TASK = 2
         private const val URI_LISTS = 3
-        private const val URI_GOOGLE_TASK_LISTS = 4
         private const val URI_TODO_AGENDA = 100
         val URI_MATCHER = UriMatcher(UriMatcher.NO_MATCH).apply {
             addURI(AUTHORITY, "tasks", URI_TASKS)
             addURI(AUTHORITY, "tasks/*", URI_OPEN_TASK)
             addURI(AUTHORITY, "lists", URI_LISTS)
-            addURI(AUTHORITY, "google_lists", URI_GOOGLE_TASK_LISTS)
             addURI(AUTHORITY, "todoagenda", URI_TODO_AGENDA)
-            addURI(PURE_CALENDAR_WIDGET, "tasks/*", URI_OPEN_TASK)
         }
     }
 }

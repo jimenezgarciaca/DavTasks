@@ -3,14 +3,8 @@
   xmlns:app="http://schemas.android.com/apk/res-auto">
 
   <Preference
-    android:key="@string/documentation"
-    android:title="@string/documentation"
-    android:icon="@drawable/ic_open_in_new_24px" />
-
-  <Preference
     android:key="@string/p_backup_dir"
-    android:title="@string/backup_directory"
-    app:allowDividerAbove="true" />
+    android:title="@string/backup_directory" />
 
   <Preference
     android:key="@string/backup_BAc_export"
@@ -44,20 +38,6 @@
       app:icon="@drawable/ic_open_in_new_24px">
       <intent android:action="android.settings.SETTINGS" />
     </Preference>
-
-  </PreferenceCategory>
-
-  <PreferenceCategory
-    android:title="@string/google_drive_backup">
-
-    <SwitchPreferenceCompat
-      android:key="@string/google_drive_backup"
-      android:title="@string/enabled" />
-
-    <Preference
-      android:key="@string/p_google_drive_backup_account"
-      android:title="@string/account"
-      android:summary="@string/none"/>
 
   </PreferenceCategory>
 

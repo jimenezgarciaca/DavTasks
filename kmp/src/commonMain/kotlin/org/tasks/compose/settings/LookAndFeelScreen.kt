@@ -1,6 +1,5 @@
 package org.tasks.compose.settings
 
-import org.tasks.themes.TasksIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +41,6 @@ import tasks.kmp.generated.resources.theme_dynamic
 import tasks.kmp.generated.resources.theme_light
 import tasks.kmp.generated.resources.theme_system_default
 import tasks.kmp.generated.resources.theme_wallpaper
-import tasks.kmp.generated.resources.translations
 import tasks.kmp.generated.resources.widget_open_list
 
 @Composable
@@ -67,7 +65,6 @@ fun LookAndFeelScreen(
     onOpenLastViewedList: (Boolean) -> Unit,
     onDefaultFilter: () -> Unit,
     onLanguage: () -> Unit,
-    onTranslations: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -160,30 +157,16 @@ fun LookAndFeelScreen(
             }
         }
 
-        SectionHeader(
-            stringResource(Res.string.settings_localization),
-            modifier = Modifier.padding(horizontal = SettingsContentPadding),
-        )
-        Column(
-            modifier = Modifier.padding(horizontal = SettingsContentPadding),
-            verticalArrangement = Arrangement.spacedBy(SettingsCardGap),
-        ) {
-            if (showLanguage) {
-                SettingsItemCard(position = CardPosition.First) {
-                    PreferenceRow(
-                        title = stringResource(Res.string.language),
-                        summary = localeName,
-                        onClick = onLanguage,
-                    )
-                }
-            }
-            SettingsItemCard(
-                position = if (showLanguage) CardPosition.Last else CardPosition.Only
-            ) {
+        if (showLanguage) {
+            SectionHeader(
+                stringResource(Res.string.settings_localization),
+                modifier = Modifier.padding(horizontal = SettingsContentPadding),
+            )
+            SettingsItemCard(modifier = Modifier.padding(horizontal = SettingsContentPadding)) {
                 PreferenceRow(
-                    title = stringResource(Res.string.translations),
-                    icon = TasksIcons.OPEN_IN_NEW,
-                    onClick = onTranslations,
+                    title = stringResource(Res.string.language),
+                    summary = localeName,
+                    onClick = onLanguage,
                 )
             }
         }

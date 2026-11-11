@@ -1,6 +1,5 @@
 package org.tasks.data.db
 
-import androidx.room3.AutoMigration
 import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
@@ -9,7 +8,6 @@ import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import org.tasks.data.dao.AlarmDao
 import org.tasks.data.dao.ApiDao
-import org.tasks.data.dao.Astrid2ContentProviderDao
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.CompletionDao
 import org.tasks.data.dao.DeletionDao
@@ -26,7 +24,6 @@ import org.tasks.data.dao.TagDataDao
 import org.tasks.data.dao.TaskAttachmentDao
 import org.tasks.data.dao.TaskDao
 import org.tasks.data.dao.TaskListMetadataDao
-import org.tasks.data.dao.UpgraderDao
 import org.tasks.data.dao.UserActivityDao
 import org.tasks.data.entity.Alarm
 import org.tasks.data.entity.Attachment
@@ -72,12 +69,6 @@ import org.tasks.data.entity.UserActivity
         Attachment::class,
         TaskDirtyVersion::class,
     ],
-    autoMigrations = [
-        AutoMigration(from = 83, to = 84, spec = AutoMigrate83to84::class),
-        AutoMigration(from = 88, to = 89, spec = AutoMigrate88to89::class),
-        AutoMigration(from = 91, to = 92),
-        AutoMigration(from = 93, to = 94, spec = AutoMigrate93to94::class),
-    ],
     version = 98
 )
 @ConstructedBy(DatabaseConstructor::class)
@@ -96,9 +87,7 @@ abstract class Database : RoomDatabase() {
     abstract fun dirtyDao(): DirtyDao
     abstract fun caldavDao(): CaldavDao
     abstract fun deletionDao(): DeletionDao
-    abstract fun contentProviderDao(): Astrid2ContentProviderDao
     abstract fun apiDao(): ApiDao
-    abstract fun upgraderDao(): UpgraderDao
     abstract fun principalDao(): PrincipalDao
     abstract fun completionDao(): CompletionDao
     abstract fun metadataDao(): MetadataDao

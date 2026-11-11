@@ -54,8 +54,12 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
         testInstrumentationRunner = "org.tasks.TestRunner"
-        manifestPlaceholders["appAuthRedirectScheme"] = "org.tasks"
         resValue("string", "opentasks_authority", "$applicationId.opentasks")
+    }
+
+    androidResources {
+        // Solo inglés y español, también en las librerías incluidas.
+        localeFilters += listOf("en", "es")
     }
 
     signingConfigs {

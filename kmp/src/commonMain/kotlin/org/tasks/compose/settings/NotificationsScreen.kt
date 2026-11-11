@@ -41,7 +41,6 @@ import tasks.kmp.generated.resources.disable_battery_optimizations
 import tasks.kmp.generated.resources.enabled
 import tasks.kmp.generated.resources.more_settings
 import tasks.kmp.generated.resources.notification_disable_battery_optimizations_description
-import tasks.kmp.generated.resources.notification_troubleshooting_summary
 import tasks.kmp.generated.resources.notifications
 import tasks.kmp.generated.resources.persistent_notifications
 import tasks.kmp.generated.resources.persistent_notifications_description
@@ -61,7 +60,6 @@ import tasks.kmp.generated.resources.swipe_to_snooze_time_30_minutes
 import tasks.kmp.generated.resources.swipe_to_snooze_time_description
 import tasks.kmp.generated.resources.swipe_to_snooze_time_immediately
 import tasks.kmp.generated.resources.swipe_to_snooze_title
-import tasks.kmp.generated.resources.troubleshooting
 import tasks.kmp.generated.resources.wearable_notifications
 import tasks.kmp.generated.resources.wearable_notifications_summary
 
@@ -83,7 +81,6 @@ private fun timeSummary(millisOfDay: Int, is24HourFormat: Boolean): String =
 fun NotificationsScreen(
     is24HourFormat: Boolean,
     isCurrentlyQuietHours: Boolean,
-    showTroubleshooting: Boolean,
     showBatteryOptimization: Boolean,
     showNotificationsEnabled: Boolean,
     showCompletionSound: Boolean,
@@ -106,7 +103,6 @@ fun NotificationsScreen(
     quietHoursEnabled: Boolean,
     quietHoursStart: Int,
     quietHoursEnd: Int,
-    onTroubleshooting: () -> Unit,
     onBatteryOptimization: () -> Unit,
     onNotificationsEnabled: (Boolean) -> Unit,
     onCompletionSound: () -> Unit,
@@ -144,18 +140,10 @@ fun NotificationsScreen(
 
         CardGroup(
             listOfNotNull(
-                TroubleshootingRow.TROUBLESHOOTING.takeIf { showTroubleshooting },
                 TroubleshootingRow.BATTERY_OPTIMIZATION.takeIf { showBatteryOptimization },
             )
         ) { row ->
             when (row) {
-                TroubleshootingRow.TROUBLESHOOTING ->
-                    PreferenceRow(
-                        title = stringResource(Res.string.troubleshooting),
-                        summary = stringResource(Res.string.notification_troubleshooting_summary),
-                        icon = TasksIcons.OPEN_IN_NEW,
-                        onClick = onTroubleshooting,
-                    )
                 TroubleshootingRow.BATTERY_OPTIMIZATION ->
                     PreferenceRow(
                         title = stringResource(Res.string.disable_battery_optimizations),
@@ -329,7 +317,6 @@ fun NotificationsScreen(
 }
 
 private enum class TroubleshootingRow {
-    TROUBLESHOOTING,
     BATTERY_OPTIMIZATION,
 }
 

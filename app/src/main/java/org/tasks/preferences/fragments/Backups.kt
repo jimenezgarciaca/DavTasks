@@ -17,7 +17,6 @@ import org.tasks.R
 import org.tasks.compose.settings.BackupsScreen
 import org.tasks.dialogs.ExportTasksDialog
 import org.tasks.dialogs.ImportTasksDialog
-import org.tasks.extensions.Context.openUri
 import org.tasks.extensions.Context.takePersistableUriPermission
 import org.tasks.extensions.Context.toast
 import org.tasks.files.FileHelper
@@ -66,9 +65,6 @@ class Backups : Fragment() {
         preferencesViewModel.lastBackup.observe(this) {
             viewModel.refreshLocalBackupSummary(it, preferencesViewModel)
         }
-        preferencesViewModel.lastDriveBackup.observe(this) {
-            viewModel.refreshDriveBackupSummary(it, preferencesViewModel)
-        }
         preferencesViewModel.lastAndroidBackup.observe(this) {
             viewModel.refreshAndroidBackupSummary(it, preferencesViewModel)
         }
@@ -94,18 +90,10 @@ class Backups : Fragment() {
                 lastBackupSummary = viewModel.lastBackupSummary,
                 showLocalBackupWarning = viewModel.showLocalBackupWarning,
                 backupsEnabled = viewModel.backupsEnabled,
-                driveBackupEnabled = viewModel.driveBackupEnabled,
-                driveAccountSummary = viewModel.driveAccountSummary,
-                driveAccountEnabled = viewModel.driveAccountEnabled,
-                lastDriveBackupSummary = viewModel.lastDriveBackupSummary,
-                showDriveBackupWarning = viewModel.showDriveBackupWarning,
                 androidBackupEnabled = viewModel.androidBackupEnabled,
                 lastAndroidBackupSummary = viewModel.lastAndroidBackupSummary,
                 showAndroidBackupWarning = viewModel.showAndroidBackupWarning,
                 ignoreWarnings = viewModel.ignoreWarnings,
-                onDocumentation = {
-                    requireContext().openUri(R.string.url_backups)
-                },
                 onBackupDir = {
                     backupDirLauncher.launch(
                         FileHelper.newDirectoryPickerIntent(
@@ -126,16 +114,6 @@ class Backups : Fragment() {
                     )
                 },
                 onBackupsEnabled = { viewModel.updateBackupsEnabled(it) },
-                onDriveBackup = { enabled ->
-                    if (enabled) {
-                        requestGoogleDriveLogin()
-                    } else {
-                        viewModel.disableDriveBackup(preferencesViewModel)
-                    }
-                },
-                onDriveAccount = {
-                    requestGoogleDriveLogin()
-                },
                 onAndroidBackup = { enabled ->
                     viewModel.updateAndroidBackup(enabled, preferencesViewModel)
                 },
@@ -167,7 +145,4 @@ class Backups : Fragment() {
             (toolbar.parent as? View)?.setBackgroundColor(defaultColor)
         }
     }
-
-    // DavTasks no incluye la copia de seguridad en Google Drive.
-    private fun requestGoogleDriveLogin() = Unit
 }

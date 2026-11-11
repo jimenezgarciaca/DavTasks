@@ -5,14 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -34,20 +31,17 @@ import org.tasks.compose.FilterCondition.InputTextOption
 import org.tasks.compose.FilterCondition.NewCriterionFAB
 import org.tasks.compose.FilterCondition.SelectCriterionType
 import org.tasks.compose.FilterCondition.SelectFromList
-import org.tasks.compose.components.SymbolIcon
 import org.tasks.data.NO_ORDER
 import org.tasks.data.dao.FilterDao
 import org.tasks.data.dao.TaskDao.TaskCriteria.activeAndVisible
 import org.tasks.data.entity.Filter
 import org.tasks.data.entity.Task
 import org.tasks.data.sql.UnaryCriterion
-import org.tasks.extensions.Context.openUri
 import org.tasks.filters.CustomFilter
 import org.tasks.filters.FilterCriteriaProvider
 import org.tasks.filters.mapToSerializedString
 import org.tasks.themes.TasksIcons
 import org.tasks.themes.TasksTheme
-import androidx.compose.ui.text.intl.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -162,8 +156,6 @@ class FilterSettingsActivity : BaseListSettingsActivity() {
         }
     }
 
-    private fun help() = openUri(R.string.url_filters)
-
     @Composable
     private fun ActivityContent ()
     {
@@ -171,22 +163,9 @@ class FilterSettingsActivity : BaseListSettingsActivity() {
             val viewState by viewModel.viewState.collectAsStateWithLifecycle()
             BaseSettingsContent(
                 optionButton = {
-                    if (isNew) {
-                        IconButton(onClick = { help() }) {
-                            // Cancel the mirroring of the help icon when the locale is Hebrew.
-                            val modifier =
-                                if (Locale.current.language == "he") {
-                                    Modifier.scale(scaleX = -1f, scaleY = 1f)
-                                } else {
-                                    Modifier
-                                }
-                            SymbolIcon(
-                                name = TasksIcons.HELP,
-                                contentDescription = "",
-                                modifier = modifier,
-                            )
-                        }
-                    } else DeleteButton(filter?.title ?: ""){ delete() }
+                    if (!isNew) {
+                        DeleteButton(filter?.title ?: "") { delete() }
+                    }
                 },
                 fab = {
                     NewCriterionFAB(viewState.fabExtended) { newCriterion() }
@@ -220,7 +199,6 @@ class FilterSettingsActivity : BaseListSettingsActivity() {
                             stringResource(R.string.custom_filter_or),
                             stringResource(R.string.custom_filter_not)
                         ),
-                        help = { help() },
                         onCancel = { editCriterionType.value = null }
                     ) { selected ->
                         val type = when (selected) {

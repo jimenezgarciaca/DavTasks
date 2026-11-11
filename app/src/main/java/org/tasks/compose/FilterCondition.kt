@@ -67,7 +67,6 @@ import org.tasks.R
 import org.tasks.compose.SwipeOut.SwipeOut
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.cancel
-import tasks.kmp.generated.resources.help
 import tasks.kmp.generated.resources.ok
 import org.tasks.extensions.formatNumber
 import org.tasks.kmp.org.tasks.compose.settings.SettingRow
@@ -324,7 +323,6 @@ object FilterCondition {
         selected: Int,
         types: List<String>,
         onCancel: () -> Unit,
-        help: () -> Unit = {},
         onSelected: (Int) -> Unit
     ) {
         val selected = remember { mutableIntStateOf(selected) }
@@ -350,21 +348,14 @@ object FilterCondition {
                     Spacer(modifier = Modifier.height(Constants.HALF_KEYLINE))
                     ToggleGroup(items = types, selected = selected)
                     Row(
-                        modifier = Modifier.height(48.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .height(48.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
                     ) {
-                        Box(contentAlignment = Alignment.CenterStart) {
-                            DialogTextButton(text = Res.string.help, onClick = help)
-                        }
-                        Box(
-                            contentAlignment = Alignment.CenterEnd,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row {
-                                DialogTextButton(text = Res.string.cancel, onClick = onCancel)
-                                DialogTextButton(text = Res.string.ok) { onSelected(selected.intValue) }
-                            }
-                        }
+                        DialogTextButton(text = Res.string.cancel, onClick = onCancel)
+                        DialogTextButton(text = Res.string.ok) { onSelected(selected.intValue) }
                     }
                 }
             }

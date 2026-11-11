@@ -129,7 +129,7 @@
     <string name="open_source">Código abierto</string>
     <string name="group_mode">Grupo</string>
     <string name="sort_created">Creado</string>
-    <string name="returning_user_import_backup">Importar respaldo Tasks.org</string>
+    <string name="returning_user_import_backup">Importar copia de seguridad</string>
     <string name="guest">Invitado</string>
     <string name="logout_confirmation">¿Cerrar sesión en %1$s?</string>
     <string name="debug">Depurar</string>
@@ -343,8 +343,6 @@
     <string name="menu_discard_changes">Descartar los cambios</string>
     <string name="more_options">Más opciones</string>
     <string name="quiet_hours_in_effect">Es el momento de descansar</string>
-    <string name="troubleshooting">Solución de problemas</string>
-    <string name="notification_troubleshooting_summary">Pulse aquí si tiene problemas con las notificaciones</string>
     <string name="disable_battery_optimizations">Desactivar optimizaciones de batería</string>
     <string name="notification_disable_battery_optimizations_description">Optimizaciones de batería pueden retrasar notificaciones</string>
     <string name="completion_sound">Reproducir el sonido de finalización</string>
@@ -355,7 +353,7 @@
     <string name="bundle_notifications">Agrupar notificaciones</string>
     <string name="bundle_notifications_summary">Combinar múltiples notificaciones en una sola</string>
     <string name="EPr_voiceRemindersEnabled_title">Avisos de voz</string>
-    <string name="EPr_voiceRemindersEnabled_desc_enabled">Tasks dirá los nombres de las tareas durante los avisos</string>
+    <string name="EPr_voiceRemindersEnabled_desc_enabled">DavTasks dirá los nombres de las tareas durante los avisos</string>
     <string name="more_settings">Más configuración</string>
     <string name="more_notification_settings_summary">Tono de llamada, vibraciones y más</string>
     <string name="default_reminder">Todas las tareas diarias</string>
@@ -429,7 +427,6 @@
     <string name="settings_localization">Configuración regional</string>
     <string name="theme">Tema</string>
     <string name="theme_dynamic">Dinámico</string>
-    <string name="translations">Contribuir con la traducción</string>
     <string name="widget_open_list">Lista abierta</string>
     <string name="theme_light">Claro</string>
     <string name="theme_black">Negro</string>

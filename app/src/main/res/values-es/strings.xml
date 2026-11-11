@@ -8,7 +8,7 @@
     <string name="import_summary_title">Resumen de restauración</string>
     <string name="import_summary_message">El fichero %1$s contenía %2$s. \n \n %3$s importadas \n %4$s ya existían \n %5$s tenían errores</string>
     <string name="import_progress_read">Leyendo tarea %d…</string>
-    <string name="read_permission_label">Permisos de Tasks</string>
+    <string name="read_permission_label">Permiso de DavTasks</string>
     <string name="DLG_hour_minutes">Tiempo (horas : minutos)</string>
     <string name="DLG_undo">Deshacer</string>
     <string name="WID_dateButtonUnset">Hacer clic para establecer</string>
@@ -110,7 +110,6 @@
     <string name="notifications">Notificaciones</string>
     <string name="attachment_directory">Carpeta de datos adjuntos</string>
     <string name="backup_directory">Carpeta de copias de seguridad</string>
-    <string name="google_drive_backup">Copia de seguridad en Google Drive</string>
     <string name="miscellaneous">Miscelánea</string>
     <string name="enabled">Activado</string>
     <string name="font_size">Tamaño de letra</string>
@@ -147,7 +146,7 @@
     <string name="theme_dark">Oscuro</string>
     <string name="theme_wallpaper">Fondo de pantalla</string>
     <string name="theme_day_night">Día/noche</string>
-    <string name="restart_required">Reinicie Tasks para que este cambio surta efecto</string>
+    <string name="restart_required">Reinicie DavTasks para que este cambio surta efecto</string>
     <string name="restart_now">Reiniciar ahora</string>
     <string name="restart_later">Más tarde</string>
     <string name="widget_settings">Configuración de widget</string>
@@ -164,7 +163,7 @@
     <string name="list">Lista</string>
     <string name="repeats_from">Repetir desde </string>
     <string name="dont_add_to_calendar">No añadir al calendario</string>
-    <string name="badges_description">Muestre un recuento de tareas en el icono de iniciador de Tasks. No todos los iniciadores admiten insignias de notificación.</string>
+    <string name="badges_description">Muestre un recuento de tareas en el icono de DavTasks en el iniciador. No todos los iniciadores admiten insignias de notificación.</string>
     <string name="tasker_create_task">Crear tarea</string>
     <string name="tasker_list_notification">Listar notificación</string>
     <string name="help">Ayuda</string>
@@ -260,7 +259,7 @@
     <string name="astrid_sort_order">Clasificación manual de Astrid</string>
     <string name="CFC_list_name">En la lista…</string>
     <string name="reset_sort_order">Restablecer orden de clasificación</string>
-    <string name="permission_read_tasks">Acceso completo a la base de datos de Tasks</string>
+    <string name="permission_read_tasks">Acceso completo a la base de datos de DavTasks</string>
     <string name="account">Cuenta</string>
     <string name="device_settings">Configuración del dispositivo</string>
     <string name="last_backup_never">nunca</string>
@@ -271,7 +270,7 @@
     <string name="background_location">Ubicación de fondo</string>
     <string name="foreground_location">Ubicación en primer plano</string>
     <string name="no_app_found">Ninguna aplicación podría manejar esta solicitud</string>
-    <string name="backup_location_warning">ATENCIÓN: los archivos ubicados en %s se eliminarán si se desinstala Tasks. Elija una ubicación personalizada para evitar que Android elimine sus archivos.</string>
+    <string name="backup_location_warning">ATENCIÓN: los archivos ubicados en %s se eliminarán si se desinstala DavTasks. Elija una ubicación personalizada para evitar que Android elimine sus archivos.</string>
     <string name="backups_ignore_warnings_summary">Ignore las alertas de copias de seguridad si no las necesita o si tiene su propio procedimiento de copiado</string>
     <string name="backups_ignore_warnings">Ignorar las advertencias</string>
     <string name="header_spacing">Espaciamiento</string>
@@ -281,7 +280,7 @@
     <string name="always_display_full_date">Mostrar la fecha completa</string>
     <string name="custom_filter_is_subtask">Es una subtarea</string>
     <string name="custom_filter_has_subtask">Tiene subtareas</string>
-    <string name="background_location_permission_required">Tasks recopila datos de ubicación para permitir los recordatorios basados en la ubicación aún cuando la aplicación está cerrada o no se utiliza.</string>
+    <string name="background_location_permission_required">DavTasks recopila datos de ubicación para permitir los recordatorios basados en la ubicación aún cuando la aplicación está cerrada o no se utiliza.</string>
     <string name="copied_to_clipboard">Se copió %s en el portapapeles</string>
     <string name="local_lists">Listas locales</string>
     <string name="start_date">Fecha de inicio</string>

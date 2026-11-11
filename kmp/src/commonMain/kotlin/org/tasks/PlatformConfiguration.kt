@@ -10,7 +10,6 @@ data class PlatformConfiguration(
 
     val showNotificationsEnabledSwitch: Boolean = false,
 
-    val supportsNotificationTroubleshooting: Boolean = false,
     val supportsSystemNotificationSettings: Boolean = false,
     val supportsOngoingNotifications: Boolean = false,
     val supportsBundledNotifications: Boolean = false,

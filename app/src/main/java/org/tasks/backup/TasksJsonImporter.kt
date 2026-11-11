@@ -59,10 +59,7 @@ import org.tasks.data.entity.Tag
 import org.tasks.data.entity.TagData
 import org.tasks.data.entity.Task
 import org.tasks.data.entity.TaskAttachment
-import org.tasks.data.entity.TaskDirtyVersion
 import org.tasks.data.entity.TaskListMetadata
-import org.tasks.db.Migrations.repeatFrom
-import org.tasks.db.Migrations.withoutFrom
 import org.tasks.extensions.forEach
 import org.tasks.extensions.jsonString
 import org.tasks.filters.FilterCriteriaProvider
@@ -627,7 +624,7 @@ class TasksJsonImporter @Inject constructor(
         }
 
         /**
-         * Keep in sync with `CommonMigrations.MIGRATION_92_93`
+         * Reconstruye las versiones de sincronización de copias anteriores a la tabla task_dirty.
          */
         private fun reconstructDirtyVersion(lastSync: Long?, modified: Long): Pair<Long, Long> = when {
             lastSync == null || lastSync == 0L -> 1L to 0L
@@ -636,3 +633,11 @@ class TasksJsonImporter @Inject constructor(
         }
     }
 }
+
+private fun String?.repeatFrom() = if (this?.contains("FROM=COMPLETION") == true) {
+    Task.RepeatFrom.COMPLETION_DATE
+} else {
+    Task.RepeatFrom.DUE_DATE
+}
+
+private fun String?.withoutFrom(): String? = this?.replace(";?FROM=[^;]*".toRegex(), "")

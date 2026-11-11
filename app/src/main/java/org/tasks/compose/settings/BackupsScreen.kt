@@ -27,22 +27,14 @@ fun BackupsScreen(
     lastBackupSummary: String,
     showLocalBackupWarning: Boolean,
     backupsEnabled: Boolean,
-    driveBackupEnabled: Boolean,
-    driveAccountSummary: String,
-    driveAccountEnabled: Boolean,
-    lastDriveBackupSummary: String,
-    showDriveBackupWarning: Boolean,
     androidBackupEnabled: Boolean,
     lastAndroidBackupSummary: String,
     showAndroidBackupWarning: Boolean,
     ignoreWarnings: Boolean,
-    onDocumentation: () -> Unit,
     onBackupDir: () -> Unit,
     onBackupNow: () -> Unit,
     onImportBackup: () -> Unit,
     onBackupsEnabled: (Boolean) -> Unit,
-    onDriveBackup: (Boolean) -> Unit,
-    onDriveAccount: () -> Unit,
     onAndroidBackup: (Boolean) -> Unit,
     onDeviceSettings: () -> Unit,
     onIgnoreWarnings: (Boolean) -> Unit,
@@ -53,17 +45,6 @@ fun BackupsScreen(
             .background(MaterialTheme.colorScheme.surface)
             .verticalScroll(rememberScrollState())
     ) {
-        Spacer(modifier = Modifier.height(SettingsContentPadding))
-
-        // Documentation
-        SettingsItemCard(modifier = Modifier.padding(horizontal = SettingsContentPadding)) {
-            PreferenceRow(
-                title = stringResource(R.string.documentation),
-                icon = TasksIcons.OPEN_IN_NEW,
-                onClick = onDocumentation,
-            )
-        }
-
         Spacer(modifier = Modifier.height(SettingsContentPadding))
 
         // Backup directory, backup now, import
@@ -102,8 +83,6 @@ fun BackupsScreen(
                 )
             }
         }
-
-        // DavTasks: sin copia de seguridad en Google Drive.
 
         // Android Backup Service section
         SectionHeader(

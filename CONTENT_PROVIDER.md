@@ -1,42 +1,42 @@
-# Tasks.org API Reference
+# DavTasks API Reference
 
-Content provider API for reading and writing Tasks.org data from another app.
+Content provider API for reading and writing DavTasks data from another app.
 
 > **`v0` is unstable.** Columns and parameters may change between releases. Check the
-> [changelog](#changelog) when you update Tasks.
+> [changelog](#changelog) when you update DavTasks.
 
 ## Base configuration
 
 | Setting | Value |
 | --- | --- |
-| **Authority** | `org.tasks.api` |
-| **Base URI** | `content://org.tasks.api/v0` |
+| **Authority** | `io.github.jimenezgarciaca.davtasks.api` |
+| **Base URI** | `content://io.github.jimenezgarciaca.davtasks.api/v0` |
 | **Default limit** | 100 rows, no maximum |
-| **Required permissions** | `org.tasks.permission.READ_TASKS`, `org.tasks.permission.WRITE_TASKS` |
+| **Required permissions** | `io.github.jimenezgarciaca.davtasks.permission.READ_TASKS`, `io.github.jimenezgarciaca.davtasks.permission.WRITE_TASKS` |
 
 ### Getting connected
 
 Add the following to your manifest:
 
 ```xml
-<uses-permission android:name="org.tasks.permission.READ_TASKS" />
-<uses-permission android:name="org.tasks.permission.WRITE_TASKS" />
+<uses-permission android:name="io.github.jimenezgarciaca.davtasks.permission.READ_TASKS" />
+<uses-permission android:name="io.github.jimenezgarciaca.davtasks.permission.WRITE_TASKS" />
 
 <queries>
-  <provider android:authorities="org.tasks.api" />
+  <provider android:authorities="io.github.jimenezgarciaca.davtasks.api" />
 </queries>
 ```
 
 Check if the content provider is available, and which release provides it:
 
 ```kotlin
-val provider = packageManager.resolveContentProvider("org.tasks.api", 0)
+val provider = packageManager.resolveContentProvider("io.github.jimenezgarciaca.davtasks.api", 0)
 val versionCode = provider?.let {
     PackageInfoCompat.getLongVersionCode(packageManager.getPackageInfo(it.packageName, 0))
 }
 ```
 
-`null` means Tasks.org is not installed. [Changelog](#changelog) entries are headed with
+`null` means DavTasks is not installed. [Changelog](#changelog) entries are headed with
 this version code.
 
 Request runtime permissions:
@@ -44,8 +44,8 @@ Request runtime permissions:
 ```kotlin
 requestPermissions(
     arrayOf(
-        "org.tasks.permission.READ_TASKS",
-        "org.tasks.permission.WRITE_TASKS",
+        "io.github.jimenezgarciaca.davtasks.permission.READ_TASKS",
+        "io.github.jimenezgarciaca.davtasks.permission.WRITE_TASKS",
     ),
     RC,
 )
@@ -121,7 +121,7 @@ var offset = 0
 var total = Int.MAX_VALUE
 
 while (offset < total) {
-    val uri = "content://org.tasks.api/v0/tasks?limit=500&offset=$offset".toUri()
+    val uri = "content://io.github.jimenezgarciaca.davtasks.api/v0/tasks?limit=500&offset=$offset".toUri()
     val page = resolver.query(uri, null, null, null, null) ?: break
     page.use { c ->
         total = c.extras.getInt(ContentResolver.EXTRA_TOTAL_COUNT, 0)
@@ -151,7 +151,7 @@ and `sort=start`, unset dates sort first ascending, last descending.
 
 ```kotlin
 val overdue = resolver.query(
-    "content://org.tasks.api/v0/tasks?limit=0&overdue=1&completed=0".toUri(),
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/tasks?limit=0&overdue=1&completed=0".toUri(),
     null, null, null, null
 )?.use { it.extras.getInt(ContentResolver.EXTRA_TOTAL_COUNT, 0) } ?: 0
 ```
@@ -159,7 +159,7 @@ val overdue = resolver.query(
 ### Watching for changes
 
 Every collection is observable. Changes fire from this API, from background sync and from
-edits in the app, and survive the Tasks process restarting.
+edits in the app, and survive the DavTasks process restarting.
 
 ```kotlin
 val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
@@ -167,7 +167,7 @@ val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
 }
 
 resolver.registerContentObserver(
-    "content://org.tasks.api/v0/tasks".toUri(),
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/tasks".toUri(),
     true,
     observer,
 )
@@ -183,7 +183,7 @@ The notification carries no payload.
 Register on the base URI for one signal covering everything:
 
 ```kotlin
-resolver.registerContentObserver("content://org.tasks.api/v0".toUri(), true, observer)
+resolver.registerContentObserver("content://io.github.jimenezgarciaca.davtasks.api/v0".toUri(), true, observer)
 ```
 
 ### Empty values
@@ -223,7 +223,7 @@ fetch the collection and match names yourself.
 
 ```kotlin
 val listId = resolver.query(
-    "content://org.tasks.api/v0/lists".toUri(), null, null, null, null
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/lists".toUri(), null, null, null, null
 )?.use { c ->
     val id = c.getColumnIndexOrThrow("_id")
     val title = c.getColumnIndexOrThrow("title")
@@ -266,7 +266,7 @@ yourself; everywhere else it means local midnight.
 | `TransactionTooLargeException` | The batch or its results exceeded the binder transaction limit. Often arrives wrapped in a `RuntimeException`. Split the batch |
 
 Every query returns a cursor, possibly with no rows, or throws. A null return means the
-request never reached the provider: Tasks is not installed, or `<queries>` is missing.
+request never reached the provider: DavTasks is not installed, or `<queries>` is missing.
 
 ---
 
@@ -275,7 +275,7 @@ request never reached the provider: Tasks is not installed, or `<queries>` is mi
 ## List tasks
 
 ```
-content://org.tasks.api/v0/tasks
+content://io.github.jimenezgarciaca.davtasks.api/v0/tasks
 ```
 
 ### Parameters
@@ -363,7 +363,7 @@ A place implies no reminder on its own; arrival and departure triggers are
 
 ```kotlin
 // Unfinished tasks due today in the Work list, most urgent first
-val uri = ("content://org.tasks.api/v0/tasks?" +
+val uri = ("content://io.github.jimenezgarciaca.davtasks.api/v0/tasks?" +
         "list_id=$workListId" +
         "&due_after=$startOfDay&due_before=$endOfDay" +
         "&completed=0" +
@@ -382,7 +382,7 @@ resolver.query(uri, null, null, null, null)?.use { c ->
 ## Get one task
 
 ```
-content://org.tasks.api/v0/tasks/{id}
+content://io.github.jimenezgarciaca.davtasks.api/v0/tasks/{id}
 ```
 
 Same columns. Returns an empty cursor if the id does not exist or has been deleted.
@@ -393,13 +393,13 @@ The item URI is also viewable: an `ACTION_VIEW` intent on it opens the task's ed
 one on the collection URI opens a new task.
 
 ```kotlin
-startActivity(Intent(Intent.ACTION_VIEW, "content://org.tasks.api/v0/tasks/$taskId".toUri()))
+startActivity(Intent(Intent.ACTION_VIEW, "content://io.github.jimenezgarciaca.davtasks.api/v0/tasks/$taskId".toUri()))
 ```
 
 ## Create a task
 
 ```
-insert content://org.tasks.api/v0/tasks
+insert content://io.github.jimenezgarciaca.davtasks.api/v0/tasks
 ```
 
 Requires `WRITE_TASKS`. Returns the new task's item URI, or throws.
@@ -426,7 +426,7 @@ val values = contentValuesOf(
     "priority" to "high",
     "list_id" to personalListId,
 )
-val uri = resolver.insert("content://org.tasks.api/v0/tasks".toUri(), values)
+val uri = resolver.insert("content://io.github.jimenezgarciaca.davtasks.api/v0/tasks".toUri(), values)
 val id = ContentUris.parseId(uri!!)
 ```
 
@@ -440,7 +440,7 @@ default list.
 ## Update a task
 
 ```
-update content://org.tasks.api/v0/tasks/{id}
+update content://io.github.jimenezgarciaca.davtasks.api/v0/tasks/{id}
 ```
 
 Requires `WRITE_TASKS`. A **patch**: only the keys you supply change, and a key mapped to
@@ -462,7 +462,7 @@ Some values are not plain column writes:
 Writes to a task on a read-only list throw `UnsupportedOperationException`.
 
 ```kotlin
-val task = "content://org.tasks.api/v0/tasks/$id".toUri()
+val task = "content://io.github.jimenezgarciaca.davtasks.api/v0/tasks/$id".toUri()
 
 resolver.update(task, contentValuesOf("title" to "Renew passport", "priority" to "high"), null, null)
 
@@ -507,7 +507,7 @@ deletes the whole series.
 ## Delete a task
 
 ```
-delete content://org.tasks.api/v0/tasks/{id}
+delete content://io.github.jimenezgarciaca.davtasks.api/v0/tasks/{id}
 ```
 
 Requires `WRITE_TASKS`. Deletes the task **and all of its subtasks**; there is no undo.
@@ -523,8 +523,8 @@ arriving at or leaving the task's place.
 ## List reminders
 
 ```
-content://org.tasks.api/v0/reminders
-content://org.tasks.api/v0/reminders/{id}
+content://io.github.jimenezgarciaca.davtasks.api/v0/reminders
+content://io.github.jimenezgarciaca.davtasks.api/v0/reminders/{id}
 ```
 
 | Parameter | Type | Description |
@@ -558,9 +558,9 @@ Which columns apply depends on the type. Sending one that does not apply throws:
 ## Create, update, delete a reminder
 
 ```
-insert content://org.tasks.api/v0/reminders
-update content://org.tasks.api/v0/reminders/{id}
-delete content://org.tasks.api/v0/reminders/{id}
+insert content://io.github.jimenezgarciaca.davtasks.api/v0/reminders
+update content://io.github.jimenezgarciaca.davtasks.api/v0/reminders/{id}
+delete content://io.github.jimenezgarciaca.davtasks.api/v0/reminders/{id}
 ```
 
 Requires `WRITE_TASKS`. `task_id` and `type` are required on insert. An insert matching an
@@ -568,14 +568,14 @@ existing reminder on the same task in every field returns that row's URI.
 
 ```kotlin
 // Two hours before it's due
-resolver.insert("content://org.tasks.api/v0/reminders".toUri(), contentValuesOf(
+resolver.insert("content://io.github.jimenezgarciaca.davtasks.api/v0/reminders".toUri(), contentValuesOf(
     "task_id" to taskId,
     "type" to "relative_due",
     "offset_ms" to -TimeUnit.HOURS.toMillis(2),
 ))
 
 // A day after it's due, then daily for six more days
-resolver.insert("content://org.tasks.api/v0/reminders".toUri(), contentValuesOf(
+resolver.insert("content://io.github.jimenezgarciaca.davtasks.api/v0/reminders".toUri(), contentValuesOf(
     "task_id" to taskId,
     "type" to "relative_due",
     "offset_ms" to TimeUnit.DAYS.toMillis(1),
@@ -590,7 +590,7 @@ The place must exist first — see [Places](#places).
 
 ```kotlin
 // "Remind me when I leave home"
-resolver.insert("content://org.tasks.api/v0/reminders".toUri(), contentValuesOf(
+resolver.insert("content://io.github.jimenezgarciaca.davtasks.api/v0/reminders".toUri(), contentValuesOf(
     "task_id" to taskId,
     "type" to "location_departure",
     "place_id" to homeId,
@@ -609,7 +609,7 @@ resolver.insert("content://org.tasks.api/v0/reminders".toUri(), contentValuesOf(
 ```kotlin
 // Match a saved place by name
 val home = resolver.query(
-    "content://org.tasks.api/v0/places".toUri(), null, null, null, null
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/places".toUri(), null, null, null, null
 )?.use { c ->
     val id = c.getColumnIndexOrThrow("_id")
     val name = c.getColumnIndexOrThrow("display_name")
@@ -618,11 +618,11 @@ val home = resolver.query(
         ?.getLong(id)
 } ?: return
 
-resolver.applyBatch("org.tasks.api", arrayListOf(
-    ContentProviderOperation.newInsert("content://org.tasks.api/v0/tasks".toUri())
+resolver.applyBatch("io.github.jimenezgarciaca.davtasks.api", arrayListOf(
+    ContentProviderOperation.newInsert("content://io.github.jimenezgarciaca.davtasks.api/v0/tasks".toUri())
         .withValue("title", "Water the plants")
         .build(),
-    ContentProviderOperation.newInsert("content://org.tasks.api/v0/reminders".toUri())
+    ContentProviderOperation.newInsert("content://io.github.jimenezgarciaca.davtasks.api/v0/reminders".toUri())
         .withValueBackReference("task_id", 0)
         .withValue("type", "location_arrival")
         .withValue("place_id", home)
@@ -637,8 +637,8 @@ resolver.applyBatch("org.tasks.api", arrayListOf(
 The join between tasks and tags. Create the tag itself via [Tags](#tags).
 
 ```
-content://org.tasks.api/v0/task_tags
-content://org.tasks.api/v0/task_tags/{id}
+content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags
+content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags/{id}
 ```
 
 | Parameter | Type | Description |
@@ -656,9 +656,9 @@ There is no `task_id` read parameter; a task's tags are the `tag_ids` column on 
 | `tag_id` | long | insert | The tag applied to the task |
 
 ```
-insert content://org.tasks.api/v0/task_tags              // task_id + tag_id
-delete content://org.tasks.api/v0/task_tags/{id}
-delete content://org.tasks.api/v0/task_tags?task_id={id}&tag_id={id}
+insert content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags              // task_id + tag_id
+delete content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags/{id}
+delete content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags?task_id={id}&tag_id={id}
 ```
 
 Inserting a pair that already exists returns the existing row's URI.
@@ -668,18 +668,18 @@ Inserting a pair that already exists returns the existing row's URI.
 ```kotlin
 // Add
 val row = resolver.insert(
-    "content://org.tasks.api/v0/task_tags".toUri(),
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags".toUri(),
     contentValuesOf("task_id" to taskId, "tag_id" to tagId),
 )!!
 
 // Read back off the task
 val tags = resolver.query(
-    "content://org.tasks.api/v0/tasks/$taskId".toUri(), arrayOf("tag_ids"), null, null, null
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/tasks/$taskId".toUri(), arrayOf("tag_ids"), null, null, null
 )!!.use { it.moveToFirst(); it.getString(0) }.split(",").filter { it.isNotEmpty() }.map(String::toLong)
 
 // Remove by natural key
 resolver.delete(
-    "content://org.tasks.api/v0/task_tags?task_id=$taskId&tag_id=$tagId".toUri(), null, null,
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags?task_id=$taskId&tag_id=$tagId".toUri(), null, null,
 )
 ```
 
@@ -688,8 +688,8 @@ resolver.delete(
 # Lists
 
 ```
-content://org.tasks.api/v0/lists
-content://org.tasks.api/v0/lists/{id}
+content://io.github.jimenezgarciaca.davtasks.api/v0/lists
+content://io.github.jimenezgarciaca.davtasks.api/v0/lists/{id}
 ```
 
 | Parameter | Type | Description |
@@ -714,9 +714,9 @@ content://org.tasks.api/v0/lists/{id}
 ## Create, update, delete a list
 
 ```
-insert content://org.tasks.api/v0/lists          // account_id + title required
-update content://org.tasks.api/v0/lists/{id}     // title, color, icon
-delete content://org.tasks.api/v0/lists/{id}
+insert content://io.github.jimenezgarciaca.davtasks.api/v0/lists          // account_id + title required
+update content://io.github.jimenezgarciaca.davtasks.api/v0/lists/{id}     // title, color, icon
+delete content://io.github.jimenezgarciaca.davtasks.api/v0/lists/{id}
 ```
 
 Requires `WRITE_TASKS`. On CalDAV, Google, Microsoft and Etebase accounts, all three block
@@ -732,7 +732,7 @@ list. Re-list `/v0/lists` and match on `title` before retrying.
 ```kotlin
 // Pick an account
 val accountId = resolver.query(
-    "content://org.tasks.api/v0/accounts".toUri(), null, null, null, null
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/accounts".toUri(), null, null, null, null
 )!!.use { c ->
     val id = c.getColumnIndexOrThrow("_id")
     val type = c.getColumnIndexOrThrow("type")
@@ -743,7 +743,7 @@ val accountId = resolver.query(
 
 // Create
 val created = resolver.insert(
-    "content://org.tasks.api/v0/lists".toUri(),
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/lists".toUri(),
     contentValuesOf("account_id" to accountId, "title" to "Groceries", "color" to 0),
 )!!
 val listId = ContentUris.parseId(created)
@@ -760,8 +760,8 @@ resolver.delete(created, null, null)
 # Tags
 
 ```
-content://org.tasks.api/v0/tags
-content://org.tasks.api/v0/tags/{id}
+content://io.github.jimenezgarciaca.davtasks.api/v0/tags
+content://io.github.jimenezgarciaca.davtasks.api/v0/tags/{id}
 ```
 
 | Parameter | Type | Description |
@@ -778,9 +778,9 @@ content://org.tasks.api/v0/tags/{id}
 | `order` | int |  | Display order in the app's drawer |
 
 ```
-insert content://org.tasks.api/v0/tags        // name required; color, icon optional
-update content://org.tasks.api/v0/tags/{id}   // rename, recolor, change icon
-delete content://org.tasks.api/v0/tags/{id}   // also removes it from every task
+insert content://io.github.jimenezgarciaca.davtasks.api/v0/tags        // name required; color, icon optional
+update content://io.github.jimenezgarciaca.davtasks.api/v0/tags/{id}   // rename, recolor, change icon
+delete content://io.github.jimenezgarciaca.davtasks.api/v0/tags/{id}   // also removes it from every task
 ```
 
 Tag names are unique case-insensitively. Inserting an existing name returns that tag's URI
@@ -794,7 +794,7 @@ Renaming onto a name another tag holds throws `IllegalArgumentException`, with t
 ```kotlin
 // Create
 val created = resolver.insert(
-    "content://org.tasks.api/v0/tags".toUri(),
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/tags".toUri(),
     contentValuesOf("name" to "admin", "color" to 0xFF4CAF50.toInt()),
 )!!
 val tagId = ContentUris.parseId(created)
@@ -813,8 +813,8 @@ resolver.delete(created, null, null)
 Saved locations.
 
 ```
-content://org.tasks.api/v0/places
-content://org.tasks.api/v0/places/{id}
+content://io.github.jimenezgarciaca.davtasks.api/v0/places
+content://io.github.jimenezgarciaca.davtasks.api/v0/places/{id}
 ```
 
 | Parameter | Type | Description |
@@ -838,9 +838,9 @@ content://org.tasks.api/v0/places/{id}
 | `order` | int |  | Display order in the app's drawer |
 
 ```
-insert content://org.tasks.api/v0/places       // latitude + longitude required
-update content://org.tasks.api/v0/places/{id}
-delete content://org.tasks.api/v0/places/{id}  // also unfiles its tasks and drops their reminders
+insert content://io.github.jimenezgarciaca.davtasks.api/v0/places       // latitude + longitude required
+update content://io.github.jimenezgarciaca.davtasks.api/v0/places/{id}
+delete content://io.github.jimenezgarciaca.davtasks.api/v0/places/{id}  // also unfiles its tasks and drops their reminders
 ```
 
 Places are unique by coordinate. Inserting coordinates that match a saved place returns that
@@ -851,7 +851,7 @@ place's URI. There is no geocoding; supply coordinates.
 ```kotlin
 // Create
 val created = resolver.insert(
-    "content://org.tasks.api/v0/places".toUri(),
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/places".toUri(),
     contentValuesOf(
         "name" to "Home",
         "address" to "221B Baker Street",
@@ -876,8 +876,8 @@ resolver.delete(created, null, null)
 Read-only.
 
 ```
-content://org.tasks.api/v0/accounts
-content://org.tasks.api/v0/accounts/{id}
+content://io.github.jimenezgarciaca.davtasks.api/v0/accounts
+content://io.github.jimenezgarciaca.davtasks.api/v0/accounts/{id}
 ```
 
 | Parameter | Type | Description |
@@ -910,7 +910,7 @@ Accounts are added and removed in the app.
 ## Example
 
 ```kotlin
-resolver.query("content://org.tasks.api/v0/accounts".toUri(), null, null, null, null)!!.use { c ->
+resolver.query("content://io.github.jimenezgarciaca.davtasks.api/v0/accounts".toUri(), null, null, null, null)!!.use { c ->
     val name = c.getColumnIndexOrThrow("name")
     val type = c.getColumnIndexOrThrow("type")
     val error = c.getColumnIndexOrThrow("error")
@@ -936,27 +936,27 @@ Target `task_id`, `tag_id`, `place_id` and `parent_id`. `list_id` takes a litera
 ```kotlin
 val ops = arrayListOf(
     // 0 — the tag
-    ContentProviderOperation.newInsert("content://org.tasks.api/v0/tags".toUri())
+    ContentProviderOperation.newInsert("content://io.github.jimenezgarciaca.davtasks.api/v0/tags".toUri())
         .withValue("name", "admin")
         .build(),
     // 1 — the task
-    ContentProviderOperation.newInsert("content://org.tasks.api/v0/tasks".toUri())
+    ContentProviderOperation.newInsert("content://io.github.jimenezgarciaca.davtasks.api/v0/tasks".toUri())
         .withValue("title", "Renew passport")
         .withValue("due_date", dueMillis)
         .withValue("due_all_day", 1)
         .withValue("list_id", listId)
         .build(),
-    ContentProviderOperation.newInsert("content://org.tasks.api/v0/reminders".toUri())
+    ContentProviderOperation.newInsert("content://io.github.jimenezgarciaca.davtasks.api/v0/reminders".toUri())
         .withValueBackReference("task_id", 1)      // the id from operation 1
         .withValue("type", "relative_due")
         .withValue("offset_ms", -TimeUnit.DAYS.toMillis(7))
         .build(),
-    ContentProviderOperation.newInsert("content://org.tasks.api/v0/task_tags".toUri())
+    ContentProviderOperation.newInsert("content://io.github.jimenezgarciaca.davtasks.api/v0/task_tags".toUri())
         .withValueBackReference("task_id", 1)
         .withValueBackReference("tag_id", 0)       // the tag from operation 0
         .build(),
 )
-val results = resolver.applyBatch("org.tasks.api", ops)
+val results = resolver.applyBatch("io.github.jimenezgarciaca.davtasks.api", ops)
 ```
 
 Change notifications fire once at the end of a batch, not per operation.
@@ -978,7 +978,7 @@ Reminders need a second query, scoped to the ids from the first:
 
 ```kotlin
 val tasks = resolver.query(
-    "content://org.tasks.api/v0/tasks?completed=0&limit=100".toUri(),
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/tasks?completed=0&limit=100".toUri(),
     null, null, null, null
 )!!.use { c ->
     val id = c.getColumnIndexOrThrow("_id")
@@ -998,7 +998,7 @@ val tasks = resolver.query(
 // Size the limit for the rows coming back, not the ids going out
 val idParams = tasks.joinToString("&") { (id, _, _) -> "task_id=$id" }
 val remindersByTask: Map<Long, List<String>> = resolver.query(
-    "content://org.tasks.api/v0/reminders?$idParams&limit=1000".toUri(), null, null, null, null
+    "content://io.github.jimenezgarciaca.davtasks.api/v0/reminders?$idParams&limit=1000".toUri(), null, null, null, null
 )!!.use { c ->
     val taskId = c.getColumnIndexOrThrow("task_id")
     val type = c.getColumnIndexOrThrow("type")
