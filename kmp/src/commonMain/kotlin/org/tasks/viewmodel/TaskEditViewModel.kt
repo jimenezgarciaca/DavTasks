@@ -203,11 +203,6 @@ class TaskEditViewModel(
                     subtasksChanged ||
                     !task.copy(hideUntil = originalTask.hideUntil).sameEditableContentAs(originalTask)
 
-        val allowsNesting: Boolean
-            get() = listOfNotNull(originalList, list).let { lists ->
-                lists.isEmpty() || lists.any { !it.isSingleLevel }
-            }
-
         internal val alarmsChanged: Boolean
             get() = !alarms.sameAlarmsAs(originalAlarms)
 
@@ -381,22 +376,21 @@ class TaskEditViewModel(
     private fun watchSubtasks() {
         combine(
             _state.map { it.task.id }.distinctUntilChanged(),
-            _state.map { it.list?.isGoogleTasks == true }.distinctUntilChanged(),
             refreshFlow.onStart { emit(Unit) },
-        ) { id, isGoogleTasks, _ -> id to isGoogleTasks }
-            .mapLatest { (id, isGoogleTasks) ->
+        ) { id, _ -> id }
+            .mapLatest { id ->
                 if (id <= 0) {
                     return@mapLatest
                 }
-                val rows = fetchSubtasks(id, isGoogleTasks) ?: return@mapLatest
+                val rows = fetchSubtasks(id) ?: return@mapLatest
                 subtaskTrees.merge(treeKey.value, id, rows)
             }
             .launchIn(viewModelScope)
     }
 
-    private suspend fun fetchSubtasks(id: Long, isGoogleTasks: Boolean): List<TaskContainer>? =
+    private suspend fun fetchSubtasks(id: Long): List<TaskContainer>? =
         try {
-            taskDao.fetchTasks(subtaskQuery(parentId = id, isGoogleTasks = isGoogleTasks))
+            taskDao.fetchTasks(subtaskQuery(parentId = id))
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -608,9 +602,6 @@ class TaskEditViewModel(
     }
 
     fun indentSubtask(node: SubtaskNode, steps: Int) {
-        if (steps > 0 && !_state.value.allowsNesting) {
-            return
-        }
         repeat(kotlin.math.abs(steps)) {
             val before = subtaskTrees.arrangementUnder(treeKey.value)
             val moved = if (steps > 0) {

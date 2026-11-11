@@ -276,6 +276,5 @@ class CustomRecurrenceViewModelTest {
         CustomRecurrenceViewModel(
             rrule = recur,
             dueDate = dueDate.millis,
-            accountType = 0,
         ).also(block)
 }

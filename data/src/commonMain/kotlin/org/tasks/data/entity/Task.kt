@@ -164,21 +164,6 @@ data class Task @OptIn(ExperimentalSerializationApi::class) constructor(
                 && order == task.order
     }
 
-    fun googleTaskUpToDate(original: Task?): Boolean {
-        if (this === original) {
-            return true
-        }
-        return if (original == null) {
-            false
-        } else title == original.title
-                && dueDate == original.dueDate
-                && completionDate == original.completionDate
-                && deletionDate == original.deletionDate
-                && parent == original.parent
-                && notes == original.notes
-                && order == original.order
-    }
-
     fun caldavUpToDate(original: Task?): Boolean {
         if (this === original) {
             return true
@@ -195,30 +180,6 @@ data class Task @OptIn(ExperimentalSerializationApi::class) constructor(
                 && parent == original.parent
                 && isCollapsed == original.isCollapsed
                 && order == original.order
-    }
-
-    fun microsoftUpToDate(original: Task?): Boolean {
-        if (this === original) {
-            return true
-        }
-        if (original == null) {
-            return false
-        }
-        if (parent != original.parent) {
-            return false
-        }
-        return if (parent > 0L) {
-            title == original.title
-                    && completionDate == original.completionDate
-        } else {
-            title == original.title
-                    && priority == original.priority
-                    && dueDate == original.dueDate
-                    && completionDate == original.completionDate
-                    && deletionDate == original.deletionDate
-                    && notes == original.notes
-                    && recurrence == original.recurrence
-        }
     }
 
     val isSaved: Boolean

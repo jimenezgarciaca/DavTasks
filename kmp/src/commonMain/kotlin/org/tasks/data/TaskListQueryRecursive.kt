@@ -32,12 +32,11 @@ internal object TaskListQueryRecursive {
         }
         val sortMode = when {
             !manualSort || filter !is CaldavFilter -> preferences.sortMode
-            filter.isGoogleTasks -> SortHelper.SORT_GTASKS
             else -> SortHelper.SORT_CALDAV
         }
         val subtaskPreference = preferences.subtaskMode
         val subtaskMode = when {
-            sortMode == SortHelper.SORT_GTASKS || sortMode == SortHelper.SORT_CALDAV -> sortMode
+            sortMode == SortHelper.SORT_CALDAV -> sortMode
             subtaskPreference == SortHelper.SORT_MANUAL -> SortHelper.SORT_CALDAV
             else -> subtaskPreference
         }
@@ -45,9 +44,9 @@ internal object TaskListQueryRecursive {
         val groupAscending =
             preferences.groupAscending && groupMode != SortHelper.GROUP_NONE
         val sortAscending =
-            preferences.sortAscending && sortMode != SortHelper.SORT_GTASKS && sortMode != SortHelper.SORT_CALDAV
+            preferences.sortAscending && sortMode != SortHelper.SORT_CALDAV
         val subtaskAscending =
-            preferences.subtaskAscending && subtaskMode != SortHelper.SORT_GTASKS && subtaskMode != SortHelper.SORT_CALDAV
+            preferences.subtaskAscending && subtaskMode != SortHelper.SORT_CALDAV
         val completedAtBottom = preferences.completedTasksAtBottom
         val parentCompleted = if (completedAtBottom) "tasks.completed > 0" else "0"
         val hideCompletedSubtasks = if (preferences.showCompletedSubtasks) {

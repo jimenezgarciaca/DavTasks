@@ -3,8 +3,6 @@ package org.tasks.data
 import androidx.room3.ColumnInfo
 import androidx.room3.Embedded
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.Task
 
@@ -28,15 +26,6 @@ data class TaskContainer(
      * [equals]: a bound row and a freshly queried one must still compare equal.
      */
     var targetIndent: Int = 0
-
-    val isGoogleTask: Boolean
-        get() = accountType == TYPE_GOOGLE_TASKS
-
-    val isSingleLevelSubtask: Boolean
-        get() = when (accountType) {
-            TYPE_GOOGLE_TASKS, TYPE_MICROSOFT -> true
-            else -> false
-        }
 
     val caldav: String?
         get() = caldavTask?.calendar

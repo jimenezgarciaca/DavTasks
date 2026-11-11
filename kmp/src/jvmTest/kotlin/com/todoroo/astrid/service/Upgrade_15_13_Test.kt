@@ -6,9 +6,6 @@ import org.junit.Test
 import org.tasks.DatabaseTest
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_ETEBASE
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_OPENTASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.CaldavCalendar
 
 class Upgrade_15_13_Test : DatabaseTest() {
@@ -39,31 +36,6 @@ class Upgrade_15_13_Test : DatabaseTest() {
 
         assertEquals("https://caldav.example.com/dav/calendars/user/foo@example.com/", accountUrl(account))
         assertEquals("https://caldav.example.com/dav/calendars/user/foo@example.com/abc/", calendarUrl(calendar))
-    }
-
-    @Test
-    fun canonicalizesTasksOrgUrls() = runBlocking {
-        val account = account(TYPE_TASKS, "https://caldav.tasks.org/calendars/user%40example.com/")
-        val calendar = calendar(account, "https://caldav.tasks.org/calendars/user%40example.com/abc/")
-
-        upgrade.canonicalizeUrls()
-
-        assertEquals("https://caldav.tasks.org/calendars/user@example.com/", accountUrl(account))
-        assertEquals("https://caldav.tasks.org/calendars/user@example.com/abc/", calendarUrl(calendar))
-    }
-
-    @Test
-    fun leavesNonCaldavIdentifiersAlone() = runBlocking {
-        val etebase = account(TYPE_ETEBASE, "https://API.etebase.com/")
-        val etebaseCollection = calendar(etebase, "AbC%40deF")
-        val openTasks = account(TYPE_OPENTASKS, "")
-        val openTasksList = calendar(openTasks, "content://org.dmfs.tasks/tasklists/1")
-
-        upgrade.canonicalizeUrls()
-
-        assertEquals("https://API.etebase.com/", accountUrl(etebase))
-        assertEquals("AbC%40deF", calendarUrl(etebaseCollection))
-        assertEquals("content://org.dmfs.tasks/tasklists/1", calendarUrl(openTasksList))
     }
 
     @Test

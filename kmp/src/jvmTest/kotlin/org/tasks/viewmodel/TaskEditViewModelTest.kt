@@ -36,7 +36,6 @@ import java.lang.reflect.Modifier
 import org.tasks.data.TaskSaver
 import org.tasks.data.entity.Alarm
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.SYNC_TAGS
 import org.tasks.data.entity.TagData
@@ -1374,32 +1373,6 @@ class TaskEditViewModelTest : TaskEditViewModelFixture() {
     }
 
     @Test
-    fun mergeRelativeStartTracksExternalDueChangeForGoogleTasks() = runTest(testDispatcher) {
-        val watchFlow = MutableSharedFlow<Task?>()
-        whenever(taskDao.watch(42L)).thenReturn(watchFlow)
-        val googleCalendar = CaldavCalendar(account = "g-acct", uuid = "g-cal", name = "Google")
-        val googleAccount = CaldavAccount(uuid = "g-acct", accountType = CaldavAccount.TYPE_GOOGLE_TASKS)
-        whenever(caldavDao.getCalendars()).thenReturn(listOf(googleCalendar))
-        whenever(caldavDao.getAccountByUuid("g-acct")).thenReturn(googleAccount)
-        val today = currentTimeMillis().startOfDay()
-        val due = today.noon()
-        val dayBefore = due.startOfDay().minusDays(1)
-        whenever(taskDao.fetch(42)).thenReturn(Task(id = 42, title = "t", dueDate = due, hideUntil = dayBefore))
-        whenever(caldavDao.getTask(42)).thenReturn(null)
-        buildViewModel(taskId = 42)
-        advanceUntilIdle()
-        assertEquals(DAY_BEFORE_DUE, viewModel.state.value.startDay)
-
-        val newDue = due.plusDays(7)
-        watchFlow.emit(viewModel.state.value.originalTask.copy(dueDate = newDue))
-        advanceUntilIdle()
-
-        val state = viewModel.state.value
-        assertEquals(DAY_BEFORE_DUE, state.startDay)
-        assertEquals(newDue.startOfDay().minusDays(1), state.task.hideUntil)
-    }
-
-    @Test
     fun mergeAdoptsExternalStartOnLocalDueEditWhenStartIsAbsolute() = runTest(testDispatcher) {
         val watchFlow = MutableSharedFlow<Task?>()
         whenever(taskDao.watch(42L)).thenReturn(watchFlow)
@@ -1518,20 +1491,6 @@ class TaskEditViewModelTest : TaskEditViewModelFixture() {
         assertEquals(due.startOfDay(), state.startDay)
         assertEquals(due.startOfDay(), state.task.hideUntil)
         assertFalse(state.hasChanges)
-    }
-
-    private suspend fun TestScope.initializeGoogleTasksExisting(due: Long, hideUntil: Long): MutableSharedFlow<Task?> {
-        val watchFlow = MutableSharedFlow<Task?>()
-        whenever(taskDao.watch(42L)).thenReturn(watchFlow)
-        val googleCalendar = CaldavCalendar(account = "g-acct", uuid = "g-cal", name = "Google")
-        val googleAccount = CaldavAccount(uuid = "g-acct", accountType = CaldavAccount.TYPE_GOOGLE_TASKS)
-        whenever(caldavDao.getCalendars()).thenReturn(listOf(googleCalendar))
-        whenever(caldavDao.getAccountByUuid("g-acct")).thenReturn(googleAccount)
-        whenever(taskDao.fetch(42)).thenReturn(Task(id = 42, title = "t", dueDate = due, hideUntil = hideUntil))
-        whenever(caldavDao.getTask(42)).thenReturn(null)
-        buildViewModel(taskId = 42)
-        advanceUntilIdle()
-        return watchFlow
     }
 
     @Test

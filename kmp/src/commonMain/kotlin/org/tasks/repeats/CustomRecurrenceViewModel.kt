@@ -10,7 +10,6 @@ import org.tasks.repeats.Frequency.MINUTELY
 import org.tasks.repeats.Frequency.MONTHLY
 import org.tasks.repeats.Frequency.WEEKLY
 import org.tasks.repeats.Frequency.YEARLY
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.date.DateTimeUtils.toDateTime
 import org.tasks.repeats.RecurrenceUtils.LAST_DAY_OF_MONTH
 import org.tasks.repeats.RecurrenceUtils.isLastDayOfMonth
@@ -24,7 +23,6 @@ import org.tasks.kmp.firstDayOfWeek
 open class CustomRecurrenceViewModel(
     rrule: String?,
     dueDate: Long,
-    accountType: Int,
 ) : ViewModel() {
     data class ViewState(
         val interval: Int = 1,
@@ -40,7 +38,6 @@ open class CustomRecurrenceViewModel(
         val lastDayOfMonth: Boolean = false,
         val openedWithLastDayOfMonth: Boolean = false,
         val openedWithLastWeekOfMonth: Boolean = false,
-        val isMicrosoftTask: Boolean = false,
     ) {
         val dueDayOfWeek: DayOfWeek
             get() = DateTime(dueDate).weekday.dayOfWeek
@@ -75,15 +72,11 @@ open class CustomRecurrenceViewModel(
         val resolvedDueDate = dueDate
             .takeIf { it > 0 }
             ?: currentTimeMillis().startOfDay()
-        val isMicrosoftTask = accountType == TYPE_MICROSOFT
-        val frequencies = if (isMicrosoftTask) FREQ_MICROSOFT else FREQ_ALL
-        val lastDayOfMonth = recur
-            ?.takeIf { !isMicrosoftTask }
-            ?.isLastDayOfMonth
-            ?: false
+        val frequencies = FREQ_ALL
+        val lastDayOfMonth = recur?.isLastDayOfMonth ?: false
         val monthDay = recur
             ?.byDay
-            ?.takeIf { recur.frequency == MONTHLY && !isMicrosoftTask }
+            ?.takeIf { recur.frequency == MONTHLY }
             ?.firstOrNull()
         _state.update { state ->
             state.copy(
@@ -91,7 +84,6 @@ open class CustomRecurrenceViewModel(
                 frequency = recur?.frequency?.takeIf { frequencies.contains(it) } ?: WEEKLY,
                 dueDate = resolvedDueDate,
                 endSelection = when {
-                    isMicrosoftTask -> 0
                     recur == null -> 0
                     recur.until != null -> 1
                     recur.count != null -> 2
@@ -109,7 +101,6 @@ open class CustomRecurrenceViewModel(
                 lastDayOfMonth = lastDayOfMonth,
                 openedWithLastDayOfMonth = lastDayOfMonth,
                 openedWithLastWeekOfMonth = monthDay?.offset == -1,
-                isMicrosoftTask = isMicrosoftTask,
                 frequencyOptions = frequencies,
             )
         }
@@ -193,7 +184,6 @@ open class CustomRecurrenceViewModel(
 
     companion object {
         val FREQ_ALL = listOf(MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY)
-        val FREQ_MICROSOFT = listOf(DAILY, WEEKLY, MONTHLY, YEARLY)
 
         private fun localeDaysOfWeek(): List<DayOfWeek> {
             val first = firstDayOfWeek().isoDayNumber

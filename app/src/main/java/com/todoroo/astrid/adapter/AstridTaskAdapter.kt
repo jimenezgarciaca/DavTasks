@@ -9,7 +9,6 @@ import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.data.TaskContainer
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.DirtyDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.entity.Task
 import org.tasks.data.entity.TaskListMetadata
 import org.tasks.filters.AstridOrderingFilter
@@ -23,14 +22,13 @@ class AstridTaskAdapter internal constructor(
     private val list: TaskListMetadata,
     private val filter: AstridOrderingFilter,
     private val updater: SubtasksFilterUpdater,
-    googleTaskDao: GoogleTaskDao,
     caldavDao: CaldavDao,
     private val taskDao: TaskDao,
     private val taskSaver: TaskSaver,
     dirtyDao: DirtyDao,
     private val refreshBroadcaster: RefreshBroadcaster,
     taskMover: TaskMover,
-) : TaskAdapter(false, googleTaskDao, caldavDao, taskDao, taskSaver, dirtyDao, refreshBroadcaster, taskMover) {
+) : TaskAdapter(false, caldavDao, taskDao, taskSaver, dirtyDao, refreshBroadcaster, taskMover) {
     private val chainedCompletions = Collections.synchronizedMap(HashMap<String, ArrayList<String>>())
 
     override fun getIndent(task: TaskContainer) = updater.getIndentForTask(task.uuid)

@@ -56,11 +56,9 @@ class RepeatControlSet : TaskEditControlFragment() {
             recurrence = viewState.task.recurrence?.let { repeatRuleToString.toStringBlocking(it) },
             repeatFrom = viewState.task.repeatFrom,
             onClick = {
-                val accountType = viewState.list.account.accountType
                 BasicRecurrenceDialog.newBasicRecurrenceDialog(
                     rrule = viewState.task.recurrence,
                     dueDate = dueDate,
-                    accountType = accountType,
                 )
                     .show(parentFragmentManager, FRAG_TAG_BASIC_RECURRENCE)
             },

@@ -7,14 +7,13 @@ import org.tasks.caldav.canonicalUrl
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.CaldavCalendar
 
 class Upgrade_15_13(
     private val caldavDao: CaldavDao,
 ) {
     suspend fun canonicalizeUrls() {
-        val accounts = caldavDao.getAccounts(TYPE_CALDAV, TYPE_TASKS)
+        val accounts = caldavDao.getAccounts(TYPE_CALDAV)
         val accountUrls = accounts.mapNotNullTo(mutableSetOf()) { it.url }
         for (account in accounts) {
             account
@@ -45,7 +44,7 @@ class Upgrade_15_13(
             }
 
         private val CaldavAccount.hasCaldavUrl: Boolean
-            get() = accountType == TYPE_CALDAV || accountType == TYPE_TASKS
+            get() = accountType == TYPE_CALDAV
 
         fun CaldavAccount.canonicalized(): CaldavAccount =
             if (hasCaldavUrl) copy(url = url?.canonicalUrl()) else this

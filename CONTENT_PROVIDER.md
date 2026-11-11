@@ -719,7 +719,7 @@ update content://io.github.jimenezgarciaca.davtasks.api/v0/lists/{id}     // tit
 delete content://io.github.jimenezgarciaca.davtasks.api/v0/lists/{id}
 ```
 
-Requires `WRITE_TASKS`. On CalDAV, Google, Microsoft and Etebase accounts, all three block
+Requires `WRITE_TASKS`. On CalDAV accounts, all three block
 on a network round trip. Failures, including timeouts, throw `IllegalStateException`
 carrying the server's message. Remote calls run one at a time, so a call can block behind
 another.
@@ -889,7 +889,7 @@ content://io.github.jimenezgarciaca.davtasks.api/v0/accounts/{id}
 | --- | --- | :-: | --- |
 | `_id` | long |  | Row id. Local to this install |
 | `name` | string |  | Display name. A local account with none gets the app's own label, in the device's language |
-| `type` | string |  | `caldav`, `tasks_org`, `google_tasks`, `microsoft`, `etebase`, `opentasks`, `local` |
+| `type` | string |  | `caldav`, `opentasks`, `local` |
 | `username` | string |  | Account username, `""` for local accounts |
 | `url` | string |  | Server URL, `""` for local |
 | `error` | string |  | Why sync last failed, `""` when healthy — see below |

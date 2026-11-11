@@ -299,17 +299,10 @@ object TasksContract {
         val PARAMS = listOf(PARAM_ID, PARAM_LIMIT, PARAM_OFFSET)
 
         const val TYPE_CALDAV = "caldav"
-        const val TYPE_TASKS_ORG = "tasks_org"
-        const val TYPE_GOOGLE_TASKS = "google_tasks"
-        const val TYPE_MICROSOFT = "microsoft"
-        const val TYPE_ETEBASE = "etebase"
         const val TYPE_OPENTASKS = "opentasks"
         const val TYPE_LOCAL = "local"
 
-        val TYPES = listOf(
-            TYPE_CALDAV, TYPE_TASKS_ORG, TYPE_GOOGLE_TASKS, TYPE_MICROSOFT, TYPE_ETEBASE,
-            TYPE_OPENTASKS, TYPE_LOCAL,
-        )
+        val TYPES = listOf(TYPE_CALDAV, TYPE_OPENTASKS, TYPE_LOCAL)
 
         const val ERROR_UNAUTHORIZED = "unauthorized"
         const val ERROR_PAYMENT_REQUIRED = "payment_required"

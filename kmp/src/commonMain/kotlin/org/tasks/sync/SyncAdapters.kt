@@ -25,11 +25,7 @@ import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.DirtyDao
 import org.tasks.data.dao.DirtyTaskVersion
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_ETEBASE
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_OPENTASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.jobs.BackgroundWork
 import org.tasks.preferences.TasksPreferences
 import kotlin.coroutines.CoroutineContext
@@ -162,12 +158,6 @@ class SyncAdapters(
         private val log = Logger.withTag("SyncAdapters")
         const val TAG_SYNC = "tag_sync"
         private const val SYNC_DEBOUNCE_MS = 1000L
-        private val SYNCABLE_TYPES = setOf(
-            TYPE_GOOGLE_TASKS,
-            TYPE_CALDAV,
-            TYPE_TASKS,
-            TYPE_ETEBASE,
-            TYPE_MICROSOFT,
-        )
+        private val SYNCABLE_TYPES = setOf(TYPE_CALDAV)
     }
 }

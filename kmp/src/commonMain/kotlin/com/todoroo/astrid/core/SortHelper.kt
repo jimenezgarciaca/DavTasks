@@ -20,7 +20,6 @@ object SortHelper {
     const val SORT_IMPORTANCE: Int = 3
     const val SORT_MODIFIED: Int = 4
     const val SORT_CREATED: Int = 5
-    const val SORT_GTASKS: Int = 6
     const val SORT_CALDAV: Int = 7
     const val SORT_START: Int = 8
     const val SORT_LIST: Int = 9
@@ -152,7 +151,6 @@ object SortHelper {
             SORT_IMPORTANCE -> "tasks.importance"
             SORT_MODIFIED -> if (grouping) sortGroup("tasks.modified") else "tasks.modified"
             SORT_CREATED -> if (grouping) sortGroup("tasks.created") else "tasks.created"
-            SORT_GTASKS -> "tasks.`order`"
             SORT_CALDAV -> ORDER_BY_MANUAL
             SORT_LIST -> "CASE WHEN cdl_order = -1 THEN cdl_name ELSE cdl_order END"
             SORT_COMPLETED -> "tasks.completed"
@@ -181,11 +179,11 @@ object SortHelper {
         secondaryMode: Int,
         secondaryAscending: Boolean
     ): Order {
-        val order = if (primaryAscending || sortMode == SORT_GTASKS || sortMode == SORT_CALDAV
+        val order = if (primaryAscending || sortMode == SORT_CALDAV
         ) asc("primary_sort")
         else desc("primary_sort")
         order.addSecondaryExpression(
-            if (secondaryAscending || secondaryMode == SORT_GTASKS || secondaryMode == SORT_CALDAV
+            if (secondaryAscending || secondaryMode == SORT_CALDAV
             ) asc("secondary_sort")
             else desc("secondary_sort")
         )

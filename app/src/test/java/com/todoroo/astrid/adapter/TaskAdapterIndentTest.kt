@@ -5,7 +5,6 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.tasks.data.TaskContainer
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
 import org.tasks.data.entity.Task
 
 class TaskAdapterIndentTest {
@@ -13,7 +12,6 @@ class TaskAdapterIndentTest {
 
     private val adapter = TaskAdapter(
         newTasksOnTop = false,
-        googleTaskDao = mock(),
         caldavDao = mock(),
         taskDao = mock(),
         taskSaver = mock(),
@@ -120,39 +118,6 @@ class TaskAdapterIndentTest {
 
         assertEquals(2, maxIndent)
         assertEquals(0, adapter.minIndent(2, dragged, maxIndent))
-    }
-
-    @Test
-    fun aCompletedSingleLevelRowIsNotOfferedAsAParentForAnActiveRow() {
-        assertEquals(
-            0,
-            maxIndent(
-                previous = row(id = 1, completed = true, accountType = TYPE_GOOGLE_TASKS),
-                dragged = row(id = 2, accountType = TYPE_GOOGLE_TASKS),
-            ),
-        )
-    }
-
-    @Test
-    fun anActiveSingleLevelRowStillTakesANewChild() {
-        assertEquals(
-            1,
-            maxIndent(
-                previous = row(id = 1, accountType = TYPE_GOOGLE_TASKS),
-                dragged = row(id = 2, accountType = TYPE_GOOGLE_TASKS),
-            ),
-        )
-    }
-
-    @Test
-    fun aCompletedSingleLevelRowStillNestsUnderACompletedRow() {
-        assertEquals(
-            1,
-            maxIndent(
-                previous = row(id = 1, completed = true, accountType = TYPE_GOOGLE_TASKS),
-                dragged = row(id = 2, completed = true, accountType = TYPE_GOOGLE_TASKS),
-            ),
-        )
     }
 
     companion object {

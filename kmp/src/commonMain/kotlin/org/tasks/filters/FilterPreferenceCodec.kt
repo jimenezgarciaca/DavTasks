@@ -38,8 +38,7 @@ class FilterPreferenceCodec(
                 tagDataDao.getByUuid(split[1])
                     ?.takeIf { !it.name.isNullOrBlank() }
                     ?.let(::TagFilter)
-            // TODO: convert filters from old ID to uuid?
-            TYPE_GOOGLE_TASKS,
+            LEGACY_TYPE_GOOGLE_TASKS,
             TYPE_CALDAV ->
                 caldavDao.getCalendarByUuid(split[1])
                     ?.let { CaldavFilter(it, caldavDao.getAccountByUuid(it.account!!)!!) }
@@ -69,8 +68,8 @@ class FilterPreferenceCodec(
         const val TYPE_CUSTOM_FILTER = 1
         const val TYPE_TAG = 2
 
-        @Deprecated("use TYPE_CALDAV")
-        const val TYPE_GOOGLE_TASKS = 3
+        /** Listas de Google Tasks guardadas por Tasks.org; se leen como listas CalDAV. */
+        private const val LEGACY_TYPE_GOOGLE_TASKS = 3
         const val TYPE_CALDAV = 4
         const val TYPE_LOCATION = 5
 

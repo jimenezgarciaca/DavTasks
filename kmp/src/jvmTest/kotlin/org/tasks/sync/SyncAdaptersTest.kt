@@ -16,11 +16,7 @@ import org.tasks.data.dao.TaskDao
 import org.tasks.data.db.Database
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_ETEBASE
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_OPENTASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.SUPPRESS_SYNC
@@ -83,168 +79,6 @@ class SyncAdaptersTest {
         taskSaver.save(task, task.copy(title = "old"), dirty = false)
 
         assertNotDirty(task.id)
-    }
-
-    @Test
-    fun googleTasksSyncsOnTitleChange() = runTest(testDispatcher) {
-        val task = createTask(title = "new")
-        setupAccount(task.id, TYPE_GOOGLE_TASKS)
-
-        taskSaver.save(task, task.copy(title = "old"))
-
-        assertDirty(task.id)
-    }
-
-    @Test
-    fun googleTasksIgnoresPriorityChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_GOOGLE_TASKS)
-
-        taskSaver.save(task, task.copy(priority = Task.Priority.HIGH))
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun googleTasksIgnoresTagChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_GOOGLE_TASKS)
-        task.putTransitory(SYNC_TAGS, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun googleTasksIgnoresAlarmChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_GOOGLE_TASKS)
-        task.putTransitory(SYNC_ALARMS, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun googleTasksIgnoresLocationChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_GOOGLE_TASKS)
-        task.putTransitory(SYNC_LOCATION, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun microsoftSyncsOnTitleChange() = runTest(testDispatcher) {
-        val task = createTask(title = "new")
-        setupAccount(task.id, TYPE_MICROSOFT)
-
-        taskSaver.save(task, task.copy(title = "old"))
-
-        assertDirty(task.id)
-    }
-
-    @Test
-    fun microsoftSyncsOnPriorityChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_MICROSOFT)
-
-        taskSaver.save(task, task.copy(priority = Task.Priority.HIGH))
-
-        assertDirty(task.id)
-    }
-
-    @Test
-    fun microsoftSyncsOnTagChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_MICROSOFT)
-        task.putTransitory(SYNC_TAGS, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertDirty(task.id)
-    }
-
-    @Test
-    fun microsoftIgnoresAlarmChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_MICROSOFT)
-        task.putTransitory(SYNC_ALARMS, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun microsoftIgnoresLocationChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_MICROSOFT)
-        task.putTransitory(SYNC_LOCATION, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun microsoftSubtaskSyncsOnTitleChange() = runTest(testDispatcher) {
-        val parent = createTask()
-        val subtask = createTask(title = "new", parent = parent.id)
-        setupAccount(subtask.id, TYPE_MICROSOFT)
-
-        taskSaver.save(subtask, subtask.copy(title = "old"))
-
-        assertDirty(subtask.id)
-    }
-
-    @Test
-    fun microsoftSubtaskSyncsOnCompletionChange() = runTest(testDispatcher) {
-        val parent = createTask()
-        val subtask = createTask(parent = parent.id)
-        setupAccount(subtask.id, TYPE_MICROSOFT)
-
-        taskSaver.save(subtask, subtask.copy(completionDate = 12345L))
-
-        assertDirty(subtask.id)
-    }
-
-    @Test
-    fun microsoftSubtaskSyncsOnReparent() = runTest(testDispatcher) {
-        val parent = createTask()
-        val subtask = createTask(parent = parent.id)
-        setupAccount(subtask.id, TYPE_MICROSOFT)
-
-        taskSaver.save(subtask, subtask.copy(parent = 0))
-
-        assertDirty(subtask.id)
-    }
-
-    @Test
-    fun microsoftSubtaskIgnoresPriorityChange() = runTest(testDispatcher) {
-        val parent = createTask()
-        val subtask = createTask(parent = parent.id)
-        setupAccount(subtask.id, TYPE_MICROSOFT)
-
-        taskSaver.save(subtask, subtask.copy(priority = Task.Priority.HIGH))
-
-        assertNotDirty(subtask.id)
-    }
-
-    @Test
-    fun microsoftSubtaskIgnoresTagChange() = runTest(testDispatcher) {
-        val parent = createTask()
-        val subtask = createTask(parent = parent.id)
-        setupAccount(subtask.id, TYPE_MICROSOFT)
-        subtask.putTransitory(SYNC_TAGS, true)
-
-        taskSaver.save(subtask, subtask.copy())
-
-        assertNotDirty(subtask.id)
     }
 
     @Test
@@ -321,48 +155,6 @@ class SyncAdaptersTest {
     }
 
     @Test
-    fun googleTasksIgnoresStartDateChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_GOOGLE_TASKS)
-
-        taskSaver.save(task, task.copy(hideUntil = 12345L))
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun microsoftIgnoresStartDateChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_MICROSOFT)
-
-        taskSaver.save(task, task.copy(hideUntil = 12345L))
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun tasksOrgSyncsOnTagChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_TASKS)
-        task.putTransitory(SYNC_TAGS, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertDirty(task.id)
-    }
-
-    @Test
-    fun etebaseSyncsOnAlarmChange() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_ETEBASE)
-        task.putTransitory(SYNC_ALARMS, true)
-
-        taskSaver.save(task, task.copy())
-
-        assertDirty(task.id)
-    }
-
-    @Test
     fun openTasksSyncsOnLocationChange() = runTest(testDispatcher) {
         val task = createTask()
         setupAccount(task.id, TYPE_OPENTASKS)
@@ -377,26 +169,6 @@ class SyncAdaptersTest {
     fun caldavNoSyncWhenNothingChanged() = runTest(testDispatcher) {
         val task = createTask()
         setupAccount(task.id, TYPE_CALDAV)
-
-        taskSaver.save(task, task.copy())
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun googleTasksNoSyncWhenNothingChanged() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_GOOGLE_TASKS)
-
-        taskSaver.save(task, task.copy())
-
-        assertNotDirty(task.id)
-    }
-
-    @Test
-    fun microsoftNoSyncWhenNothingChanged() = runTest(testDispatcher) {
-        val task = createTask()
-        setupAccount(task.id, TYPE_MICROSOFT)
 
         taskSaver.save(task, task.copy())
 

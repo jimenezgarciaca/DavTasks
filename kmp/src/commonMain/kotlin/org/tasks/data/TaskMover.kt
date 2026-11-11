@@ -4,7 +4,6 @@ import co.touchlab.kermit.Logger
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.DirtyDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.dao.TaskDao
 import org.tasks.data.db.DbUtils.dbchunk
 import org.tasks.data.entity.CaldavTask
@@ -17,7 +16,6 @@ import org.tasks.service.TaskDeleter
 class TaskMover(
     private val taskDao: TaskDao,
     private val caldavDao: CaldavDao,
-    private val googleTaskDao: GoogleTaskDao,
     private val dirtyDao: DirtyDao,
     private val appPreferences: AppPreferences,
     private val refreshBroadcaster: RefreshBroadcaster,
@@ -69,10 +67,8 @@ class TaskMover(
             if (newParent != 0L) {
                 nestUnderParent(taskIds, newParent, selectedList)
             }
-            if (selectedList.isIcalendar) {
-                log.d { "Updating parents for ${selectedList.uuid}" }
-                caldavDao.updateParents(selectedList.uuid, force = true)
-            }
+            log.d { "Updating parents for ${selectedList.uuid}" }
+            caldavDao.updateParents(selectedList.uuid, force = true)
             val changed = if (newParent != 0L) taskIds else (moved + unparented).distinct()
             dirtyDao.setDirty(changed + taskDao.getChildren(changed))
         }
@@ -80,29 +76,9 @@ class TaskMover(
     }
 
     private suspend fun nestUnderParent(roots: List<Long>, newParent: Long, selectedList: CaldavFilter) {
-        if (selectedList.isIcalendar) {
-            val parentRemoteId = caldavDao.getTask(newParent)?.remoteId
-            roots.forEach { root ->
-                caldavDao.getTask(root)?.let { caldavDao.update(it.id, parentRemoteId) }
-            }
-            return
-        }
-        if (selectedList.isGoogleTasks) {
-            roots.forEach { root ->
-                taskDao.fetch(root)?.let {
-                    googleTaskDao.move(
-                        task = it,
-                        list = selectedList.uuid,
-                        newParent = newParent,
-                        newPosition = googleTaskDao.getBottom(selectedList.uuid, newParent),
-                    )
-                }
-            }
-        } else {
-            taskDao.setParent(newParent, roots)
-        }
-        taskDao.getChildren(roots).takeIf { it.isNotEmpty() }?.let {
-            taskDao.setParent(newParent, it)
+        val parentRemoteId = caldavDao.getTask(newParent)?.remoteId
+        roots.forEach { root ->
+            caldavDao.getTask(root)?.let { caldavDao.update(it.id, parentRemoteId) }
         }
     }
 
@@ -113,47 +89,10 @@ class TaskMover(
     }
 
     private suspend fun performMove(task: Task, selectedList: CaldavFilter): Boolean {
-        googleTaskDao.getByTaskId(task.id)?.let {
-            return moveGoogleTask(task, it, selectedList)
-        }
         caldavDao.getTask(task.id)?.let {
             return moveCaldavTask(task, it, selectedList)
         }
         moveLocalTask(task, selectedList)
-        return true
-    }
-
-    private suspend fun moveGoogleTask(task: Task, googleTask: CaldavTask, selected: CaldavFilter): Boolean {
-        if (googleTask.calendar == selected.uuid) {
-            return false
-        }
-        val id = task.id
-        val children = taskDao.getChildren(id)
-        taskDeleter.markMoved(children + id)
-        when {
-            selected.isGoogleTasks -> {
-                val listId = selected.uuid
-                googleTaskDao.insertAndShift(
-                    task = task,
-                    caldavTask = CaldavTask(
-                        task = id,
-                        calendar = listId,
-                        remoteId = null,
-                    ),
-                    top = appPreferences.addTasksToTop()
-                )
-                children.takeIf { it.isNotEmpty() }
-                        ?.map {
-                            CaldavTask(
-                                task = it,
-                                calendar = listId,
-                                remoteId = null,
-                            )
-                        }
-                        ?.let { googleTaskDao.insert(it) }
-            }
-            else -> createCaldavSubtree(task, children, selected)
-        }
         return true
     }
 
@@ -164,67 +103,25 @@ class TaskMover(
         val id = task.id
         val childIds = taskDao.getChildren(id)
         taskDeleter.markMoved(childIds + id)
-        when {
-            selected.isGoogleTasks -> moveToGoogleTasks(id, childIds, selected)
-            else -> createCaldavSubtree(task, childIds, selected)
-        }
+        createCaldavSubtree(task, childIds, selected)
         return true
     }
 
     private suspend fun moveLocalTask(task: Task, selected: CaldavFilter) {
-        when {
-            selected.isGoogleTasks -> moveToGoogleTasks(task.id, taskDao.getChildren(task.id), selected)
-            else -> createCaldavSubtree(task, taskDao.getChildren(task.id), selected)
-        }
+        createCaldavSubtree(task, taskDao.getChildren(task.id), selected)
     }
 
     private suspend fun createCaldavSubtree(task: Task, childIds: List<Long>, selected: CaldavFilter) {
         val listId = selected.uuid
-        val pushesParent = selected.account.pushesRemoteParent
         val root = CaldavTask(task = task.id, calendar = listId)
-        val caldavChildren = if (selected.isSingleLevel) {
-            taskDao.setParent(task.id, childIds)
-            childIds.map { child ->
-                CaldavTask(task = child, calendar = listId)
-                    .apply { if (pushesParent) remoteParent = root.remoteId }
-            }
-        } else {
-            val byId = taskDao.fetch(childIds).associateBy { it.id }
-            val remoteIds = hashMapOf(task.id to root.remoteId)
-            childIds.mapNotNull { byId[it] }.map { child ->
-                CaldavTask(task = child.id, calendar = listId)
-                    .apply { if (pushesParent) remoteParent = remoteIds[child.parent] }
-                    .also { remoteIds[child.id] = it.remoteId }
-            }
+        val byId = taskDao.fetch(childIds).associateBy { it.id }
+        val remoteIds = hashMapOf(task.id to root.remoteId)
+        val caldavChildren = childIds.mapNotNull { byId[it] }.map { child ->
+            CaldavTask(task = child.id, calendar = listId)
+                .apply { remoteParent = remoteIds[child.parent] }
+                .also { remoteIds[child.id] = it.remoteId }
         }
         caldavDao.insert(task, root, appPreferences.addTasksToTop())
         caldavChildren.takeIf { it.isNotEmpty() }?.let { caldavDao.insert(it) }
-    }
-
-    private suspend fun moveToGoogleTasks(id: Long, children: List<Long>, filter: CaldavFilter) {
-        if (!filter.isGoogleTasks) {
-            return
-        }
-        val task = taskDao.fetch(id) ?: return
-        taskDao.setParent(id, children)
-        val listId = filter.uuid
-        googleTaskDao.insertAndShift(
-            task,
-            CaldavTask(
-                task = id,
-                calendar = listId,
-                remoteId = null
-            ),
-            appPreferences.addTasksToTop()
-        )
-        children.takeIf { it.isNotEmpty() }
-                ?.map {
-                    CaldavTask(
-                        task = it,
-                        calendar = listId,
-                        remoteId = null
-                    )
-                }
-                ?.let { googleTaskDao.insert(it) }
     }
 }

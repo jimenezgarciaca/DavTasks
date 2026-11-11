@@ -9,16 +9,13 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
-import org.junit.Before
 import org.junit.Test
 import org.tasks.LocalBroadcastManager
-import org.tasks.R
 import org.tasks.data.TaskContainer
 import org.tasks.data.TaskSaver
 import org.tasks.data.TaskListQuery.getQuery
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.DirtyDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
 import org.tasks.data.entity.CaldavCalendar
@@ -38,7 +35,6 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 class CaldavManualSortTaskAdapterTest : InjectingTestCase() {
-    @Inject lateinit var googleTaskDao: GoogleTaskDao
     @Inject lateinit var taskDao: TaskDao
     @Inject lateinit var taskSaver: TaskSaver
     @Inject lateinit var dirtyDao: DirtyDao
@@ -57,16 +53,6 @@ class CaldavManualSortTaskAdapterTest : InjectingTestCase() {
         override fun getItem(position: Int) = tasks[position]
 
         override fun getTaskCount() = tasks.size
-    }
-
-    @Before
-    override fun setUp() {
-        super.setUp()
-        preferences.clear()
-        preferences.setBoolean(R.string.p_manual_sort, true)
-        tasks.clear()
-        adapter = CaldavManualSortTaskAdapter(googleTaskDao, caldavDao, taskDao, taskSaver, dirtyDao, localBroadcastManager, taskMover)
-        adapter.setDataSource(dataSource)
     }
 
     @Test

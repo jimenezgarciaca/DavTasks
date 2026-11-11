@@ -24,14 +24,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.tasks.data.SubtaskNode
-import org.tasks.data.SubtaskTreeWriter
 import java.lang.reflect.Modifier
-import org.tasks.data.PendingTask
 import org.tasks.data.TaskContainer
 import org.tasks.data.entity.Alarm
-import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
-import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.Task
 import org.tasks.compose.pickers.DAY_BEFORE_DUE
@@ -60,11 +55,6 @@ class TaskEditSubtaskTest : TaskEditViewModelFixture() {
         "onSubtaskFocused",
         "toggleSubtaskCollapsed",
     )
-
-    private val googleAccount =
-        CaldavAccount(uuid = "google-1", accountType = CaldavAccount.TYPE_GOOGLE_TASKS)
-    private val googleCalendar = CaldavCalendar(account = "google-1", uuid = "google-cal")
-    private val googleList = CaldavFilter(calendar = googleCalendar, account = googleAccount)
 
     @Test
     fun backspacingANewSubtaskAwayThrowsItAwayAltogether() = runTest(testDispatcher) {
@@ -394,73 +384,6 @@ class TaskEditSubtaskTest : TaskEditViewModelFixture() {
 
         val subtaskId = createdRows.values.first { it.title == "Subtask" }.id
         assertEquals(subtaskId, createdRows.values.first { it.title == "Nested" }.parent)
-    }
-
-    @Test
-    fun nestedSubtasksAreCreatedFlatOnAListThatHoldsOneLevel() = runTest(testDispatcher) {
-        initializeNew()
-        viewModel.setTitle("Parent")
-        addSubtask("Subtask")
-        val nested = addSubtask("Nested")
-        viewModel.indentSubtask(nested, steps = 1)
-        advanceUntilIdle()
-        viewModel.setList(googleList)
-        advanceUntilIdle()
-
-        viewModel.save()
-        advanceUntilIdle()
-
-        val parentId = viewModel.state.value.task.id
-        assertEquals(parentId, createdRows.values.first { it.title == "Subtask" }.parent)
-        assertEquals(parentId, createdRows.values.first { it.title == "Nested" }.parent)
-    }
-
-    @Test
-    fun subtasksCanStillBeNestedOnTheWayToAListThatHoldsOneLevel() = runTest(testDispatcher) {
-        initializeNew()
-        addSubtask("first")
-        val second = addSubtask("second")
-        viewModel.setList(googleList)
-        advanceUntilIdle()
-
-        viewModel.indentSubtask(second, steps = 1)
-        advanceUntilIdle()
-
-        assertEquals(listOf("first", "  second"), tree())
-        assertTrue(viewModel.state.value.allowsNesting)
-    }
-
-    @Test
-    fun subtasksCannotBeNestedOnAListThatHoldsOneLevelAndIsStayingThere() =
-        runTest(testDispatcher) {
-            whenever(caldavDao.getCalendars()).thenReturn(listOf(googleCalendar))
-            whenever(caldavDao.getAccountByUuid("google-1")).thenReturn(googleAccount)
-            whenever(caldavDao.getTask(42)).thenReturn(
-                CaldavTask(id = 1, task = 42, calendar = "google-cal")
-            )
-            initializeWithSubtasks(saved(1, "first"), saved(2, "second"))
-            assertFalse(viewModel.state.value.allowsNesting)
-
-            viewModel.indentSubtask(node("second"), steps = 1)
-            advanceUntilIdle()
-
-            assertEquals(listOf("first", "second"), tree())
-        }
-
-    @Test
-    fun nestingCarriedOntoASingleLevelListCanStillBeTakenOutByHand() = runTest(testDispatcher) {
-        whenever(caldavDao.getCalendars()).thenReturn(listOf(googleCalendar))
-        whenever(caldavDao.getAccountByUuid("google-1")).thenReturn(googleAccount)
-        whenever(caldavDao.getTask(42)).thenReturn(
-            CaldavTask(id = 1, task = 42, calendar = "google-cal")
-        )
-        initializeWithSubtasks(saved(1, "first"), saved(2, "second", parent = 1, indent = 1))
-        assertEquals(listOf("first", "  second"), tree())
-
-        viewModel.indentSubtask(node("second"), steps = -1)
-        advanceUntilIdle()
-
-        assertEquals(listOf("first", "second"), tree())
     }
 
     @Test
@@ -1012,41 +935,6 @@ class TaskEditSubtaskTest : TaskEditViewModelFixture() {
     }
 
     @Test
-    fun movingToAListThatHoldsOneLevelLeavesTheTreeAsItIs() = runTest(testDispatcher) {
-        initializeNew()
-        viewModel.setTitle("Parent")
-        addSubtask("a")
-        val b = addSubtask("b")
-        viewModel.indentSubtask(b, steps = 1)
-        advanceUntilIdle()
-        assertEquals(listOf("a", "  b"), tree())
-
-        viewModel.setList(googleList)
-        advanceUntilIdle()
-
-        assertEquals(listOf("a", "  b"), tree())
-    }
-
-    @Test
-    fun draggingOnAListThatHoldsOneLevelFollowsTheNestingOnScreen() = runTest(testDispatcher) {
-        initializeNew()
-        viewModel.setTitle("Parent")
-        addSubtask("a")
-        val b = addSubtask("b")
-        viewModel.indentSubtask(b, steps = 1)
-        addSubtask("c")
-        advanceUntilIdle()
-        assertEquals(listOf("a", "  b", "c"), tree())
-        viewModel.setList(googleList)
-        advanceUntilIdle()
-
-        viewModel.moveSubtask(fromKey = node("c").key, toKey = node("b").key)
-        advanceUntilIdle()
-
-        assertEquals(listOf("a", "  c", "  b"), tree())
-    }
-
-    @Test
     fun movingTheTaskToAnotherListTakesItsAddedSubtasksWithIt() = runTest(testDispatcher) {
         buildViewModel(remoteId = "parent-uuid")
         advanceUntilIdle()
@@ -1297,54 +1185,6 @@ class TaskEditSubtaskTest : TaskEditViewModelFixture() {
     }
 
     @Test
-    fun movingToAListThatHoldsOneLevelAndBackLeavesTheNestingAlone() = runTest(testDispatcher) {
-        initializeWithSubtasks(
-            saved(1, "a"),
-            saved(2, "b", parent = 1, indent = 1),
-            saved(3, "c", parent = 2, indent = 2),
-        )
-        val caldav = viewModel.state.value.list!!
-        val singleLevel = CaldavFilter(
-            calendar = seedCalendar,
-            account = CaldavAccount(uuid = "acct-1", accountType = TYPE_GOOGLE_TASKS),
-        )
-
-        viewModel.setList(singleLevel)
-        advanceUntilIdle()
-        assertEquals(listOf("a", "  b", "    c"), tree())
-
-        viewModel.setList(caldav)
-        advanceUntilIdle()
-
-        assertEquals(listOf("a", "  b", "    c"), tree())
-        viewModel.save()
-        advanceUntilIdle()
-        verify(taskDao, never()).setParent(any(), any())
-    }
-
-    @Test
-    fun aDragOnAListThatHoldsOneLevelKeepsTheNestingUntilTheSave() = runTest(testDispatcher) {
-        initializeWithSubtasks(
-            saved(1, "a"),
-            saved(2, "b", parent = 1, indent = 1),
-            saved(3, "c"),
-        )
-        viewModel.setList(
-            CaldavFilter(
-                calendar = seedCalendar,
-                account = CaldavAccount(uuid = "acct-1", accountType = TYPE_GOOGLE_TASKS),
-            )
-        )
-        advanceUntilIdle()
-        assertEquals(listOf("a", "  b", "c"), tree())
-
-        viewModel.moveSubtask(fromKey = "uuid-c", toKey = "uuid-a")
-        advanceUntilIdle()
-
-        assertEquals(listOf("c", "a", "  b"), tree())
-    }
-
-    @Test
     fun nothingReachesPastTheDatabaseWhileTheWriteIsStillOpen() = runTest(testDispatcher) {
         initializeWithSubtasks(saved(1, "a"))
         val duringTransaction = mutableListOf<String>()
@@ -1501,35 +1341,6 @@ class TaskEditSubtaskTest : TaskEditViewModelFixture() {
     }
 
     @Test
-    fun aSubtaskOnItsWayOutTakesWhatIsNestedInsideItOnAnyList() =
-        runTest(testDispatcher) {
-            initializeWithSubtasks(
-                saved(1, "a"),
-                saved(2, "b", parent = 1, indent = 1),
-                saved(3, "c", parent = 2, indent = 2),
-            )
-            viewModel.setList(
-                CaldavFilter(
-                    calendar = seedCalendar,
-                    account = CaldavAccount(uuid = "acct-1", accountType = TYPE_GOOGLE_TASKS),
-                )
-            )
-            advanceUntilIdle()
-            assertEquals(listOf("a", "  b", "    c"), tree())
-
-            viewModel.removeSubtask(node("a"))
-            advanceUntilIdle()
-
-            assertEquals(listOf("a"), tree())
-
-            viewModel.save()
-            advanceUntilIdle()
-            verify(taskDeleter).markDeleted(check<List<Long>> {
-                assertEquals(listOf(1L, 2L, 3L), it)
-            })
-        }
-
-    @Test
     fun aDraftEditorTakesTheRowsPlaceInTheTreeAsWellAsItsId() = runTest(testDispatcher) {
         initializeNew()
         viewModel.setTitle("Parent")
@@ -1676,29 +1487,6 @@ class TaskEditSubtaskTest : TaskEditViewModelFixture() {
         val subtask = addSubtask("Subtask")
 
         assertEquals(2, subtaskTrees.get(subtask.key)!!.task.ringFlags)
-    }
-
-    @Test
-    fun tickingASubtaskCascadesThroughTheNestingOnEveryList() = runTest(testDispatcher) {
-        initializeWithSubtasks(
-            saved(1, "a"),
-            saved(2, "b", parent = 1, indent = 1),
-        )
-        viewModel.setList(
-            CaldavFilter(
-                calendar = seedCalendar,
-                account = CaldavAccount(uuid = "acct-1", accountType = TYPE_GOOGLE_TASKS),
-            )
-        )
-        advanceUntilIdle()
-        assertEquals(listOf("a", "  b"), tree())
-
-        viewModel.toggleSubtaskComplete(node("a"))
-        advanceUntilIdle()
-
-        assertTrue(viewModel.state.value.subtasks.first { it.node.title == "a" }.completed)
-        assertTrue(viewModel.state.value.subtasks.first { it.node.title == "b" }.completed)
-        assertFalse(subtaskTrees.get("uuid-b")!!.completionEdited)
     }
 
     @Test

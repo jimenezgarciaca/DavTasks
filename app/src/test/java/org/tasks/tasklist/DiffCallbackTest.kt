@@ -13,7 +13,6 @@ class DiffCallbackTest {
 
     private val adapter = TaskAdapter(
         newTasksOnTop = false,
-        googleTaskDao = stub(),
         caldavDao = stub(),
         taskDao = stub(),
         taskSaver = stub(),

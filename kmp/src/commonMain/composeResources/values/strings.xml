@@ -79,7 +79,6 @@
     <string name="sort_not_available">Not available for tags, filters, or places</string>
     <string name="none">None</string>
     <string name="display_name">Display name</string>
-    <string name="guest">Guest</string>
     <string name="local_lists">Local lists</string>
     <string name="this_device_only">This device only</string>
     <string name="add_shortcut_to_home_screen">Add shortcut to home screen</string>
@@ -138,7 +137,6 @@
     </plurals>
     <string name="sync_metadata">Store tag metadata here</string>
     <string name="sync_metadata_summary">Store tag names, colors, icons and display order on this account so they sync across your devices</string>
-    <string name="metadata_stored_on_tasks_org">Stored on your Tasks.org account</string>
     <string name="metadata_stored_on_account">Currently stored on %1$s</string>
     <string name="metadata_move_message">Tag metadata is currently stored on %1$s. Move it to this account?</string>
     <string name="metadata_move">Move</string>
@@ -437,8 +435,6 @@
     <string name="keep_editing">Keep editing</string>
     <string name="DLG_delete_this_task_question">Delete this task?</string>
     <string name="TEA_add_subtask">Add subtask</string>
-    <string name="subtasks_multilevel_google_task">Multi-level subtasks not supported by Google Tasks</string>
-    <string name="subtasks_multilevel_microsoft">Multi-level subtasks not supported by Microsoft To Do</string>
     <string name="language">Language</string>
     <string name="launcher_icon">Launcher icon</string>
     <string name="markdown">Markdown</string>

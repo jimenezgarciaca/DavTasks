@@ -3,7 +3,6 @@ package org.tasks.data
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -12,7 +11,6 @@ import org.mockito.kotlin.whenever
 import org.tasks.DatabaseTest
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.Task
@@ -39,7 +37,6 @@ class RemoteParentPushTest : DatabaseTest() {
     private val mover = TaskMover(
         taskDao = taskDao,
         caldavDao = caldavDao,
-        googleTaskDao = db.googleTaskDao(),
         dirtyDao = db.dirtyDao(),
         appPreferences = appPreferences,
         refreshBroadcaster = mock(),
@@ -83,25 +80,6 @@ class RemoteParentPushTest : DatabaseTest() {
             caldavDao.getTask(parent.id)!!.remoteId,
             caldavDao.getTask(child.id)!!.remoteParent,
         )
-    }
-
-    @Test
-    fun movingASubtreeOntoAMicrosoftListLeavesTheRemoteParentAlone() = runBlocking {
-        val parent = newTask("parent")
-        val child = newTask("child", parent = parent.id)
-
-        mover.move(listOf(parent.id), destination(TYPE_MICROSOFT))
-
-        assertNull(caldavDao.getTask(child.id)!!.remoteParent)
-    }
-
-    @Test
-    fun theAccountForATaskIsTheOneItIsOnRatherThanOneItHasLeft() = runBlocking {
-        val task = newTask("moved")
-
-        mover.move(listOf(task.id), destination(TYPE_MICROSOFT))
-
-        assertEquals(TYPE_MICROSOFT, caldavDao.getAccountForTask(task.id)!!.accountType)
     }
 
     @Test

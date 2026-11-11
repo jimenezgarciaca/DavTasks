@@ -22,23 +22,18 @@ import org.tasks.data.entity.Alarm
 import org.tasks.data.entity.Alarm.Companion.TYPE_DATE_TIME
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.TagData
 import org.tasks.data.entity.Task
 import org.tasks.filters.CaldavFilter
 import org.tasks.compose.pickers.DUE_DATE
-import org.tasks.filters.SubtaskFilter
-import org.tasks.preferences.SubtaskQueryPreferences
 import org.tasks.service.TaskCompleter
 import org.tasks.service.TaskDeleter
 
 class SubtaskTreeWriterTest : DatabaseTest() {
     private val taskDao = db.taskDao()
     private val caldavDao = db.caldavDao()
-    private val googleTaskDao = db.googleTaskDao()
     private val dirtyDao = db.dirtyDao()
     private val taskCompleter by lazy {
         TaskCompleter(
@@ -78,7 +73,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
     private fun writerWith(completer: TaskCompleter = taskCompleter) = SubtaskTreeWriter(
         taskDao = taskDao,
         caldavDao = caldavDao,
-        googleTaskDao = googleTaskDao,
         tagDao = db.tagDao(),
         dirtyDao = dirtyDao,
         alarmService = alarmService,
@@ -92,14 +86,13 @@ class SubtaskTreeWriterTest : DatabaseTest() {
 
     private val trees = SubtaskTrees()
 
-    private var accountType = TYPE_CALDAV
 
     private var parent = Task()
     private val rootKey get() = subtaskKey(parent)
     private val list
         get() = CaldavFilter(
             calendar = CaldavCalendar(uuid = CALENDAR, account = ACCOUNT),
-            account = CaldavAccount(uuid = ACCOUNT, accountType = accountType),
+            account = CaldavAccount(uuid = ACCOUNT, accountType = TYPE_CALDAV),
         )
 
     @Before
@@ -131,21 +124,9 @@ class SubtaskTreeWriterTest : DatabaseTest() {
         return task
     }
 
-    private suspend fun useGoogleTasks() = useAccountType(TYPE_GOOGLE_TASKS)
-
-    private suspend fun useAccountType(type: Int) {
-        accountType = type
-        val account = caldavDao.getAccountByUuid(ACCOUNT) ?: error("no account to move")
-        caldavDao.update(account.copy(accountType = type))
-        assertEquals(type, caldavDao.getAccountByUuid(ACCOUNT)!!.accountType)
-    }
-
     private suspend fun rows(): List<TaskContainer> =
         taskDao.fetchTasks(
-            subtaskQuery(
-                parentId = parent.id,
-                isGoogleTasks = accountType == TYPE_GOOGLE_TASKS,
-            )
+            subtaskQuery(parentId = parent.id)
         )
 
     private suspend fun tree(): List<String> =
@@ -163,16 +144,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
 
     @Test
     fun subtasksAreReadInTheOrderTheyAreStoredIn() = runBlocking {
-        newTask("c", parent = parent.id, order = 3)
-        newTask("a", parent = parent.id, order = 1)
-        newTask("b", parent = parent.id, order = 2)
-
-        assertEquals(listOf("a", "b", "c"), tree())
-    }
-
-    @Test
-    fun subtasksAreReadInStoredOrderOnAGoogleListToo() = runBlocking {
-        useGoogleTasks()
         newTask("c", parent = parent.id, order = 3)
         newTask("a", parent = parent.id, order = 1)
         newTask("b", parent = parent.id, order = 2)
@@ -256,33 +227,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
         write()
 
         assertEquals(listOf("outer", "  inner"), tree())
-    }
-
-    @Test
-    fun flattenOnAListThatHoldsOneLevel() = runBlocking {
-        val a = newTask("a", parent = parent.id, order = 1)
-        newTask("b", parent = a.id, order = 2)
-        stage()
-        assertEquals(listOf("a", "  b"), tree())
-        useGoogleTasks()
-
-        write()
-
-        assertEquals(listOf("a", "b"), tree())
-    }
-
-    @Test
-    fun googleTaskSubtasksReorderByPosition() = runBlocking {
-        useGoogleTasks()
-        newTask("a", parent = parent.id, order = 0)
-        newTask("b", parent = parent.id, order = 1)
-        newTask("c", parent = parent.id, order = 2)
-        stage()
-
-        trees.move(key = node("c").key, parentKey = rootKey, after = null)
-        write()
-
-        assertEquals(listOf("c", "a", "b"), tree())
     }
 
     @Test
@@ -378,20 +322,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
         write()
 
         assertEquals("uuid-a", caldavDao.getTask(b.id)!!.remoteParent)
-    }
-
-    @Test
-    fun microsoftHierarchyIsLeftForItsOwnSyncToWorkOut() = runBlocking {
-        val a = newTask("a", parent = parent.id, order = 1)
-        val b = newTask("b", parent = a.id, order = 2)
-        stage()
-        assertEquals(listOf("a", "  b"), tree())
-        useAccountType(TYPE_MICROSOFT)
-
-        write()
-
-        assertEquals(listOf("a", "b"), tree())
-        assertNull(caldavDao.getTask(b.id)!!.remoteParent)
     }
 
     @Test
@@ -616,37 +546,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
     }
 
     @Test
-    fun anAddedSubtaskOnAGoogleListIsCreatedThereAndFlaggedForTheSync() = runBlocking {
-        useGoogleTasks()
-        newTask("a", parent = parent.id, order = 0)
-        stage()
-
-        trees.add(rootKey, Task(title = "new", remoteId = "uuid-new"), list)
-        write()
-
-        assertEquals(listOf("a", "new"), tree())
-        val created = rows().first { it.title == "new" }
-        assertTrue(caldavDao.getTask(created.id)!!.isMoved)
-    }
-
-    @Test
-    fun aGoogleSubtaskWithNoPositionIsMovedRatherThanQuietlyNumbered() = runBlocking {
-        useGoogleTasks()
-        val a = newTask("a", parent = parent.id, order = 0)
-        val b = newTask("b", parent = parent.id, order = null)
-        stage()
-        assertEquals(listOf("b", "a"), tree())
-
-        trees.move(key = node("a").key, parentKey = rootKey, after = null)
-        write()
-
-        assertEquals(listOf("a", "b"), tree())
-        assertEquals(1L, taskDao.fetch(b.id)!!.order)
-        assertTrue(caldavDao.getTask(b.id)!!.isMoved)
-        assertFalse(caldavDao.getTask(a.id)!!.isMoved)
-    }
-
-    @Test
     fun aRowCreatedSinceTheTreeLastRefreshedDoesNotRenumberItsSiblings() = runBlocking {
         val a = newTask("a", parent = parent.id, order = 1)
         val b = newTask("b", parent = parent.id, order = 3)
@@ -685,53 +584,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
         write()
 
         assertEquals("renamed there", taskDao.fetch(a.id)!!.title)
-    }
-
-    @Test
-    fun aGoogleRunIsRenumberedAgainstWhereEachMoveLeftIt() = runBlocking {
-        useGoogleTasks()
-        newTask("a", parent = parent.id, order = 0)
-        newTask("zulu", parent = parent.id, order = 1)
-        newTask("alpha", parent = parent.id, order = 2)
-        newTask("d", parent = parent.id, order = 3)
-        stage()
-
-        trees.move(key = node("a").key, parentKey = rootKey, after = node("d").key)
-        write()
-
-        assertEquals(listOf("zulu", "alpha", "d", "a"), tree())
-        assertEquals(listOf(0L, 1L, 2L, 3L), rows().map { taskDao.fetch(it.id)!!.order })
-    }
-
-    @Test
-    fun renamingAndTickingOffOnAGoogleListIsWrittenLikeAnywhereElse() = runBlocking {
-        useGoogleTasks()
-        val a = newTask("a", parent = parent.id, order = 0)
-        val b = newTask("b", parent = parent.id, order = 1)
-        stage()
-
-        trees.setTitle(node("a").key, "renamed")
-        trees.setCompleted(node("b").key, true)
-        write()
-
-        assertEquals("renamed", taskDao.fetch(a.id)!!.title)
-        assertTrue(taskDao.fetch(b.id)!!.isCompleted)
-    }
-
-    @Test
-    fun deletingOnAGoogleListLeavesItsSiblingsOrdinalsAlone() = runBlocking {
-        useGoogleTasks()
-        val a = newTask("a", parent = parent.id, order = 0)
-        newTask("b", parent = parent.id, order = 1)
-        val c = newTask("c", parent = parent.id, order = 2)
-        stage()
-
-        trees.delete(node("b").key)
-        write()
-
-        assertEquals(listOf("a", "c"), tree())
-        assertEquals(0L, taskDao.fetch(a.id)!!.order)
-        assertEquals(2L, taskDao.fetch(c.id)!!.order)
     }
 
     @Test
@@ -826,20 +678,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
     }
 
     @Test
-    fun aSubtaskOnAMicrosoftListIsCreatedWithoutARemoteParent() = runBlocking {
-        useAccountType(TYPE_MICROSOFT)
-        newTask("a", parent = parent.id, order = 0)
-        stage()
-
-        trees.add(node("a").key, Task(title = "new", remoteId = "uuid-new"), list)
-        write()
-
-        val created = taskDao.fetch(rows().first { it.title == "new" }.id)!!
-        assertEquals(parent.id, created.parent)
-        assertNull(caldavDao.getTask(created.id)!!.remoteParent)
-    }
-
-    @Test
     fun positioningARunLeavesTheTreesOwnCopyOfTheRowAlone() = runBlocking {
         newTask("a", parent = parent.id, order = 1)
         newTask("b", parent = parent.id, order = 2)
@@ -880,19 +718,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
         write()
 
         assertEquals(listOf("(No title)", "  one", "(No title)", "  two"), tree())
-    }
-
-    @Test
-    fun aBlankSubtaskIsNotKeptOnAListThatWillNotNestWhatIsInsideIt() = runBlocking {
-        useGoogleTasks()
-        stage()
-        val outer = trees.add(rootKey, Task(remoteId = "uuid-blank"), list)
-        val inner = trees.add(rootKey, Task(title = "inner", remoteId = "uuid-inner"), list)
-        trees.indent(inner.key)
-
-        write()
-
-        assertEquals(listOf("inner"), tree())
     }
 
     @Test
@@ -937,22 +762,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
         runCatching { write() }
 
         assertEquals(listOf("new"), tree())
-    }
-
-    @Test
-    fun anUnpositionedGoogleRowIsSlottedInWithoutLandingOnASibling() = runBlocking {
-        useGoogleTasks()
-        val x = newTask("x", parent = parent.id, order = 0)
-        val y = newTask("y", parent = parent.id, order = 1)
-        val orphan = newTask("orphan", parent = parent.id, order = null)
-        stage()
-
-        trees.move(key = node("orphan").key, parentKey = rootKey, after = node("x").key)
-        write()
-
-        assertEquals(listOf("x", "orphan", "y"), tree())
-        val orders = listOf(x, orphan, y).map { taskDao.fetch(it.id)!!.order }
-        assertEquals(listOf(0L, 1L, 2L), orders)
     }
 
     @Test
@@ -1151,21 +960,6 @@ class SubtaskTreeWriterTest : DatabaseTest() {
             rows().first { it.title == "(No title)" }.id,
             taskDao.fetch(dragged.id)!!.parent,
         )
-    }
-
-    @Test
-    fun deletingASubtaskTakesItsNestedRowsWithItOnAnyList() = runBlocking {
-        val a = newTask("a", parent = parent.id, order = 1)
-        val b = newTask("b", parent = a.id, order = 2)
-        useAccountType(TYPE_MICROSOFT)
-        stage()
-        assertEquals(listOf("a", "  b"), trees.rowsOf(rootKey).map { "  ".repeat(it.indent) + it.node.title })
-
-        trees.delete(node("a").key)
-        write()
-
-        assertTrue(taskDao.fetch(a.id)!!.isDeleted)
-        assertTrue(taskDao.fetch(b.id)!!.isDeleted)
     }
 
     @Test

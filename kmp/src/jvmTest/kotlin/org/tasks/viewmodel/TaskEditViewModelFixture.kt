@@ -33,7 +33,6 @@ import org.tasks.data.dao.AlarmDao
 import org.tasks.data.dao.CaldavDao
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.data.dao.DirtyDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.dao.TagDao
 import org.tasks.data.dao.TagDataDao
 import org.tasks.data.dao.TaskDao
@@ -58,7 +57,6 @@ abstract class TaskEditViewModelFixture {
     protected val taskDao: TaskDao = mock()
     protected val taskSaver: TaskSaver = mock()
     protected val caldavDao: CaldavDao = mock()
-    protected val googleTaskDao: GoogleTaskDao = mock()
     protected val dirtyDao: DirtyDao = mock()
     protected val refreshBroadcaster: RefreshBroadcaster = mock()
     protected val refreshes = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -69,7 +67,6 @@ abstract class TaskEditViewModelFixture {
         SubtaskTreeWriter(
             taskDao = taskDao,
             caldavDao = caldavDao,
-            googleTaskDao = googleTaskDao,
             tagDao = tagDao,
             dirtyDao = dirtyDao,
             alarmService = alarmService,

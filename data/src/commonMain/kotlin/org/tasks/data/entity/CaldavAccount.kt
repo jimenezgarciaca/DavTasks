@@ -45,29 +45,11 @@ data class CaldavAccount(
     @ColumnInfo(name = "cda_last_sync", defaultValue = "0")
     var lastSync: Long = 0,
 ) : CommonParcelable {
-    val needsPro: Boolean
-        get() = isCaldavAccount || isEtebaseAccount || isOpenTasks
     val isCaldavAccount: Boolean
         get() = accountType == TYPE_CALDAV
 
-    val isEtebaseAccount: Boolean
-        get() = accountType == TYPE_ETEBASE
-
     val isOpenTasks: Boolean
         get() = accountType == TYPE_OPENTASKS
-
-    val isTasksOrg: Boolean
-        get() = accountType == TYPE_TASKS ||
-                (accountType == TYPE_CALDAV && url?.matches(Regex("https://(staging|caldav)\\.tasks\\.org/.*")) == true)
-
-    val isMicrosoft: Boolean
-        get() = accountType == TYPE_MICROSOFT
-
-    val pushesRemoteParent: Boolean
-        get() = pushesRemoteParent(accountType)
-
-    val isGoogleTasks: Boolean
-        get() = accountType == TYPE_GOOGLE_TASKS
 
     val isLocalList: Boolean
         get() = accountType == TYPE_LOCAL
@@ -108,25 +90,17 @@ data class CaldavAccount(
 //        const val TYPE_ETESYNC = 1
         const val TYPE_LOCAL = 2
         const val TYPE_OPENTASKS = 3
-        const val TYPE_TASKS = 4
-        const val TYPE_ETEBASE = 5
-        const val TYPE_MICROSOFT = 6
-        const val TYPE_GOOGLE_TASKS = 7
+        // 4 a 7 eran Tasks.org, EteSync, Microsoft To Do y Google Tasks; DavTasks no los usa.
 
-        val TYPES_CALDAV = listOf(TYPE_CALDAV, TYPE_TASKS, TYPE_ETEBASE, TYPE_OPENTASKS)
+        val TYPES_CALDAV = listOf(TYPE_CALDAV, TYPE_OPENTASKS)
 
-        private val ALL_ACCOUNT_TYPES = listOf(
-            TYPE_CALDAV, TYPE_TASKS, TYPE_ETEBASE, TYPE_OPENTASKS,
-            TYPE_MICROSOFT, TYPE_GOOGLE_TASKS, TYPE_LOCAL,
-        )
+        val SUPPORTED_TYPES = listOf(TYPE_CALDAV, TYPE_OPENTASKS, TYPE_LOCAL)
+
+        private val ALL_ACCOUNT_TYPES = SUPPORTED_TYPES
 
         val TYPES_NON_LOCAL = ALL_ACCOUNT_TYPES.filter { it != TYPE_LOCAL }
 
-        fun pushesRemoteParent(accountType: Int?): Boolean =
-            accountType != TYPE_MICROSOFT && accountType != TYPE_GOOGLE_TASKS
-
         fun syncTraits(accountType: Int): Set<SyncTrait> = when (accountType) {
-            TYPE_MICROSOFT -> setOf(SyncTrait.TAGS)
             in TYPES_CALDAV -> setOf(
                 SyncTrait.TAGS, SyncTrait.ALARMS, SyncTrait.LOCATION, SyncTrait.START_DATE
             )

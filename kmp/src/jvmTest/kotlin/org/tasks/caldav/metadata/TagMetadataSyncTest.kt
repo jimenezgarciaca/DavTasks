@@ -691,17 +691,6 @@ class TagMetadataSyncTest : DatabaseTest() {
     }
 
     @Test
-    fun `new account toggle is interactable and unclaimed when no primary exists`() = runBlocking {
-        val toggle = sync.newAccountToggleState()
-
-        assertTrue(toggle.visible)
-        assertFalse(toggle.checked)
-        assertTrue(toggle.interactable)
-        assertFalse(toggle.forcedByTasksOrg)
-        assertNull(toggle.otherPrimary)
-    }
-
-    @Test
     fun `new account toggle names the current caldav primary`() = runBlocking {
         val existing = caldavDao.getAccount(caldavDao.insert(CaldavAccount(name = "Personal")))!!
         preferences.set(TasksPreferences.metadataPrimaryAccount, existing.id!!)
@@ -712,18 +701,6 @@ class TagMetadataSyncTest : DatabaseTest() {
         assertFalse(toggle.checked)
         assertTrue(toggle.interactable)
         assertEquals("Personal", toggle.otherPrimary)
-    }
-
-    @Test
-    fun `new account toggle is locked off when a tasks org account forces the primary`() = runBlocking {
-        caldavDao.insert(CaldavAccount(accountType = CaldavAccount.TYPE_TASKS, uuid = "tasks-org"))
-
-        val toggle = sync.newAccountToggleState()
-
-        assertTrue(toggle.visible)
-        assertFalse(toggle.checked)
-        assertFalse(toggle.interactable)
-        assertTrue(toggle.forcedByTasksOrg)
     }
 
     @Test
@@ -853,64 +830,6 @@ class TagMetadataSyncTest : DatabaseTest() {
         val work = tagDataDao.getAll().single()
         assertEquals(0, work.color)
         assertEquals(true, dirty("work"))
-    }
-
-    @Test
-    fun `pushDirty after a takeover does not seed the previous store's inbound tombstones`() = runBlocking {
-        val a = insertPrimaryAccount()
-        tagDataDao.insert(TagData(name = "Old"))
-        sync.applyRemote("""{"version":1,"tags":{"old":{"deleted":true,"ts":1}}}""")
-        assertEquals(true, reaped("old"))
-
-        val tasksOrg = caldavDao.getAccount(
-            caldavDao.insert(CaldavAccount(accountType = CaldavAccount.TYPE_TASKS, uuid = "tasks-org"))
-        )!!
-        tagDataDao.insert(TagData(name = "Doomed"))
-        var pushed: String? = null
-        val client = mock<CaldavClient> {
-            onBlocking { principal() } doReturn principal
-            onBlocking { tagMetadataVersion(any()) } doReturn null
-            onBlocking { tagMetadata(any()) } doReturn null
-            onBlocking { pushTagMetadata(any(), any(), any()) } doAnswer { pushed = it.getArgument(1); true }
-        }
-        val provider = mock<CaldavClientProvider> { onBlocking { forAccount(any(), any()) } doReturn client }
-        val editSync = TagMetadataSync(caldavDao, tagDataDao, provider, vtodoCache, preferences)
-
-        editSync.deleteTag(tagDataDao.getAll().single { it.normalizedName == "doomed" })
-        editSync.pushDirty(tasksOrg, client, principal)
-
-        val seeded = TagMetadataBlob.parse(pushed)!!
-        assertTrue("A's tombstone leaked into the new store", seeded.entryOf("old") is Entry.Live)
-        assertTrue(seeded.entryOf("doomed") is Entry.Tomb)
-        assertEquals(false, reaped("old"))
-        assertEquals(a.id, preferences.get(TasksPreferences.metadataPrimaryAccount, 0L))
-    }
-
-    @Test
-    fun `a store abandoned by a sign-out is not replayed against the next account`() = runBlocking {
-        val signedOut = caldavDao.getAccount(
-            caldavDao.insert(CaldavAccount(accountType = CaldavAccount.TYPE_TASKS, uuid = "tasks-org"))
-        )!!
-        preferences.set(TasksPreferences.metadataStoreAccount, signedOut.id)
-        preferences.set(TasksPreferences.metadataRev, "v1")
-        tagDataDao.insert(TagData(name = "Work"))
-        sync.deleteTag(tagDataDao.getAll().single())
-        db.deletionDao().delete(caldavAccount = signedOut, cleanup = {})
-        assertEquals(listOf("work"), tagDataDao.getTombstoneKeys())
-
-        val client = mock<CaldavClient> {
-            onBlocking { tagMetadataVersion(any()) } doReturn "v1"
-            onBlocking { tagMetadata(any()) } doReturn
-                    """{"rev":"v1","version":1,"tags":{"work":{"name":"Work"}},"order":[]}"""
-        }
-        val signedIn = caldavDao.getAccount(
-            caldavDao.insert(CaldavAccount(accountType = CaldavAccount.TYPE_TASKS, uuid = "tasks-org-again"))
-        )!!
-        sync.pull(signedIn, client, principal)
-
-        verify(client, never()).pushTagMetadata(any(), any(), any())
-        assertTrue(tagDataDao.getTombstoneKeys().isEmpty())
-        assertEquals("Work", tagDataDao.getAll().single().name)
     }
 
     @Test

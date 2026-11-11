@@ -11,10 +11,7 @@ import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.TagDataDao
 import org.tasks.data.dao.TaskDao
 import org.tasks.data.db.Database
-import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.TagData
 import org.tasks.data.entity.Task
@@ -49,22 +46,6 @@ class TasksJsonImporterTest : InjectingTestCase() {
     private fun ByteArray.withVersion(version: Int) = String(this, Charsets.UTF_8)
         .replace("\"version\":${BuildConfig.VERSION_CODE}", "\"version\":$version")
         .toByteArray(Charsets.UTF_8)
-
-    private suspend fun setupAccount(
-        uuid: String,
-        accountType: Int = TYPE_TASKS,
-        url: String? = "https://caldav.tasks.org/calendars/user1/",
-        username: String? = "user@test.com",
-    ) {
-        caldavDao.insert(
-            CaldavAccount(
-                uuid = uuid,
-                accountType = accountType,
-                url = url,
-                username = username,
-            )
-        )
-    }
 
     private suspend fun setupCalendar(
         account: String,
@@ -211,28 +192,6 @@ class TasksJsonImporterTest : InjectingTestCase() {
         assertEquals(1, taskDao.getAll().size)
         assertEquals(listOf(canonicalUrl), caldavDao.getAccounts().map { it.url })
         assertEquals(listOf("${canonicalUrl}tasks/"), caldavDao.getCalendars().map { it.url })
-    }
-
-    @Test
-    fun deduplicateMicrosoftByUsername() = runBlocking {
-        setupAccount("acc-A", accountType = TYPE_MICROSOFT, url = null, username = "user@outlook.com")
-        setupCalendar("acc-A", "cal-A", url = "tasks-list-1")
-        setupTask("outlook task", "cal-A", "ms-remote-1", obj = "ms-remote-1")
-
-        val backup = export()
-        database.clearAllTables()
-
-        setupAccount("acc-B", accountType = TYPE_MICROSOFT, url = null, username = "user@outlook.com")
-        setupCalendar("acc-B", "cal-B", url = "tasks-list-1")
-        setupTask("outlook task", "cal-B", "ms-remote-1", obj = "ms-remote-1")
-
-        val result = import(backup)
-
-        assertEquals(1, result.taskCount)
-        assertEquals(0, result.importCount)
-        assertEquals(1, result.skipCount)
-        assertEquals(1, taskDao.getAll().size)
-        assertEquals(1, caldavDao.getAccounts().size)
     }
 
     @Test

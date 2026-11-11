@@ -11,8 +11,4 @@ data class GoogleTask(
     var remoteOrder: Long = 0,
     var lastSync: Long = 0,
     var deleted: Long = 0,
-) {
-    companion object {
-        const val KEY = "gtasks"
-    }
-}
+)

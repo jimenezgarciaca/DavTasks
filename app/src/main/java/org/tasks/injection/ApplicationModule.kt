@@ -44,7 +44,6 @@ import org.tasks.data.dao.CompletionDao
 import org.tasks.data.dao.DeletionDao
 import org.tasks.data.dao.DirtyDao
 import org.tasks.data.dao.FilterDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.dao.LocationDao
 import org.tasks.data.dao.NotificationDao
 import org.tasks.data.dao.TagDao
@@ -123,9 +122,6 @@ class ApplicationModule {
     @Singleton
     fun getTaskListMetadataDao(db: Database): TaskListMetadataDao = db.taskListMetadataDao()
 
-    @Provides
-    @Singleton
-    fun getGoogleTaskDao(db: Database): GoogleTaskDao = db.googleTaskDao()
 
     @Provides
     @Singleton
@@ -390,7 +386,6 @@ class ApplicationModule {
     fun providesTaskMover(
         taskDao: TaskDao,
         caldavDao: CaldavDao,
-        googleTaskDao: GoogleTaskDao,
         dirtyDao: DirtyDao,
         preferences: Preferences,
         refreshBroadcaster: RefreshBroadcaster,
@@ -398,7 +393,6 @@ class ApplicationModule {
     ) = org.tasks.data.TaskMover(
         taskDao = taskDao,
         caldavDao = caldavDao,
-        googleTaskDao = googleTaskDao,
         dirtyDao = dirtyDao,
         appPreferences = preferences,
         refreshBroadcaster = refreshBroadcaster,

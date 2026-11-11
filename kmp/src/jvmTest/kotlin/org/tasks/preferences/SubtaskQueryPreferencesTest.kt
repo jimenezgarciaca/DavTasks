@@ -7,15 +7,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SubtaskQueryPreferencesTest {
-    private val caldav = SubtaskQueryPreferences(isGoogleTasks = false)
-    private val google = SubtaskQueryPreferences(isGoogleTasks = true)
+    private val caldav = SubtaskQueryPreferences()
 
     @Test
     fun subtasksAreReadInTheOrderTheBackendStoresThemIn() {
         assertEquals(SortHelper.SORT_CALDAV, caldav.sortMode)
         assertEquals(SortHelper.SORT_CALDAV, caldav.subtaskMode)
-        assertEquals(SortHelper.SORT_GTASKS, google.sortMode)
-        assertEquals(SortHelper.SORT_GTASKS, google.subtaskMode)
         assertTrue(caldav.subtaskAscending)
         assertTrue(caldav.sortAscending)
     }
@@ -49,16 +46,5 @@ class SubtaskQueryPreferencesTest {
     @Test
     fun datesAreShownTheWayTheyAreEverywhereElse() {
         assertFalse(caldav.alwaysDisplayFullDate)
-    }
-
-    @Test
-    fun oneInstanceDoesNotShareItsSettingsWithAnother() {
-        assertTrue(caldav.showCompleted)
-        assertTrue(google.showCompleted)
-
-        google.showCompleted = false
-
-        assertTrue(caldav.showCompleted)
-        assertTrue(SubtaskQueryPreferences(isGoogleTasks = true).showCompleted)
     }
 }

@@ -20,7 +20,6 @@ import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_LOCAL
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_OPENTASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.Task
@@ -106,10 +105,7 @@ abstract class CaldavDao(private val database: Database) {
     @Query("""
 SELECT *
 FROM caldav_accounts
-ORDER BY CASE cda_account_type
-             WHEN $TYPE_TASKS THEN 0
-             ELSE 1
-             END, UPPER(cda_name)
+ORDER BY UPPER(cda_name)
     """)
     abstract fun watchAccounts(): Flow<List<CaldavAccount>>
 
@@ -117,9 +113,8 @@ ORDER BY CASE cda_account_type
 SELECT *
 FROM caldav_accounts
 ORDER BY CASE cda_account_type
-             WHEN $TYPE_TASKS THEN 0
-             WHEN $TYPE_LOCAL THEN 2
-             ELSE 1
+             WHEN $TYPE_LOCAL THEN 1
+             ELSE 0
              END, UPPER(cda_name)
     """)
     abstract suspend fun getAccounts(): List<CaldavAccount>
@@ -136,13 +131,9 @@ ORDER BY CASE cda_account_type
     @Query("UPDATE caldav_accounts SET cda_last_sync = :lastSync WHERE cda_id = :id")
     abstract suspend fun setLastSync(id: Long, lastSync: Long)
 
-    @Query("UPDATE caldav_accounts SET cda_username = :username, cda_name = :name, cda_password = :password, cda_error = '' WHERE cda_id = :id")
-    abstract suspend fun setMicrosoftReauth(id: Long, username: String?, name: String?, password: String?)
-
     @Query(
         "SELECT * FROM caldav_accounts " +
-        "WHERE cda_account_type = $TYPE_TASKS OR (cda_id = :preferredId AND cda_account_type = $TYPE_CALDAV) " +
-        "ORDER BY (cda_account_type = $TYPE_TASKS) DESC, cda_id ASC " +
+        "WHERE cda_id = :preferredId AND cda_account_type = $TYPE_CALDAV " +
         "LIMIT 1"
     )
     abstract suspend fun getMetadataPrimary(preferredId: Long): CaldavAccount?
@@ -244,7 +235,7 @@ WHERE cd_task IN (:tasks)
         account: CaldavAccount,
         calendar: String,
     ) {
-        if (tasks.isEmpty() || !account.pushesRemoteParent) {
+        if (tasks.isEmpty()) {
             return
         }
         val remoteParent = getRemoteIdForTask(parentId)
@@ -525,6 +516,3 @@ ORDER BY primary_sort
         fun Long.toAppleEpoch(): Long = (this - APPLE_EPOCH) / 1000
     }
 }
-
-suspend fun CaldavDao.tasksAccount(): CaldavAccount? =
-    getAccounts().firstOrNull { it.isTasksOrg }

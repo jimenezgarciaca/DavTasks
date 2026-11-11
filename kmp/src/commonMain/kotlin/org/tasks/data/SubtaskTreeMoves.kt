@@ -1,6 +1,5 @@
 package org.tasks.data
 
-import org.tasks.filters.CaldavFilter
 
 fun List<SubtaskRow>.travellingWith(from: Int, dragged: SubtaskRow): IntRange {
     val count = drop(from).takeWhile { it.indent > dragged.indent }.size
@@ -50,12 +49,8 @@ private fun List<SubtaskRow>.depthsAt(landing: Int): IntRange {
 fun List<SubtaskRow>.dropRange(
     from: Int,
     to: Int,
-    allowsNesting: Boolean = true,
 ): IntRange {
     val dragged = getOrNull(from) ?: return 0..0
-    if (!allowsNesting) {
-        return 0..dragged.indent
-    }
     val landing = landingFor(from, to)
         ?: return without(blockAt(from, dragged)).depthsAt(from)
     return landing.others.depthsAt(landing.at)

@@ -140,7 +140,6 @@ abstract class ApiTestCase {
         TaskMover(
             taskDao = db.taskDao(),
             caldavDao = caldavDao,
-            googleTaskDao = db.googleTaskDao(),
             dirtyDao = db.dirtyDao(),
             appPreferences = appPreferences,
             refreshBroadcaster = mock(),

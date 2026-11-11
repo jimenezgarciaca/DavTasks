@@ -48,7 +48,6 @@ import org.tasks.data.dao.TaskListMetadataDao
 import org.tasks.data.dao.UserActivityDao
 import org.tasks.data.entity.Attachment
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.Filter
@@ -201,7 +200,7 @@ class TasksJsonImporter @Inject constructor(
                                     imported.canonicalized()
                                 } else {
                                     imported
-                                }
+                                }.asSupportedAccount()
                                 importedAccounts[account.uuid!!] = account
                                 if (caldavDao.getAccountByUuid(account.uuid!!) != null) {
                                     return@forEach
@@ -272,10 +271,10 @@ class TasksJsonImporter @Inject constructor(
                                     .filterNot { (k, _) -> ignoreKeys.contains(k) }
                                     .forEach { (k, v) -> preferences.setStringSet(k, v as HashSet<String>)}
                             "googleTaskAccounts" -> reader.forEach<GoogleTaskAccount> { googleTaskAccount ->
-                                if (caldavDao.getAccount(TYPE_GOOGLE_TASKS, googleTaskAccount.account!!) == null) {
+                                if (caldavDao.getAccountByUuid(googleTaskAccount.account!!) == null) {
                                     caldavDao.insert(
                                         CaldavAccount(
-                                            accountType = TYPE_GOOGLE_TASKS,
+                                            accountType = CaldavAccount.TYPE_LOCAL,
                                             uuid = googleTaskAccount.account,
                                             name = googleTaskAccount.account,
                                             username = googleTaskAccount.account,
@@ -626,3 +625,10 @@ private fun String?.repeatFrom() = if (this?.contains("FROM=COMPLETION") == true
 }
 
 private fun String?.withoutFrom(): String? = this?.replace(";?FROM=[^;]*".toRegex(), "")
+
+/**
+ * Las cuentas de servicios que DavTasks no sincroniza (Tasks.org, EteSync, Microsoft To Do,
+ * Google Tasks) se importan como cuentas locales para conservar sus listas y tareas.
+ */
+private fun CaldavAccount.asSupportedAccount(): CaldavAccount =
+    if (accountType in CaldavAccount.SUPPORTED_TYPES) this else copy(accountType = CaldavAccount.TYPE_LOCAL, url = "", password = "")

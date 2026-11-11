@@ -58,13 +58,11 @@ class CustomRecurrenceActivity : FragmentActivity() {
     companion object {
         const val EXTRA_RRULE = "extra_rrule"
         const val EXTRA_DATE = "extra_date"
-        const val EXTRA_ACCOUNT_TYPE = "extra_account_type"
 
         @JvmStatic
-        fun newIntent(context: Context, rrule: String?, dueDate: Long, accountType: Int) =
+        fun newIntent(context: Context, rrule: String?, dueDate: Long) =
             Intent(context, CustomRecurrenceActivity::class.java)
                 .putExtra(EXTRA_DATE, dueDate)
                 .putExtra(EXTRA_RRULE, rrule)
-                .putExtra(EXTRA_ACCOUNT_TYPE, accountType)
     }
 }

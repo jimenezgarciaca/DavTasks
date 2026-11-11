@@ -42,25 +42,17 @@ import org.tasks.compose.TaskEditIcon
 import org.tasks.compose.TaskEditRow
 import org.tasks.data.INDENT_STEP_DP
 import org.tasks.data.TaskContainer
-import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.Task
 import org.tasks.data.isHidden
-import org.tasks.filters.CaldavFilter
 import org.tasks.tasklist.SectionedDataSource
 import org.tasks.tasklist.TasksResults
 import org.tasks.tasklist.UiItem
 import org.tasks.themes.TasksTheme
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.TEA_add_subtask
-import tasks.kmp.generated.resources.subtasks_multilevel_google_task
-import tasks.kmp.generated.resources.subtasks_multilevel_microsoft
 
 @Composable
 fun SubtaskRow(
-    originalFilter: CaldavFilter,
-    filter: CaldavFilter,
-    hasParent: Boolean,
     existingSubtasks: TasksResults,
     newSubtasks: List<Task>,
     openSubtask: (Task) -> Unit,
@@ -86,60 +78,42 @@ fun SubtaskRow(
         },
         content = {
             Column {
-                val subtasksDisabled =
-                    hasParent &&
-                            !filter.isIcalendar &&
-                            !originalFilter.isIcalendar &&
-                            originalFilter.uuid == filter.uuid
-                if (subtasksDisabled) {
-                    DisabledText(
-                        text = stringResource(
-                            if (filter.isGoogleTasks) {
-                                Res.string.subtasks_multilevel_google_task
-                            } else {
-                                Res.string.subtasks_multilevel_microsoft
-                            }
-                        ),
-                        modifier = Modifier.padding(start = 12.dp, top = 20.dp, bottom = 20.dp, end = 16.dp)
-                    )
-                } else {
-                    Spacer(modifier = Modifier.height(height = 8.dp))
-                    if (existingSubtasks is TasksResults.Results) {
-                        existingSubtasks
-                            .tasks
-                            .filterIsInstance<UiItem.Task>()
-                            .map { it.task }
-                            .forEach { task ->
-                            ExistingSubtaskRow(
-                                task = task,
-                                indent = if (filter.isIcalendar) task.indent else 0,
-                                onRowClick = { openSubtask(task.task) },
-                                onCompleteClick = {
-                                    completeExistingSubtask(
-                                        task.task,
-                                        !task.isCompleted
-                                    )
-                                },
-                                onToggleSubtaskClick = { toggleSubtask(task.id, !task.isCollapsed) }
-                            )
-                        }
-                    }
-                    newSubtasks.forEach { subtask ->
-                        NewSubtaskRow(
-                            subtask = subtask,
-                            addSubtask = addSubtask,
-                            onComplete = completeNewSubtask,
-                            onDelete = deleteSubtask,
+                Spacer(modifier = Modifier.height(height = 8.dp))
+                if (existingSubtasks is TasksResults.Results) {
+                    existingSubtasks
+                        .tasks
+                        .filterIsInstance<UiItem.Task>()
+                        .map { it.task }
+                        .forEach { task ->
+                        ExistingSubtaskRow(
+                            task = task,
+                            indent = task.indent,
+                            onRowClick = { openSubtask(task.task) },
+                            onCompleteClick = {
+                                completeExistingSubtask(
+                                    task.task,
+                                    !task.isCompleted
+                                )
+                            },
+                            onToggleSubtaskClick = { toggleSubtask(task.id, !task.isCollapsed) }
                         )
                     }
-                    DisabledText(
-                        text = stringResource(Res.string.TEA_add_subtask),
-                        modifier = Modifier
-                            .clickable { addSubtask() }
-                            .padding(12.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
                 }
+                newSubtasks.forEach { subtask ->
+                    NewSubtaskRow(
+                        subtask = subtask,
+                        addSubtask = addSubtask,
+                        onComplete = completeNewSubtask,
+                        onDelete = deleteSubtask,
+                    )
+                }
+                DisabledText(
+                    text = stringResource(Res.string.TEA_add_subtask),
+                    modifier = Modifier
+                        .clickable { addSubtask() }
+                        .padding(12.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         },
     )
@@ -247,9 +221,6 @@ fun ExistingSubtaskRow(
 fun NoSubtasks() {
     TasksTheme {
         SubtaskRow(
-            originalFilter = CaldavFilter(CaldavCalendar(), CaldavAccount()),
-            filter = CaldavFilter(CaldavCalendar(), CaldavAccount()),
-            hasParent = false,
             existingSubtasks = TasksResults.Results(SectionedDataSource()),
             newSubtasks = emptyList(),
             openSubtask = {},
@@ -268,9 +239,6 @@ fun NoSubtasks() {
 fun SubtasksPreview() {
     TasksTheme {
         SubtaskRow(
-            originalFilter = CaldavFilter(CaldavCalendar(), CaldavAccount()),
-            filter = CaldavFilter(CaldavCalendar(), CaldavAccount()),
-            hasParent = false,
             existingSubtasks = TasksResults.Results(
                 SectionedDataSource(
                     tasks = listOf(

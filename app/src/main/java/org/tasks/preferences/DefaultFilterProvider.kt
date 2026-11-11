@@ -2,7 +2,6 @@ package org.tasks.preferences
 
 import kotlinx.coroutines.runBlocking
 import org.tasks.R
-import org.tasks.data.GoogleTask
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavCalendar.Companion.ACCESS_READ_ONLY
 import org.tasks.data.entity.CaldavTask
@@ -87,14 +86,7 @@ class DefaultFilterProvider @Inject constructor(
     suspend fun getList(task: Task): CaldavFilter {
         var originalList: CaldavFilter? = null
         if (task.isNew) {
-            if (task.hasTransitory(GoogleTask.KEY)) {
-                val listId = task.getTransitory<String>(GoogleTask.KEY)!!
-                val googleTaskList = caldavDao.getCalendarByUuid(listId)
-                if (googleTaskList != null) {
-                    val account = caldavDao.getAccountByUuid(googleTaskList.account!!)!!
-                    originalList = CaldavFilter(calendar = googleTaskList, account = account)
-                }
-            } else if (task.hasTransitory(CaldavTask.KEY)) {
+            if (task.hasTransitory(CaldavTask.KEY)) {
                 val caldav = caldavDao.getCalendarByUuid(task.getTransitory(CaldavTask.KEY)!!)
                     ?.takeIf { it.access != ACCESS_READ_ONLY }
                 if (caldav != null) {
@@ -118,6 +110,5 @@ class DefaultFilterProvider @Inject constructor(
 
         @Suppress("DEPRECATION")
         @Deprecated("use TYPE_CALDAV")
-        const val TYPE_GOOGLE_TASKS = FilterPreferenceCodec.TYPE_GOOGLE_TASKS
     }
 }

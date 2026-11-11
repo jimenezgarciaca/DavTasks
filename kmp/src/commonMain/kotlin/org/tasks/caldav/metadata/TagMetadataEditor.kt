@@ -23,19 +23,15 @@ open class TagMetadataEditor(
         val visible: Boolean = false,
         val checked: Boolean = false,
         val interactable: Boolean = true,
-        val forcedByTasksOrg: Boolean = false,
         val otherPrimary: String? = null,
     )
 
     suspend fun toggleState(account: CaldavAccount): ToggleState {
         if (!account.isCaldavAccount) return ToggleState()
         val primary = primaryAccount()
-        val forced = primary?.accountType == CaldavAccount.TYPE_TASKS
         return ToggleState(
             visible = true,
             checked = primary?.id == account.id,
-            interactable = !forced,
-            forcedByTasksOrg = forced,
             otherPrimary = primary
                 ?.takeIf { it.id != account.id }
                 ?.let { it.name ?: it.username ?: "" },
@@ -44,12 +40,9 @@ open class TagMetadataEditor(
 
     suspend fun newAccountToggleState(): ToggleState {
         val primary = primaryAccount()
-        val forced = primary?.accountType == CaldavAccount.TYPE_TASKS
         return ToggleState(
             visible = true,
             checked = false,
-            interactable = !forced,
-            forcedByTasksOrg = forced,
             otherPrimary = primary?.let { it.name ?: it.username ?: "" },
         )
     }

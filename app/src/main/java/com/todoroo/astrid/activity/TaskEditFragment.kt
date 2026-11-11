@@ -120,7 +120,6 @@ class TaskEditFragment : Fragment() {
                     BasicRecurrenceDialog.newBasicRecurrenceDialog(
                         rrule = vs.task.recurrence,
                         dueDate = editViewModel.dueDate.value,
-                        accountType = vs.list.account.accountType,
                     ).show(parentFragmentManager, FRAG_TAG_BASIC_RECURRENCE)
                 },
                 repeatRuleToString = { repeatRuleToString.toStringBlocking(it) },

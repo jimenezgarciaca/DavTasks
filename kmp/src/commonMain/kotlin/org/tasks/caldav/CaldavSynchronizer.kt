@@ -58,7 +58,6 @@ import org.tasks.data.entity.CaldavAccount.Companion.SERVER_NEXTCLOUD
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_OPEN_XCHANGE
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_OWNCLOUD
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_SABREDAV
-import org.tasks.data.entity.CaldavAccount.Companion.SERVER_TASKS
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_UNKNOWN
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavCalendar.Companion.ACCESS_OWNER
@@ -247,7 +246,6 @@ class CaldavSynchronizer(
     private fun getServerType(account: CaldavAccount, headers: Headers): Int {
         val dav = headers.getAll("DAV")?.joinToString(",")
         return when {
-            account.isTasksOrg -> SERVER_TASKS
             dav?.contains("oc-resource-sharing") == true ->
                 if (dav.contains("nextcloud-") || dav.contains("nc-"))
                     SERVER_NEXTCLOUD

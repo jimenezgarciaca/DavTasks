@@ -158,24 +158,4 @@ class SubtaskTreeMovesTest {
         assertEquals(null, rows.resolveMove(from = 0, to = 1, rootKey = "root"))
     }
 
-    @Test
-    fun aListThatCannotNestOffersNothingDeeperThanTheTopLevel() {
-        val rows = rows(0, 0)
-
-        assertEquals(0..0, rows.dropRange(from = 1, to = 1, allowsNesting = false))
-    }
-
-    @Test
-    fun aRowAlreadyNestedOnSuchAListIsStillOfferedEveryDepthUpToItsOwn() {
-        val rows = rows(0, 1, 2)
-
-        assertEquals(0..2, rows.dropRange(from = 2, to = 2, allowsNesting = false))
-    }
-
-    @Test
-    fun aListThatCanNestOffersTheDepthBelowTheRowAboveInstead() {
-        val rows = rows(0, 0)
-
-        assertEquals(0..1, rows.dropRange(from = 1, to = 1, allowsNesting = true))
-    }
 }

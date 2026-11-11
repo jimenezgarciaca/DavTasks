@@ -8,7 +8,6 @@ import org.tasks.compose.pickers.NO_DAY
 import org.tasks.compose.pickers.NO_TIME
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.DirtyDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.dao.TagDao
 import org.tasks.data.dao.TaskDao
 import org.tasks.data.entity.CaldavTask
@@ -33,7 +32,6 @@ data class SubtaskWriteResult(
 class SubtaskTreeWriter(
     private val taskDao: TaskDao,
     private val caldavDao: CaldavDao,
-    private val googleTaskDao: GoogleTaskDao,
     private val tagDao: TagDao,
     private val dirtyDao: DirtyDao,
     private val alarmService: AlarmService,
@@ -79,10 +77,9 @@ class SubtaskTreeWriter(
         if (trees.rowsOf(rootKey).isEmpty()) {
             return SubtaskWriteResult.Nothing
         }
-        val singleLevel = list.isSingleLevel
         val committed = taskDao.inTransaction {
             val plan = plan(trees, rootKey, parent, list)
-            val placement = createRows(plan, parent, list, untitled, singleLevel)
+            val placement = createRows(plan, parent, list, untitled)
             val positioned = positionRuns(plan, placement, list)
             Committed(plan = plan, placement = placement, wrote = placement.wrote || positioned)
         }
@@ -126,7 +123,7 @@ class SubtaskTreeWriter(
         list: CaldavFilter,
     ): Plan {
         val current = taskDao
-            .fetchTasks(subtaskQuery(parentId = parent.id, isGoogleTasks = list.isGoogleTasks))
+            .fetchTasks(subtaskQuery(parentId = parent.id))
         trees.merge(rootKey, parent.id, current)
         val rows = trees.rowsOf(rootKey)
         val doomed = rows.doomed()
@@ -151,18 +148,17 @@ class SubtaskTreeWriter(
         parent: Task,
         list: CaldavFilter,
         untitled: String,
-        singleLevel: Boolean,
     ): Placement {
         val created = linkedMapOf<String, Created>()
         val ids = mutableMapOf<String, Long>()
         val runs = linkedMapOf<Long, MutableList<Long>>()
         val touched = plan.emptied.toMutableSet()
         val remoteParents = mutableMapOf<Long, String?>()
-        val kept = plan.live.keptBy(singleLevel)
+        val kept = plan.live.survivors()
         var wrote = false
         plan.live.forEach { row ->
             val node = row.node
-            val parentId = if (singleLevel) parent.id else ids[node.parentKey] ?: parent.id
+            val parentId = ids[node.parentKey] ?: parent.id
             val id = if (node.isNew) {
                 create(
                     node = node,
@@ -306,38 +302,17 @@ class SubtaskTreeWriter(
         }
         task.parent = parentId
         taskDao.createNew(task)
-        if (list.isGoogleTasks) {
-            googleTaskDao.insertAndShift(
-                task = task,
-                caldavTask = CaldavTask(
-                    task = task.id,
-                    calendar = list.uuid,
-                    remoteId = null,
-                    isMoved = true,
-                ),
-                top = false,
-            )
-        } else {
-            caldavDao.insert(
-                task = task,
-                caldavTask = CaldavTask(
-                    task = task.id,
-                    calendar = list.uuid,
-                    remoteParent = if (remoteParents.containsKey(parentId)) {
-                        remoteParents[parentId]
-                    } else {
-                        val remoteId = if (list.account.pushesRemoteParent) {
-                            caldavDao.getRemoteIdForTask(parentId)
-                        } else {
-                            null
-                        }
-                        remoteParents[parentId] = remoteId
-                        remoteId
-                    },
-                ),
-                addToTop = false,
-            )
-        }
+        caldavDao.insert(
+            task = task,
+            caldavTask = CaldavTask(
+                task = task.id,
+                calendar = list.uuid,
+                remoteParent = remoteParents.getOrPut(parentId) {
+                    caldavDao.getRemoteIdForTask(parentId)
+                },
+            ),
+            addToTop = false,
+        )
         if (pending.tags.isNotEmpty()) {
             tagDao.applyTags(task, pending.tags)
             task.putTransitory(SYNC_TAGS, true)
@@ -361,31 +336,8 @@ class SubtaskTreeWriter(
     ): Boolean {
         val reparented = mutableListOf<Long>()
         val dirty = mutableListOf<Long>()
-        val order = if (list.isGoogleTasks) {
-            emptyList()
-        } else {
-            sortKeysFor(children.map { byId[it] ?: taskDao.fetch(it) }, parentId)
-        }
+        val order = sortKeysFor(children.map { byId[it] ?: taskDao.fetch(it) }, parentId)
         children.forEachIndexed { position, id ->
-            if (list.isGoogleTasks) {
-                val row = taskDao.fetch(id) ?: return@forEachIndexed
-                val unpositioned = row.order == null
-                if (unpositioned) {
-                    taskDao.setOrder(id, position.toLong())
-                    row.order = position.toLong()
-                }
-                if (unpositioned || row.parent != parentId || row.order != position.toLong()) {
-                    googleTaskDao.move(
-                        task = row,
-                        list = list.uuid,
-                        newParent = parentId,
-                        newPosition = position.toLong(),
-                    )
-                    dirty.add(id)
-                }
-                byId[id]?.let { it.parent = row.parent; it.order = row.order }
-                return@forEachIndexed
-            }
             val row = byId[id] ?: taskDao.fetch(id) ?: return@forEachIndexed
             val target = order[position]
             val reparent = row.parent != parentId
@@ -475,8 +427,6 @@ class SubtaskTreeWriter(
     }
 }
 
-private fun List<SubtaskRow>.keptBy(singleLevel: Boolean): Set<String> =
-    (if (singleLevel) map { it.copy(indent = 0) } else this).survivors()
 
 private fun List<SubtaskRow>.survivors(): Set<String> {
     val kept = HashSet<String>()

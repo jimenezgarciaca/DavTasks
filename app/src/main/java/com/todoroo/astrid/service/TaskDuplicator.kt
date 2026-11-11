@@ -6,14 +6,12 @@ import com.todoroo.astrid.gcal.GCalHelper
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.data.dao.AlarmDao
 import org.tasks.data.dao.CaldavDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.dao.LocationDao
 import org.tasks.data.dao.TagDao
 import org.tasks.data.dao.TagDataDao
 import org.tasks.data.dao.TaskAttachmentDao
 import org.tasks.data.db.DbUtils.dbchunk
 import org.tasks.data.entity.Attachment
-import org.tasks.data.entity.CaldavAccount.Companion.pushesRemoteParent
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.Geofence
 import org.tasks.data.entity.Task
@@ -29,7 +27,6 @@ class TaskDuplicator @Inject constructor(
     private val refreshBroadcaster: RefreshBroadcaster,
     private val tagDao: TagDao,
     private val tagDataDao: TagDataDao,
-    private val googleTaskDao: GoogleTaskDao,
     private val caldavDao: CaldavDao,
     private val locationDao: LocationDao,
     private val alarmDao: AlarmDao,
@@ -64,24 +61,13 @@ class TaskDuplicator @Inject constructor(
         clone.suppressRefresh()
         val newId = taskDao.createNew(clone)
         tagDao.insert(clone, tagDataDao.getTagDataForTask(task.id))
-        val googleTask = googleTaskDao.getByTaskId(task.id)
         val caldavTask = caldavDao.getTask(task.id)
-        if (googleTask != null) {
-            googleTaskDao.insertAndShift(
-                clone,
-                CaldavTask(
-                    task = clone.id,
-                    calendar = googleTask.calendar,
-                    remoteId = null
-                ),
-                preferences.addTasksToTop()
-            )
-        } else if (caldavTask != null) {
+        if (caldavTask != null) {
             val newDavTask = CaldavTask(
                 task = clone.id,
                 calendar = caldavTask.calendar
             )
-            if (parentId != 0L && pushesRemoteParent(caldavDao.getAccountType(task.id))) {
+            if (parentId != 0L) {
                 newDavTask.remoteParent = caldavDao.getRemoteIdForTask(parentId)
             }
             caldavDao.insert(clone, newDavTask, preferences.addTasksToTop())

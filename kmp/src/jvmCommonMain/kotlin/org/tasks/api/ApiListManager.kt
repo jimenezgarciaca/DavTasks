@@ -36,7 +36,6 @@ class ApiListManager(
                     color = color,
                     icon = icon,
                 )
-                account.isUnsupported() -> throw unsupported()
                 else -> CaldavCalendar(
                     uuid = UUIDHelper.newUUID(),
                     account = account.uuid,
@@ -65,7 +64,6 @@ class ApiListManager(
             remote("update") {
                 when {
                     account.isLocalList -> Unit
-                    account.isUnsupported() -> throw unsupported()
                     else ->
                         caldavClientProvider.forAccount(account, calendar.url!!)
                             .use { it.updateCollection(title, color, icon) }
@@ -81,7 +79,6 @@ class ApiListManager(
         remote("delete") {
             when {
                 account.isLocalList -> Unit
-                account.isUnsupported() -> throw unsupported()
                 else ->
                     caldavClientProvider.forAccount(account, calendar.url!!).use { it.deleteCollection() }
             }
@@ -106,12 +103,6 @@ class ApiListManager(
     } catch (e: Exception) {
         throw IllegalStateException(e.message ?: "Failed to $operation list", e)
     }
-
-    // DavTasks no incluye la sincronización con Google Tasks, Microsoft To Do ni EteSync.
-    private fun CaldavAccount.isUnsupported() = isGoogleTasks || isMicrosoft || isEtebaseAccount
-
-    private fun unsupported() =
-        UnsupportedOperationException("Tipo de cuenta no soportado en DavTasks")
 
     companion object {
         private const val CALL_TIMEOUT_MS = 30_000L

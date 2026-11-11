@@ -1,7 +1,6 @@
 package org.tasks.locale.ui.activity;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.Toolbar;
@@ -11,7 +10,6 @@ import net.dinglisch.android.tasker.TaskerPlugin;
 import org.tasks.LocalBroadcastManager;
 import org.tasks.R;
 import org.tasks.databinding.ActivityTaskerCreateBinding;
-import org.tasks.extensions.Context;
 import org.tasks.locale.bundle.TaskCreationBundle;
 
 import javax.inject.Inject;
@@ -19,8 +17,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public final class TaskerCreateTaskActivity extends AbstractFragmentPluginAppCompatActivity
-    implements Toolbar.OnMenuItemClickListener {
+public final class TaskerCreateTaskActivity extends AbstractFragmentPluginAppCompatActivity {
 
   @Inject LocalBroadcastManager localBroadcastManager;
 
@@ -39,8 +36,6 @@ public final class TaskerCreateTaskActivity extends AbstractFragmentPluginAppCom
     toolbar.setTitle(R.string.tasker_create_task);
     toolbar.setNavigationIcon(getDrawable(R.drawable.ic_outline_save_24px));
     toolbar.setNavigationOnClickListener(v -> save());
-    toolbar.setOnMenuItemClickListener(this);
-    toolbar.inflateMenu(R.menu.menu_help);
 
     getOnBackPressedDispatcher()
         .addCallback(
@@ -117,14 +112,5 @@ public final class TaskerCreateTaskActivity extends AbstractFragmentPluginAppCom
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
     outState.putParcelable(TaskCreationBundle.EXTRA_BUNDLE, previousBundle);
-  }
-
-  @Override
-  public boolean onMenuItemClick(MenuItem item) {
-    if (item.getItemId() == R.id.menu_help) {
-      Context.INSTANCE.openUri(this, R.string.url_tasker);
-      return true;
-    }
-    return onOptionsItemSelected(item);
   }
 }

@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,7 +22,6 @@ import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,7 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
@@ -177,7 +173,7 @@ fun CustomRecurrence(
                         selected = state.selectedDays,
                         toggle = toggleDay,
                     )
-                } else if (state.frequency == Frequency.MONTHLY && !state.isMicrosoftTask) {
+                } else if (state.frequency == Frequency.MONTHLY) {
                     MonthlyPicker(
                         monthDay = state.monthDay,
                         lastDayOfMonth = state.lastDayOfMonth,
@@ -189,22 +185,20 @@ fun CustomRecurrence(
                         onSelected = setMonthSelection,
                     )
                 }
-                if (!state.isMicrosoftTask) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = if (state.frequency == Frequency.WEEKLY) 11.dp else 16.dp),
-                        color = border()
-                    )
-                    EndsPicker(
-                        selection = state.endSelection,
-                        endDate = state.endDate,
-                        endOccurrences = state.endCount,
-                        setEndDate = setEndDate,
-                        setSelection = setSelectedEndType,
-                        setOccurrences = setOccurrences,
-                        calendarDisplayMode = calendarDisplayMode,
-                        setDisplayMode = setDisplayMode,
-                    )
-                }
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = if (state.frequency == Frequency.WEEKLY) 11.dp else 16.dp),
+                    color = border()
+                )
+                EndsPicker(
+                    selection = state.endSelection,
+                    endDate = state.endDate,
+                    endOccurrences = state.endCount,
+                    setEndDate = setEndDate,
+                    setSelection = setSelectedEndType,
+                    setOccurrences = setOccurrences,
+                    calendarDisplayMode = calendarDisplayMode,
+                    setDisplayMode = setDisplayMode,
+                )
             }
             Spacer(modifier = Modifier.height(ContentBottomGap))
             Row(

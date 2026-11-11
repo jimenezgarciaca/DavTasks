@@ -11,7 +11,6 @@ import org.tasks.compose.pickers.BasicRecurrence
 import org.tasks.compose.pickers.BasicRecurrenceOption
 import org.tasks.compose.pickers.isCustomRecurrence
 import org.tasks.dialogs.DialogBuilder
-import org.tasks.repeats.CustomRecurrenceActivity.Companion.EXTRA_ACCOUNT_TYPE
 import org.tasks.repeats.CustomRecurrenceActivity.Companion.newIntent
 import org.tasks.repeats.RecurrenceUtils.newRecur
 import org.tasks.repeats.Recur
@@ -85,7 +84,6 @@ class BasicRecurrenceDialog : DialogFragment() {
                         context = requireContext(),
                         rrule = rule,
                         dueDate = args.getLong(EXTRA_DATE),
-                        accountType = args.getInt(EXTRA_ACCOUNT_TYPE)
                     )
                 )
             }
@@ -107,13 +105,11 @@ class BasicRecurrenceDialog : DialogFragment() {
         fun newBasicRecurrenceDialog(
             rrule: String?,
             dueDate: Long,
-            accountType: Int,
         ): BasicRecurrenceDialog {
             val dialog = BasicRecurrenceDialog()
             dialog.arguments = Bundle().apply {
                 rrule?.let { putString(EXTRA_RRULE, it) }
                 putLong(EXTRA_DATE, dueDate)
-                putInt(EXTRA_ACCOUNT_TYPE, accountType)
             }
             return dialog
         }

@@ -13,7 +13,6 @@ import org.tasks.data.dao.CompletionDao
 import org.tasks.data.dao.DeletionDao
 import org.tasks.data.dao.DirtyDao
 import org.tasks.data.dao.FilterDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.dao.LocationDao
 import org.tasks.data.dao.METADATA_CATEGORY_TAG
 import org.tasks.data.dao.MetadataDao
@@ -81,7 +80,6 @@ abstract class Database : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
     abstract fun locationDao(): LocationDao
     abstract fun tagDao(): TagDao
-    abstract fun googleTaskDao(): GoogleTaskDao
     abstract fun filterDao(): FilterDao
     abstract fun taskDao(): TaskDao
     abstract fun dirtyDao(): DirtyDao

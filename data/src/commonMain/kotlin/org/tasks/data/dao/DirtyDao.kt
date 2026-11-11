@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import org.tasks.data.db.SuspendDbUtils.chunkedMap
 import org.tasks.data.db.SuspendDbUtils.eachChunk
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_LOCAL
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.data.entity.CaldavAccount.Companion.TYPES_NON_LOCAL
 import org.tasks.data.entity.CaldavAccount.Companion.TYPES_TAGS
 import org.tasks.data.entity.CaldavCalendar.Companion.ACCESS_READ_ONLY
@@ -95,7 +94,6 @@ abstract class DirtyDao {
         WHERE cd_task IN (:ids)
           AND cd_deleted = 0
           AND cda_account_type IN (:accountTypes)
-          AND NOT (cda_account_type = $TYPE_MICROSOFT AND tasks.parent > 0)
         ON CONFLICT(caldav_task_id) DO UPDATE SET dirty_version = dirty_version + 1
     """)
     internal abstract suspend fun upsertDirtyForTags(ids: List<Long>, accountTypes: List<Int>)

@@ -34,7 +34,6 @@ import tasks.kmp.generated.resources.error_adding_account
 import tasks.kmp.generated.resources.invalid_username_or_password
 import tasks.kmp.generated.resources.metadata_not_supported
 import tasks.kmp.generated.resources.metadata_stored_on_account
-import tasks.kmp.generated.resources.metadata_stored_on_tasks_org
 import tasks.kmp.generated.resources.network_error
 import tasks.kmp.generated.resources.password_required
 import tasks.kmp.generated.resources.sync_metadata_summary
@@ -119,7 +118,6 @@ open class CaldavAccountSettingsViewModel(
             return
         }
         val subtitle = when {
-            toggle.forcedByTasksOrg -> getString(Res.string.metadata_stored_on_tasks_org)
             toggle.otherPrimary != null ->
                 getString(Res.string.metadata_stored_on_account, toggle.otherPrimary)
             else -> getString(Res.string.sync_metadata_summary)

@@ -124,7 +124,6 @@
     <string name="group_mode">Grupo</string>
     <string name="sort_created">Creado</string>
     <string name="returning_user_import_backup">Importar copia de seguridad</string>
-    <string name="guest">Invitado</string>
     <string name="logout_confirmation">¿Cerrar sesión en %1$s?</string>
     <string name="debug">Depurar</string>
     <string name="caldav_server_owncloud">ownCloud</string>
@@ -404,8 +403,6 @@
     <string name="keep_editing">Continuar editando</string>
     <string name="DLG_delete_this_task_question">¿Desea eliminar esta tarea?</string>
     <string name="TEA_add_subtask">Añadir subtarea</string>
-    <string name="subtasks_multilevel_google_task">Subtareas multinivel no compatibles con Google Tasks</string>
-    <string name="subtasks_multilevel_microsoft">Microsoft To Do no admite subtareas de múltiples niveles</string>
     <string name="customize_drawer">Personalizar menú</string>
     <string name="customize_drawer_summary">Arrastra y suelta para reorganizar los elementos del menú</string>
     <string name="hide_unused_tags">Ocultar etiquetas no utilizadas</string>

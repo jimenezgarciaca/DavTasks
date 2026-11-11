@@ -5,7 +5,6 @@ import com.todoroo.astrid.gcal.GCalHelper
 import com.todoroo.astrid.utility.TitleParser.parse
 import org.tasks.R
 import org.tasks.Strings.isNullOrEmpty
-import org.tasks.data.GoogleTask
 import org.tasks.data.TaskSaver
 import org.tasks.data.UUIDHelper
 import org.tasks.data.createDueDate
@@ -13,7 +12,6 @@ import org.tasks.data.createGeofence
 import org.tasks.data.createHideUntil
 import org.tasks.data.dao.AlarmDao
 import org.tasks.data.dao.CaldavDao
-import org.tasks.data.dao.GoogleTaskDao
 import org.tasks.data.dao.LocationDao
 import org.tasks.data.dao.TagDao
 import org.tasks.data.dao.TagDataDao
@@ -45,7 +43,6 @@ class TaskCreator @Inject constructor(
     private val taskDao: TaskDao,
     private val taskSaver: TaskSaver,
     private val tagDao: TagDao,
-    private val googleTaskDao: GoogleTaskDao,
     private val defaultFilterProvider: DefaultFilterProvider,
     private val caldavDao: CaldavDao,
     private val locationDao: LocationDao,
@@ -70,17 +67,7 @@ class TaskCreator @Inject constructor(
         }
         tagDao.insert(task, task.tags)
         val addToTop = preferences.addTasksToTop()
-        if (task.hasTransitory(GoogleTask.KEY)) {
-            googleTaskDao.insertAndShift(
-                task,
-                CaldavTask(
-                    task = task.id,
-                    calendar = task.getTransitory<String>(GoogleTask.KEY)!!,
-                    remoteId = null
-                ),
-                addToTop
-            )
-        } else if (task.hasTransitory(CaldavTask.KEY)) {
+        if (task.hasTransitory(CaldavTask.KEY)) {
             caldavDao.insert(
                 task,
                 CaldavTask(
@@ -92,26 +79,14 @@ class TaskCreator @Inject constructor(
         } else {
             val remoteList = defaultFilterProvider.getDefaultList()
             if (remoteList is CaldavFilter) {
-                if (remoteList.isGoogleTasks) {
-                    googleTaskDao.insertAndShift(
-                        task,
-                        CaldavTask(
-                            task = task.id,
-                            calendar = remoteList.uuid,
-                            remoteId = null
-                        ),
-                        addToTop
-                    )
-                } else {
-                    caldavDao.insert(
-                        task,
-                        CaldavTask(
-                            task = task.id,
-                            calendar = remoteList.uuid,
-                        ),
-                        addToTop
-                    )
-                }
+                caldavDao.insert(
+                    task,
+                    CaldavTask(
+                        task = task.id,
+                        calendar = remoteList.uuid,
+                    ),
+                    addToTop
+                )
             }
         }
         if (task.hasTransitory(Place.KEY)) {
@@ -174,7 +149,7 @@ class TaskCreator @Inject constructor(
         values?.entries?.forEach { (key, value) ->
             when (key) {
                 Tag.KEY -> tags.add(value as String)
-                GoogleTask.KEY, CaldavTask.KEY, Place.KEY -> task.putTransitory(key, value)
+                CaldavTask.KEY, Place.KEY -> task.putTransitory(key, value)
                 DUE_DATE.name -> value.substitute()?.toLongOrNull()?.let { task.dueDate =
                     createDueDate(Task.URGENCY_SPECIFIC_DAY, it) }
                 IMPORTANCE.name -> value.substitute()?.toIntOrNull()?.let { task.priority = it }

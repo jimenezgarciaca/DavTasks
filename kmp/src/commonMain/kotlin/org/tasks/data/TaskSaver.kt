@@ -6,9 +6,7 @@ import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.TaskDao
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_LOCAL
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
 import org.tasks.data.entity.SUPPRESS_SYNC
 import org.tasks.data.entity.SyncTrait
 import org.tasks.data.entity.SYNC_ALARMS
@@ -63,11 +61,10 @@ class TaskSaver(
         }
         val accountType = caldavDao.getAccountType(task.id) ?: return false
         val traits = CaldavAccount.syncTraits(accountType)
-        val isMicrosoftSubtask = accountType == TYPE_MICROSOFT && task.parent > 0L
-        val transitoryChanged = !isMicrosoftSubtask &&
-                ((SyncTrait.TAGS in traits && task.checkTransitory(SYNC_TAGS)) ||
-                        (SyncTrait.ALARMS in traits && task.checkTransitory(SYNC_ALARMS)) ||
-                        (SyncTrait.LOCATION in traits && task.checkTransitory(SYNC_LOCATION)))
+        val transitoryChanged =
+            (SyncTrait.TAGS in traits && task.checkTransitory(SYNC_TAGS)) ||
+                    (SyncTrait.ALARMS in traits && task.checkTransitory(SYNC_ALARMS)) ||
+                    (SyncTrait.LOCATION in traits && task.checkTransitory(SYNC_LOCATION))
         if (transitoryChanged) {
             return true
         }
@@ -76,8 +73,6 @@ class TaskSaver(
         }
         return when (accountType) {
             TYPE_LOCAL -> false
-            TYPE_GOOGLE_TASKS -> !task.googleTaskUpToDate(original)
-            TYPE_MICROSOFT -> !task.microsoftUpToDate(original)
             else -> !task.caldavUpToDate(original)
         }
     }
