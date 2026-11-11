@@ -760,7 +760,7 @@ class Preferences @JvmOverloads constructor(
         get() = getInt(R.string.p_theme_color, BLUE_500)
 
     val dynamicColor: Boolean
-        get() = getBoolean(R.string.p_dynamic_color, false)
+        get() = getBoolean(R.string.p_dynamic_color, true)
 
     val markdown: Boolean
         get() = getBoolean(R.string.p_markdown, false)

@@ -85,7 +85,7 @@ data class DrawerSettings(
 data class LookAndFeelSettings(
     val theme: Int = BaseTheme.DEFAULT,
     val themeColor: Int = ColorProvider.BLUE_500,
-    val dynamicColor: Boolean = false,
+    val dynamicColor: Boolean = true,
     val markdown: Boolean = false,
     val openLastViewedList: Boolean = true,
     val defaultOpenFilter: String? = null,
