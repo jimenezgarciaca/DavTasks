@@ -274,9 +274,6 @@ class Preferences @JvmOverloads constructor(
         }
     }
 
-    val isTrackingEnabled: Boolean
-        get() = getBoolean(R.string.p_collect_statistics, true)
-
     val defaultCalendar: String?
         get() = getStringValue(R.string.gcal_p_default)
 
@@ -663,14 +660,6 @@ class Preferences @JvmOverloads constructor(
         editor.apply()
     }
 
-    fun removeByPrefix(prefix: String) {
-        val editor = prefs.edit()
-        prefs.all.keys
-            .filter { it.startsWith(prefix) }
-            .forEach { editor.remove(it) }
-        editor.apply()
-    }
-
     fun bundleNotifications(): Boolean = getBoolean(R.string.p_bundle_notifications, true)
 
     fun usePersistentReminders(): Boolean =
@@ -749,13 +738,6 @@ class Preferences @JvmOverloads constructor(
     val showTagChip: Boolean
         get() = getBoolean(R.string.p_tag_chips, true)
 
-    fun alreadyNotified(account: String?, scope: String?): Boolean =
-            getBoolean(context.getString(R.string.p_notified_oauth_error, account, scope), false)
-
-    fun setAlreadyNotified(account: String?, scope: String?, value: Boolean) {
-        setBoolean(context.getString(R.string.p_notified_oauth_error, account, scope), value)
-    }
-
     val defaultThemeColor: Int
         get() = getInt(R.string.p_theme_color, BLUE_500)
 
@@ -825,7 +807,6 @@ class Preferences @JvmOverloads constructor(
             R.string.p_install_version,
             R.string.p_install_date,
             R.string.p_device_install_version,
-            R.string.p_collect_statistics,
         )
     }
 }

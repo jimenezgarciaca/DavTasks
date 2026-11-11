@@ -201,7 +201,6 @@
     <item>@string/theme_system_default</item>
   </string-array>
 
-  <string name="p_collect_statistics">collect_statistics</string>
   <string name="p_back_button_saves_task">back_button_saves_task</string>
 
   <string name="p_open_last_viewed_list">open_last_viewed_list</string>
@@ -271,7 +270,6 @@
   <string name="preference_screen">preference_screen</string>
   <string name="p_add_to_top">google_tasks_add_to_top</string>
   <string name="p_wearable_notifications">wearable_notifications</string>
-  <string name="p_notified_oauth_error">notified_oauth_error_%1$s_%2$s</string>
   <string name="p_chip_appearance">chip_appearance</string>
   <string name="p_subtask_chips">chips_subtask</string>
   <string name="p_start_date_chip">chips_start_date</string>

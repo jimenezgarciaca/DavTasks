@@ -44,20 +44,6 @@ jobs:
         if: ${{ env.HAS_SIGNING_KEY != 'true' }}
         run: ./gradlew --stacktrace :app:assembleGenericDebug
 
-      - name: Informe de código sin uso (R8)
-        if: ${{ env.HAS_SIGNING_KEY == 'true' }}
-        run: |
-          f=app/build/outputs/mapping/genericRelease/usage.txt
-          if [ -f "$f" ]; then
-            awk '/^(org\.tasks|com\.todoroo)/ { cls=$0; if (cls !~ /:$/) print "R8_UNUSED_CLASS " cls; next }
-                 /^    / { if (cls ~ /^(org\.tasks|com\.todoroo).*:$/) print "R8_UNUSED_MEMBER " cls " " $0; next }
-                 { cls="" }' "$f"
-          fi
-          ls app/build/outputs/mapping/genericRelease/ || true
-          r=app/build/outputs/mapping/genericRelease/resources.txt
-          if [ -f "$r" ]; then
-            grep -iE "unused|remov" "$r" | sed 's/^/R8_RES /' | head -3000
-          fi
       - name: Verificar APK
         run: |
           apk=$(find app/build/outputs/apk -name '*.apk' | head -1)
