@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="SSD_sort_auto">Slim sorteer</string>
-    <string name="SSD_sort_alpha">Volgens titel</string>
-    <string name="SSD_sort_due">Volgens datum</string>
-    <string name="SSD_sort_importance">Volgens prioriteit</string>
-    <string name="SSD_sort_modified">Volgens laaste verander</string>
     <string name="FLA_search_filter">Gelyk aan \'%s\'</string>
     <string name="custom_filter_or">of</string>
     <string name="custom_filter_not">nie</string>

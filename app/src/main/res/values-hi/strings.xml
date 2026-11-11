@@ -22,7 +22,6 @@
     <string name="tomorrow">कल</string>
     <string name="TLA_menu_search">खोज</string>
     <string name="TLA_menu_settings">सेटिंग्स</string>
-    <string name="app_settings">ऐप सेटिंग</string>
     <string name="TAd_actionEditTask">संपादित करें</string>
     <string name="yesterday">कल</string>
 </resources>

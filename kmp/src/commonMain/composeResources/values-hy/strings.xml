@@ -4,7 +4,6 @@
     <string name="more_options">Ավելի շատ ընտրանքներ</string>
     <string name="ok">Լավ</string>
     <string name="cancel">Չեղարկել</string>
-    <string name="app_settings">Ծրագրի կարգավորումներ</string>
     <string name="customize_drawer">Կարգավորել պանելը</string>
     <string name="SSD_sort_my_order">Իմ դասավորությունը</string>
     <string name="astrid_sort_order">Astrid-ի ձեռքով դասավորում</string>
@@ -14,7 +13,6 @@
     <string name="SSD_sort_due">Ավարտման ամսաթվով</string>
     <string name="SSD_sort_importance">Առաջնահերթությամբ</string>
     <string name="SSD_sort_modified">Փոխման ամսաթվով</string>
-    <string name="TEA_note_label">Նկարագրություն</string>
     <string name="save">Պահել</string>
     <string name="due_date">Ավարտման ամսաթիվ</string>
     <string name="due_time">Ավարտման ժամ</string>
@@ -51,8 +49,6 @@
     <string name="date_shortcut_evening">Երեկո</string>
     <string name="date_shortcut_night">Գիշեր</string>
     <string name="discard_changes">Չեղարկե՞լ փոփոխությունները</string>
-    <string name="tag_settings">Թեգերի կարգավորումներ</string>
-    <string name="list_settings">Ցուցակի կարգավորումներ</string>
     <string name="delete">Ջնջել</string>
     <string name="name_cannot_be_empty">Պետք է անուն տալ</string>
     <string name="filter">Ֆիլտր</string>
@@ -66,9 +62,6 @@
     <string name="theme_day_night">Օր/գիշեր</string>
     <string name="theme_system_default">Համակարգի պես</string>
     <string name="theme_dynamic">Դինամիկ</string>
-    <string name="restart_required">Վերաբացեք Tasks-ը՝ փոփոխությունների ուժի մեջ մտնելու համար</string>
-    <string name="restart_now">Վերաբացել հիմա</string>
-    <string name="restart_later">Հետո</string>
     <string name="widget_settings">Վիդջեթի կարգավորումներ</string>
     <string name="user">Օգտատեր</string>
     <string name="password">Գաղտնաբառ</string>
@@ -77,9 +70,7 @@
     <string name="repeats_plural_number_of_times">Կրկնել յուրաքանչյուր %1$s, %2$d %3$s</string>
     <string name="dont_add_to_calendar">Չավելացնել օրացույցում</string>
     <string name="help">Օգնություն</string>
-    <string name="help_and_feedback">Օգնություն և հետադարձ կապ</string>
     <string name="logout">Դուրս գալ</string>
-    <string name="reinitialize_account">Վերագործարկել</string>
     <string name="whats_new">Ինչ նոր բան կա</string>
     <string name="caldav_selection_description">Սինխրոնիզացում՝ ինտերնետային ստանդարտների վրա հիմնված</string>
     <string name="etesync_selection_description">Գաղտնագրվող սինխրոնիզացիա</string>
@@ -91,20 +82,11 @@
     <string name="drawer_tags">Թեգեր</string>
     <string name="new_task">Նոր անելիք</string>
     <string name="sort_mode">Դասավորում</string>
-    <string name="sort_due_date">Ավարտման ամսաթիվ</string>
-    <string name="sort_priority">Առաջնահերթ</string>
-    <string name="sort_start_date">Սկսման ամսաթիվ</string>
-    <string name="group_none">Չկա</string>
     <string name="sort_list">Ցուցակ</string>
-    <string name="blog_feed_none">Չկա</string>
     <string name="metadata_move">Տեղափոխել</string>
-    <string name="mcp_tools_group_tags">Թեգեր</string>
-    <string name="mcp_tools_group_reminders">Հիշեցումներ</string>
-    <string name="mcp_copy">Պատճենել</string>
     <string name="new_filter">Ստեղծել նոր ֆիլտր</string>
     <string name="decsync_selection_description">Լոկալ ֆայլային սինխրոնիզացիա</string>
     <string name="davx5_selection_description">Սինխրոնիզացրեք Ձեր առաջադրանքները DAVx⁵ ծրագրի հետ</string>
-    <string name="show_advanced_settings">Ցուցադրել ընդլայնված կարգավորումները</string>
     <string name="preferences_advanced">Ընդլայնված</string>
     <string name="documentation">Դոկումենտացիա</string>
     <string name="back">Հետ</string>
@@ -115,21 +97,9 @@
     <string name="filter_medium_priority">Միջին առաջնահերթություն</string>
     <string name="filter_low_priority">Ցածր առաջնահերթություն</string>
     <string name="filter_no_priority">Առանց առաջնահերթության</string>
-    <string name="donate_nag">Ցույց տվեք Ձեր օգնությունը նվիրաբերման միջոցով🥹</string>
     <string name="local_lists">Լոկալ ցուցակներ</string>
-    <string name="last_backup_never">երբեք</string>
-    <string name="your_subscription_expired">Ձեր բաժանորդագրության ժամկետը լրացել է։ Ծառայությունը վերսկսելու համար բաժանորդագրվեք հիմա։</string>
     <string name="support">Աջակցություն</string>
     <string name="open_source">Բաց կոդով</string>
-    <string name="sign_in_with_google">Մուտք գործել Google-ով</string>
-    <string name="authentication_required">Պետք է նույնականացում</string>
-    <string name="migrating_tasks">Անելիքների միգրացիա</string>
-    <string name="app_password">Ծրագրի գաղտնաբառ</string>
-    <string name="email_to_task">Ստեղծել անելիք Email-ով</string>
-    <string name="email_to_task_address">Ձեր էլ․ հասցեն</string>
     <string name="completed">Ավարտված</string>
     <string name="dismiss">Մերժել</string>
-    <string name="legal_disclosure_prefix_using">Օգտագործելով Tasks.org-ը</string>
-    <string name="tos_updated_title">Մենք թարմացրել ենք մեր օգտագործման պայմանները</string>
-    <string name="accept">Ընդունել</string>
 </resources>

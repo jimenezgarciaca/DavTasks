@@ -9,11 +9,6 @@
     <string name="TLA_menu_search">بگەڕێ</string>
     <string name="TAd_actionEditTask">دەستکاری</string>
     <string name="action_call">پەیوەندی</string>
-    <string name="SSD_sort_auto">ڕیزکردنی ژیرانە</string>
-    <string name="SSD_sort_alpha">بە ناونیشان</string>
-    <string name="SSD_sort_start">بە بەرواری دەستپێکردن</string>
-    <string name="SSD_sort_due">بە بەرواری جێبەجێکردن</string>
-    <string name="sort_created">بە کاتی دروستکردن</string>
     <string name="FLA_new_filter">پاڵاوتنێک دروست بکە</string>
     <string name="TEA_importance_label">گرنگی</string>
     <string name="TEA_estimatedDuration_label">چەندێک دەخایەنێت؟</string>
@@ -23,6 +18,4 @@
     <string name="import_summary_title">پوختە وەک خۆی لێ بکەرەوە</string>
     <string name="TLA_menu_settings">ڕێکخستنەکان</string>
     <string name="TEA_title_hint">ناوی ئەرک</string>
-    <string name="SSD_sort_importance">بە گرنگی</string>
-    <string name="SSD_sort_modified">بە کۆتا دەستکاری</string>
 </resources>

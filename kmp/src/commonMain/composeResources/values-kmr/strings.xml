@@ -20,17 +20,12 @@
     <string name="help">Alîkarî</string>
     <string name="preferences_advanced">Pêşketî</string>
     <string name="back">Vegere</string>
-    <string name="last_backup_never">Ti carî</string>
     <string name="completed">Qediya</string>
     <string name="filter_notifications">Agahdarî</string>
     <string name="filter_today">Îro</string>
     <string name="drawer_places">Cih</string>
-    <string name="group_none">Ne yek</string>
     <string name="sort_list">Lîste</string>
     <string name="support">Piştgirî</string>
-    <string name="social">Civakî</string>
-    <string name="restart_later">Paşê</string>
-    <string name="blog_feed_none">Ne yek</string>
     <string name="email">Ename</string>
     <string name="color">Reng</string>
     <string name="icon">Îkon</string>
@@ -39,7 +34,6 @@
     <string name="priority_high">Bilind</string>
     <string name="priority_medium">Navîn</string>
     <string name="priority_low">Nizm</string>
-    <string name="TEA_note_label">Danasîn</string>
     <string name="repeat_monthly_first_week">Yekemîn</string>
     <string name="repeat_monthly_second_week">Duyemîn</string>
     <string name="repeat_monthly_third_week">Sêyemîn</string>
@@ -71,7 +65,4 @@
     <string name="theme_dark">Tarî</string>
     <string name="theme_wallpaper">Wêneya dîwêr</string>
     <string name="theme_day_night">Roj/Êvar</string>
-    <string name="mcp_access_advanced">Pêşketî</string>
-    <string name="mcp_tools_group_lists">Lîste</string>
-    <string name="mcp_tools_group_places">Cih</string>
 </resources>

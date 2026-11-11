@@ -2,7 +2,6 @@
 <resources>
     <string name="search">Пошук</string>
     <string name="settings">Налады</string>
-    <string name="subscription_required_description">Разблакуйце ўсе функцыі ўсяго за 1 даляр на год</string>
     <string name="filter_my_tasks">Мае заданні</string>
     <string name="filter_notifications">Апавяшчэнні</string>
     <string name="filter_snoozed">Адкладзеныя</string>
@@ -10,7 +9,6 @@
     <string name="filter_today">Сёння</string>
     <string name="filter_recently_modified">Нядаўна змененыя</string>
     <string name="default_list">Спіс па ўмаўчанні</string>
-    <string name="help_and_feedback">Даведка і зваротная сувязь</string>
     <string name="drawer_filters">Фільтры</string>
     <string name="drawer_tags">Тэгі</string>
     <string name="drawer_places">Месцы</string>
@@ -25,18 +23,12 @@
     <string name="yesterday_lowercase">учора</string>
     <string name="today">Сёння</string>
     <string name="today_lowercase">сёння</string>
-    <string name="wear_install_app">Усталяваць на тэлефон</string>
-    <string name="wear_unknown_error">Невядомая памылка</string>
     <string name="add_task">Дадаць заданне</string>
     <string name="show_unstarted">Паказаць непачатыя</string>
     <string name="show_completed">Паказаць завершаныя</string>
     <string name="search_no_results">Не знойдзена</string>
     <string name="save">Захаваць</string>
     <string name="sort_mode">Сартаванне</string>
-    <string name="sort_due_date">Дата выканання</string>
-    <string name="sort_priority">Прыярытэт</string>
-    <string name="sort_start_date">Дата пачатку</string>
-    <string name="group_none">Няма</string>
     <string name="ok">ОК</string>
     <string name="cancel">Скасаваць</string>
     <string name="SSD_sort_due">Па даце завяршэння</string>
@@ -53,12 +45,10 @@
     <string name="task_list_options">Налады спісу заданняў</string>
     <string name="EPr_edit_screen_options">Налады экрану рэдагавання</string>
     <string name="backup_BPr_header">Рэзервовыя копіі</string>
-    <string name="blog_feed_none">Няма</string>
     <string name="due_date">Дата выканання</string>
     <string name="due_time">Час выканання</string>
     <string name="day_before_due">Дзень да даты выканання</string>
     <string name="week_before_due">Тыдзень да даты выканання</string>
-    <string name="TEA_note_label">Апісанне</string>
     <string name="start_date">Дата пачатку</string>
     <string name="TEA_control_repeat">Паўтараць</string>
     <string name="TEA_control_reminders">Напаміны</string>
@@ -70,7 +60,6 @@
     <string name="TEA_add_subtask">Дадаць падзаданне</string>
     <string name="customize_drawer">Наладзіць панэль</string>
     <string name="customize_drawer_summary">Перацягніце элементы меню, каб іх пераставіць</string>
-    <string name="mcp_tools_group_reminders">Напаміны</string>
     <string name="new_filter">Стварыць новы фільтр</string>
     <string name="more_options">Больш налад</string>
 </resources>

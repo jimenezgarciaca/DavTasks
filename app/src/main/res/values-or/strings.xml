@@ -4,25 +4,13 @@
     <string name="tomorrow">ଆସନ୍ତାକାଲି</string>
     <string name="color">ରଙ୍ଗ</string>
     <string name="widget_show_settings">ସେଟିଂ ଦେଖାଅ</string>
-    <string name="SSD_sort_importance">ପ୍ରାଥମିକତା ଅନୁଯାୟୀ</string>
     <string name="TLA_menu_sort">ସଜାନ୍ତୁ</string>
     <string name="TLA_menu_search">ସନ୍ଧାନ</string>
     <string name="TLA_menu_settings">ସେଟିଂ</string>
     <string name="TAd_actionEditTask">ସମ୍ପାଦନା</string>
-    <string name="SSD_sort_alpha">ଆଖ୍ୟା ଅନୁଯାୟୀ</string>
-    <string name="sort_list">ତାଲିକା ଅନୁଯାୟୀ</string>
-    <string name="sort_created">ସୃଷ୍ଟି ସମୟ ଅନୁଯାୟୀ</string>
     <string name="TEA_control_gcal">କ୍ୟାଲେଣ୍ଡର</string>
     <string name="TEA_control_importance">ପ୍ରାଥମିକତା</string>
     <string name="TEA_control_notes">ଵର୍ଣ୍ଣନା</string>
-    <plurals name="repeat_n_minutes">
-        <item quantity="one">%d ମିନିଟ୍</item>
-        <item quantity="other">%d ମିନିଟ୍</item>
-    </plurals>
-    <plurals name="repeat_n_days">
-        <item quantity="one">%d ଦିନ</item>
-        <item quantity="other">%d ଦିନ</item>
-    </plurals>
     <string name="now">ଏବେ</string>
     <string name="today">ଆଜି</string>
     <string name="widget_show_dividers">ଵିଭାଜକ ଦେଖାଅ</string>
@@ -43,26 +31,10 @@
     <string name="preferences_advanced">ଵିକଶିତ</string>
     <string name="custom_filter_or">କିମ୍ବା</string>
     <string name="device_settings">ଡିଵାଇସ୍ ସେଟିଂ</string>
-    <string name="open_source">ଖୋଲା ଉତ୍ସ</string>
     <string name="widget_show_title">ଆଖ୍ୟା ଦେଖାଅ</string>
-    <string name="SSD_sort_my_order">ମୋର କ୍ରମ</string>
-    <string name="SSD_sort_start">ଆରମ୍ଭ ତାରିଖ ଅନୁଯାୟୀ</string>
-    <string name="SSD_sort_modified">ଗତ ସଂଶୋଧନ ଅନୁଯାୟୀ</string>
     <string name="FLA_new_filter">ନୂଆ ଶୋଧକ ସୃଷ୍ଟି କରିବା</string>
     <string name="TEA_note_label">ଵର୍ଣ୍ଣନା</string>
     <string name="TEA_importance_label">ପ୍ରାଥମିକତା</string>
-    <plurals name="repeat_n_hours">
-        <item quantity="one">%d ଘଣ୍ଟା</item>
-        <item quantity="other">%d ଘଣ୍ଟା</item>
-    </plurals>
-    <plurals name="repeat_n_weeks">
-        <item quantity="one">%d ସପ୍ତାହ</item>
-        <item quantity="other">%d ସପ୍ତାହ</item>
-    </plurals>
-    <plurals name="repeat_times">
-        <item quantity="one">ଥର</item>
-        <item quantity="other">ଥର</item>
-    </plurals>
     <string name="widget_show_menu">ମେନୁ ଦେଖାଅ</string>
     <string name="theme_black">କଳା</string>
     <string name="theme_system_default">ସିଷ୍ଟମ୍ ଡିଫଲ୍ଟ</string>
@@ -76,10 +48,6 @@
     <string name="filter_overdue">ଅତିଦେୟ</string>
     <string name="last_backup">ଗତ ବ୍ୟାକଅପ୍: %s</string>
     <string name="TVA_add_comment">ଏକ ମନ୍ତଵ୍ୟ ଯୋଡ଼ନ୍ତୁ…</string>
-    <string name="github_sponsor">ପ୍ରାୟୋଜକ</string>
-    <string name="support">ସମର୍ଥନ</string>
-    <string name="privacy">ଗୋପନୀୟତା</string>
-    <string name="app_password">ଆପ୍ ପାସ୍‍ୱର୍ଡ଼</string>
     <string name="ok">ଠିକ ଅଛି</string>
     <string name="cancel">ବାତିଲ କରନ୍ତୁ</string>
 </resources>

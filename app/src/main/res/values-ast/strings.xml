@@ -18,21 +18,11 @@
     <string name="TLA_menu_sort">Ordenar</string>
     <string name="TLA_menu_search">Guetar</string>
     <string name="TLA_menu_settings">Axustes</string>
-    <string name="app_settings">Axustes de l\'aplicación</string>
     <string name="TAd_actionEditTask">Editar</string>
     <string name="customize_drawer">Personalizar caxón</string>
     <string name="action_call">Llamar</string>
-    <string name="SSD_sort_my_order">El mio orden</string>
     <string name="astrid_sort_order">Ordenación manual d\'Astrid</string>
     <string name="astrid_sort_order_summary">Activar el mou d\'ordenación manual d\'Astris pa \'Les mis xeres\', \'Güei\', y etiquetes. Esti mou d\'ordenación sedrá sustituyíu por \'El mio orden\' nun anovamientu futuru</string>
-    <string name="SSD_sort_auto">Orden intelixente</string>
-    <string name="SSD_sort_alpha">Por títulu</string>
-    <string name="SSD_sort_start">Por data d\'entamu</string>
-    <string name="SSD_sort_due">Por data de vencimientu</string>
-    <string name="SSD_sort_importance">Por prioridá</string>
-    <string name="SSD_sort_modified">Por última modificación</string>
-    <string name="sort_created">Por data de creación</string>
-    <string name="sort_list">Por llista</string>
     <string name="FLA_search_filter">Coincidencia de \'%s\'</string>
     <string name="FLA_new_filter">Crear nuevu filtru</string>
     <string name="TEA_title_hint">Nome de la xera</string>
@@ -103,40 +93,14 @@
     <string name="CFC_gtasks_list_text">Na Llista: ?</string>
     <string name="CFC_list_name">Na Llista…</string>
     <string name="gtasks_GTA_clear_completed">Llimpiar xeres acabaes</string>
-    <string name="gtasks_GLA_authenticating">Autenticando…</string>
-    <string name="gtasks_error_accountNotFound">Cuenta %s non atopada—por favor, pieslla sesión y vuelve a aniciala dende los axustes de Google Tasks.</string>
     <string name="premium_record_audio">Grabar una nota</string>
-    <string name="ring_once">Sonar una vuelta</string>
-    <string name="ring_five_times">Sonar cinco vueltes</string>
-    <string name="ring_nonstop">Sonar ensin parar</string>
     <string name="snooze_all">Posponer too</string>
     <string name="repeat_option_custom">Personalizáu…</string>
     <plurals name="task_count">
         <item quantity="one">%d xera</item>
         <item quantity="other">%d xeres</item>
     </plurals>
-    <plurals name="repeat_times">
-        <item quantity="one">vuelta</item>
-        <item quantity="other">vueltes</item>
-    </plurals>
-    <plurals name="repeat_n_minutes">
-        <item quantity="one">%d minutu</item>
-        <item quantity="other">%d minutos</item>
-    </plurals>
-    <plurals name="repeat_n_hours">
-        <item quantity="one">%d hora</item>
-        <item quantity="other">%d hores</item>
-    </plurals>
-    <plurals name="repeat_n_days">
-        <item quantity="one">%d día</item>
-        <item quantity="other">%d díes</item>
-    </plurals>
-    <plurals name="repeat_n_weeks">
-        <item quantity="one">%d selmana</item>
-        <item quantity="other">%d selmanes</item>
-    </plurals>
     <string name="repeat_snackbar">%1$s reprogramó esta xera pa %2$s</string>
-    <string name="new_tag">Amestar nueva etiqueta</string>
     <string name="new_list">Amestar nueva llista</string>
     <string name="delete_tag_confirmation">Desaniciar %s?</string>
     <string name="delete_comment">comentariu</string>
@@ -239,7 +203,6 @@
     <string name="badges">Insignies</string>
     <string name="list">Llista</string>
     <string name="repeats_from">Repetir dende</string>
-    <string name="repeats_plural_number_of_times">Repetir cada %1$s, ocurre %2$d%3$s</string>
     <string name="list_separator_with_space">", "</string>
     <string name="dont_add_to_calendar">Non amestar al calendariu</string>
     <string name="badges_description">Amosar un contador de xeres nel iconu de Tasks del llanzador. Non tolos llanzadores soporten insignies.</string>
@@ -247,12 +210,9 @@
     <string name="tasker_list_notification">Llistar avisu</string>
     <string name="help">Aida</string>
     <string name="help_and_feedback">Aida y comentarios</string>
-    <string name="subscription">Soscripción</string>
-    <string name="refresh_purchases">Anovar les compres</string>
     <string name="pro_dashclock_extension">Estensión Dashclock</string>
     <string name="logout">Zarrar sesión</string>
     <string name="delete_tasks_warning">%s desaniciarase. ¡Esto nun se puee desfacer!</string>
-    <string name="reinitialize_account">Reaniciar</string>
     <string name="action_create_new_task">Amestar nueva xera</string>
     <string name="action_new_task">Nueva xera</string>
     <string name="show_description">Amosar descripción</string>
@@ -273,16 +233,8 @@
     <string name="location_permission_required_location">Son necesarios permisos d\'allugamientu p\'atopar el to allugamientu actual</string>
     <string name="open_map">Abrir mapa</string>
     <string name="choose_new_location">Escueye nuevu allugamientu</string>
-    <string name="banner_app_updated_title">Aplicación anovada</string>
-    <string name="banner_app_updated_description">Tasks ta acabantes d\'anovase a %s. Quies ver les notes de la versión?</string>
     <string name="whats_new">Novedaes</string>
     <string name="invalid_backup_file">Copia de seguranza invalida</string>
     <string name="expand_subtasks">Espander subxeres</string>
     <string name="collapse_subtasks">Encoyer subxeres</string>
-    <string name="choose_synchronization_service">Selecciona una plataforma</string>
-    <string name="caldav_selection_description">Sincronización basada en estándares abiertos d\'internet</string>
-    <string name="etesync_selection_description">Sincronización con cifráu d\'estremu a estremu</string>
-    <string name="decsync_selection_description">Sincronización basada en ficheros</string>
-    <string name="davx5_selection_description">Sincroniza les tos xeres cola aplicación DAVx⁵</string>
-    <string name="show_advanced_settings">Amosar axustes avanzaos</string>
 </resources>

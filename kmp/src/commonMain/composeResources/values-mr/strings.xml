@@ -4,11 +4,9 @@
     <string name="filter_today">आज</string>
     <string name="search">शोध</string>
     <string name="search_no_results">कोणतेही परिणाम नाही</string>
-    <string name="subscription_required_description">सर्व वैशिष्ट्ये $1 USD वर्षात अनलॉक करा</string>
     <string name="filter_my_tasks">माझी कार्ये</string>
     <string name="filter_notifications">सूचना</string>
     <string name="default_list">डीफॉल्ट यादी</string>
-    <string name="help_and_feedback">मदत आणि अभिप्राय</string>
     <string name="settings">सेटिंग्ज</string>
     <string name="more_options">अधिक पर्याय</string>
     <string name="ok">ठीक आहे</string>

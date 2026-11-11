@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="show_completed">Ipakita ang natapos</string>
-    <string name="sort_priority">Prayoridad</string>
     <string name="password_required">Password kailangan</string>
     <string name="add_account">Magdagdag ng account</string>
     <string name="SSD_sort_due">Ayon sa ukol na petsa</string>

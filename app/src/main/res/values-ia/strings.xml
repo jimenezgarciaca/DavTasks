@@ -18,14 +18,8 @@
     <string name="help_and_feedback">Adjuta e commentarios</string>
     <string name="notifications">Notificationes</string>
     <string name="filter_today_only">Solmente hodie</string>
-    <string name="privacy">Confidentialitate</string>
-    <string name="open_source">Codice aperte</string>
-    <string name="upgrade_open_source_description">Tu subscription supporta le developpamento continuate</string>
     <string name="today">Hodie</string>
     <string name="save">Salvar</string>
     <string name="TEA_control_files">Files</string>
-    <string name="SSD_sort_alpha">Per titulo</string>
-    <string name="sort_list">Per lista</string>
-    <string name="SSD_sort_start">Per data de initio</string>
     <string name="read_permission_label">Permissiones de Tasks</string>
 </resources>

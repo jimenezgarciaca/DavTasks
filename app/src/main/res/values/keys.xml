@@ -4,31 +4,19 @@
   These should not be translated 
 -->
 <resources>
-  <string name="app_package">org.tasks</string>
   <string name="backup_api_key">AEdPqrEAAAAI49v5bBusi_bq1bgLBB1LIsepNV0eBrFkQrBZkw</string>
   <string name="FSA_label">Tasks Shortcut</string>
   <string name="caldav">CalDAV</string>
-  <string name="etesync">EteSync</string>
   <string name="davx5">DAVx⁵</string>
   <string name="decsync">DecSync CC</string>
   <string name="tasks_org">Tasks.org</string>
-  <string name="tasks_org_account">Tasks.org Cloud</string>
-  <string name="gtasks_GPr_header">Google Tasks</string>
   <string name="microsoft">Microsoft To&#xA0;Do</string>
-  <string name="etebase_url">https://api.etebase.com/partner/tasksorg/</string>
-  <string name="help_url_sync">https://tasks.org/sync</string>
 
   <string name="url_davx5">https://tasks.org/davx5</string>
-  <string name="url_caldav">https://tasks.org/caldav</string>
-  <string name="url_etesync">https://tasks.org/etesync</string>
   <string name="url_tasker">https://tasks.org/help/tasker</string>
-  <string name="url_donate">https://tasks.org/donate</string>
   <string name="url_filters">https://tasks.org/filters</string>
   <string name="url_backups">https://tasks.org/backups</string>
-  <string name="url_notifications">https://tasks.org/notifications</string>
   <string name="url_troubleshoot_intents">https://tasks.org/intents</string>
-  <string name="url_google_tasks">https://tasks.org/docs/sync_google_tasks</string>
-  <string name="url_microsoft">https://tasks.org/docs/sync_microsoft</string>
 
   <string name="p_date_shortcut_morning">date_shortcut_morning</string>
   <string name="p_date_shortcut_afternoon">date_shortcut_afternoon</string>
@@ -39,9 +27,7 @@
 
   <string name="p_attachment_dir">custom_files_dir</string>
   <string name="p_backup_dir">p_backup_dir</string>
-  <string name="p_google_drive_backup">p_google_drive_backup</string>
   <string name="p_google_drive_backup_account">p_google_drive_backup_account</string>
-  <string name="p_google_drive_backup_folder">p_google_drive_backup_folder</string>
   <!-- boolean : whether to enable quiet hours or not -->
   <string name="p_rmd_enable_quiet">enable_qhours</string>
 
@@ -228,7 +214,6 @@
   <string name="p_theme">theme_style</string>
   <string name="p_theme_color">theme_color</string>
   <string name="p_theme_launcher">theme_launcher</string>
-  <string name="p_language">language</string>
 
   <string name="p_widget_filter">widget-id-</string>
   <string name="p_widget_theme">widget-theme-v2-</string>
@@ -277,7 +262,6 @@
   <string name="p_bundle_notifications">bundle_notifications</string>
   <string name="p_strict_mode_vm">strict_mode_vm</string>
   <string name="p_strict_mode_thread">strict_mode_thread</string>
-  <string name="p_debug_pro">debug_pro</string>
   <string name="p_crash_main_queries">debug_crash_main_queries</string>
   <string name="p_last_backup">last_backup</string>
   <string name="p_show_description">show_description</string>
@@ -299,8 +283,6 @@
   <string name="p_auto_dismiss_datetime_list_screen">auto_dismiss_datetime_list_screen</string>
   <string name="p_auto_dismiss_datetime_widget">auto_dismiss_datetime_widget</string>
   <string name="p_just_updated">just_updated</string>
-  <string name="p_last_review_request">last_review_request</string>
-  <string name="p_last_subscribe_request">last_subscribe_request</string>
   <string name="p_backups_enabled">backups_enabled</string>
   <string name="p_backups_ignore_warnings">backups_ignore_warnings</string>
   <string name="p_backups_android_backup_enabled">backups_android_backup_enabled</string>
@@ -313,60 +295,30 @@
   <string name="p_default_location">default_location</string>
   <string name="p_warn_notifications_disabled">warn_notifications_disabled</string>
   <string name="p_warn_alarms_disabled">warn_alarms_disabled</string>
-  <string name="p_warn_microsoft">warn_microsoft</string>
-  <string name="p_warn_google_tasks">warn_google_Tasks</string>
   <string name="p_local_list_banner_dismissed">local_list_banner_dismissed</string>
 
-  <string name="event_showed_purchase_dialog">showed_purchase_dialog</string>
-  <string name="event_purchase_result">billing_flow_result</string>
-  <string name="param_sku">sku</string>
-  <string name="param_result">result</string>
-  <string name="param_state">state</string>
-  <string name="param_order_id">order_id</string>
-  <string name="param_action">action</string>
-  <string name="param_label">label</string>
-  <string name="param_selection">selection</string>
-  <string name="event_sync_add_account">sync_add_account</string>
-  <string name="event_initial_sync_complete">initial_sync_complete</string>
   <string name="param_task_count">task_count</string>
   <string name="param_import_count">import_count</string>
   <string name="param_skip_count">skip_count</string>
-  <string name="event_sync_unknown_access">sync_unknown_access</string>
-  <string name="event_banner">banner</string>
-  <string name="event_pebble">pebble</string>
   <string name="event_dashclock">dashclock</string>
-  <string name="param_device_model">device_model</string>
   <string name="event_add_task">add_task</string>
   <string name="event_complete_task">complete_task</string>
-  <string name="event_request_review">request_review</string>
   <string name="event_create_shortcut">create_shortcut</string>
   <string name="event_create_widget">create_widget</string>
-  <string name="event_add_account">add_account</string>
   <string name="param_source">source</string>
-  <string name="event_accept_tos">accept_tos</string>
-  <string name="event_accept_tos_update">accept_tos_update</string>
-  <string name="event_onboarding_complete">onboarding_complete</string>
-  <string name="event_onboarding_name_your_price">onboarding_name_your_price</string>
   <string name="event_screen_settings">screen_settings</string>
-  <string name="event_create_tag">create_tag</string>
   <string name="event_create_filter">create_filter</string>
   <string name="event_create_place">create_place</string>
   <string name="event_create_list">create_list</string>
   <string name="event_search">search</string>
-  <string name="event_sort_change">sort_change</string>
   <string name="event_settings_click">settings_click</string>
   <string name="event_help_and_feedback">help_and_feedback</string>
   <string name="event_notification">notification</string>
-  <string name="event_preference_changed">preference_changed</string>
   <string name="event_widget_click">widget_click</string>
   <string name="param_widget_id">widget_id</string>
   <string name="event_multi_select">multi_select</string>
   <string name="param_count">count</string>
-  <string name="event_screen_welcome">screen_welcome</string>
-  <string name="event_screen_add_account">screen_add_account</string>
   <string name="event_settings_navigation">settings_navigation</string>
-  <string name="event_pro_card">pro_card</string>
-  <string name="param_key">key</string>
   <string name="param_type">type</string>
   <string name="param_screen">screen</string>
   <string name="param_error">error</string>
@@ -375,10 +327,8 @@
   <string name="p_picker_mode_time">picker_mode_time</string>
   <string name="p_markdown">markdown</string>
   <string name="p_completed_tasks_at_bottom">completed_tasks_at_bottom</string>
-  <string name="p_shown_beast_mode_hint">shown_beast_mode_hint</string>
   <string name="p_beast_mode_order">beast_mode_order_v6</string>
   <string name="p_last_sync">last_sync_time</string>
   <string name="p_multiline_title">multiline_title</string>
   <string name="p_dynamic_color">dynamic_color</string>
-  <string name="remote_config_tos_version">tos_version</string>
 </resources>

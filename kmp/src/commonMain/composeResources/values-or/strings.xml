@@ -2,7 +2,6 @@
 <resources>
     <string name="search">ସନ୍ଧାନ</string>
     <string name="filter_today">ଆଜି</string>
-    <string name="help_and_feedback">ସାହାଯ୍ୟ ଓ ମତାମତ</string>
     <string name="settings">ସେଟିଂ</string>
     <string name="drawer_filters">ଶୋଧକ</string>
     <string name="tomorrow">ଆସନ୍ତାକାଲି</string>
@@ -12,7 +11,6 @@
     <string name="today">ଆଜି</string>
     <string name="today_lowercase">ଆଜି</string>
     <string name="sort_mode">ସଜାନ୍ତୁ</string>
-    <string name="sort_priority">ପ୍ରାଥମିକତା</string>
     <string name="password_required">ପାସ୍‍ୱର୍ଡ଼ ଆଵଶ୍ୟକ</string>
     <string name="help">ସହାୟତା</string>
     <string name="filter_overdue">ଅତିଦେୟ</string>
@@ -21,8 +19,6 @@
     <string name="SSD_sort_alpha">ଆଖ୍ୟା ଅନୁଯାୟୀ</string>
     <string name="SSD_sort_modified">ଗତ ସଂଶୋଧନ ଅନୁଯାୟୀ</string>
     <string name="SSD_sort_my_order">ମୋର କ୍ରମ</string>
-    <string name="app_passwords">ଆପ୍ ପାସ୍‍ୱର୍ଡ଼</string>
-    <string name="app_password">ଆପ୍ ପାସ୍‍ୱର୍ଡ଼</string>
     <string name="url">URL</string>
     <string name="user">ଉପଭୋକ୍ତା</string>
     <string name="password">ପାସ୍‍ୱର୍ଡ଼</string>
@@ -39,9 +35,7 @@
     <string name="version_string">ସଂସ୍କରଣ %1$s</string>
     <string name="privacy_policy">ଗୋପନୀୟତା ନୀତି</string>
     <string name="support">ସମର୍ଥନ</string>
-    <string name="social">ସାମାଜିକ</string>
     <string name="open_source">ଖୋଲା ଉତ୍ସ</string>
-    <string name="restart_later">ପରେ</string>
     <string name="invite_declined">ନିମନ୍ତ୍ରଣ ପ୍ରତ୍ୟାଖ୍ୟାନ ହୋଇଛି</string>
     <string name="invite_awaiting_response">ନିମନ୍ତ୍ରଣ ପ୍ରତିକ୍ରିୟାର ଅପେକ୍ଷାରେ</string>
     <string name="invite_invalid">ନିମନ୍ତ୍ରଣ ଅମାନ୍ୟ ଅଟେ</string>
@@ -54,7 +48,6 @@
     <string name="next_thursday">ଆସନ୍ତା ଗୁରୁ</string>
     <string name="next_friday">ଆସନ୍ତା ଶୁକ୍ର</string>
     <string name="next_saturday">ଆସନ୍ତା ଶନି</string>
-    <string name="TEA_note_label">ଵର୍ଣ୍ଣନା</string>
     <string name="repeat_monthly_first_week">ପ୍ରଥମ</string>
     <string name="repeat_monthly_second_week">ଦ୍ୱିତୀୟ</string>
     <string name="repeat_monthly_third_week">ତୃତୀୟ</string>
@@ -153,7 +146,6 @@
     <string name="theme_dark">ଗାଢ଼</string>
     <string name="theme_day_night">ଦିନ/ରାତି</string>
     <string name="theme_system_default">ସିଷ୍ଟମ୍ ଡିଫଲ୍ଟ</string>
-    <string name="mcp_access_advanced">ଵିକଶିତ</string>
     <string name="new_filter">ନୂଆ ଶୋଧକ ସୃଷ୍ଟି କରିବା</string>
     <string name="ok">ଠିକ ଅଛି</string>
     <string name="cancel">ବାତିଲ କରନ୍ତୁ</string>

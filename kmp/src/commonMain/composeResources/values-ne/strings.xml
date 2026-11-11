@@ -8,8 +8,6 @@
     <string name="filter_my_tasks">मेरा कार्यहरू</string>
     <string name="filter_today">आज</string>
     <string name="save">सुरक्षित गर्नुहोस्</string>
-    <string name="sort_priority">प्राथमिकता</string>
-    <string name="sort_start_date">सुरु मिति</string>
     <string name="ok">ठिक छ</string>
     <string name="cancel">रद्द गर्नुहोस्</string>
     <string name="no_start_date">सुरु मिति छैन</string>
@@ -31,7 +29,6 @@
     <string name="next_thursday">अर्को बिहिबार</string>
     <string name="next_friday">अर्को शुक्रबार</string>
     <string name="next_saturday">अर्को शनिबार</string>
-    <string name="TEA_note_label">विवरण</string>
     <string name="start_date">सुरु मिति</string>
     <string name="repeat_option_does_not_repeat">दोहोरिँदैन</string>
     <string name="repeat_option_every_day">प्रत्येक दिन</string>

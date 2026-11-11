@@ -7,7 +7,6 @@
     <string name="filter_today">آج</string>
     <string name="filter_recently_modified">حالیہ ترمییم شدہ</string>
     <string name="default_list">ڈیفالٹ فہرست</string>
-    <string name="help_and_feedback">مدداور تجاویز</string>
     <string name="settings">سیٹنگز</string>
     <string name="drawer_filters">فلٹرز</string>
     <string name="drawer_tags">ٹیگز</string>
@@ -26,17 +25,11 @@
     <string name="new_task">نیا ٹاسک</string>
     <string name="save">محفوظ کریں</string>
     <string name="sort_mode">ترتیب</string>
-    <string name="sort_due_date">آخری تاریخ</string>
-    <string name="sort_priority">ترجیح</string>
-    <string name="sort_start_date">تاریخ آغاز</string>
-    <string name="group_none">کوئی نہیں</string>
     <string name="filter">فلٹر</string>
     <string name="sort_list">فہرست</string>
     <string name="password_required">پاسورڈ مطلوب ہے</string>
     <string name="caldav_home_set_not_found">ہوم سیٹ نہیں ملا</string>
     <string name="add_account">اکاؤنٹ داخل کریں</string>
-    <string name="google_tasks_selection_description">بنیادی سروس جو آپ کے گوگل اکاؤنٹ کے ساتھ سنکرونائز ہوتی</string>
-    <string name="name_your_price">اپنی قیمت بتائیں</string>
     <string name="ok">ٹھیک ہے</string>
     <string name="cancel">منسوخ کریں</string>
     <string name="caldav_selection_description">اوپن انٹرنیٹ میعارات پر مبنی سنکرونائزیشن</string>
@@ -57,8 +50,6 @@
     <string name="subtasks">ذیلی ٹاسکس</string>
     <string name="none">کوئی نہیں</string>
     <string name="display_name">ظاہری نام</string>
-    <string name="manage_subscription">سبسکرپشن تبدیل کریں</string>
-    <string name="button_unsubscribe">سبسکرپسن کینسل کریں</string>
     <string name="logout">لاگ آؤٹ</string>
     <string name="logout_warning">اس اکاؤنٹ کاتمام ڈیٹا آپ کی ڈٰوائس سے ختم ہو جائے گا</string>
     <string name="remove">ختم کریں</string>
@@ -82,10 +73,6 @@
     <string name="discard_changes">تبدیلیاں مسترد کریں؟</string>
     <string name="discard">مسترد کریں</string>
     <string name="delete">ڈیلیٹ کریں</string>
-    <plurals name="list_count">
-        <item quantity="one">%1$d فہرست</item>
-        <item quantity="other">%1$d فہسرتیں</item>
-    </plurals>
     <string name="error_adding_account">ایرر:%1$s</string>
     <string name="network_error">رابطہ نہیں ہو سکا</string>
     <string name="url_host_name_required">ہوسٹ کا نام مطلوب ہے</string>
@@ -99,24 +86,12 @@
     <string name="source_code">سورس کوڈ</string>
     <string name="third_party_licenses">تھرڈ پارٹی لائسنسز</string>
     <string name="privacy_policy">رازداری کی پالیسی</string>
-    <string name="send_anonymous_statistics">ٹاسکس ایپ کو بہتر بنائیں</string>
-    <string name="send_anonymous_statistics_summary">ٹاسکس ایپ کو بہتر بنانے کیلئے استعمال کے اعدادوشمار اور کریش رپورٹس گمنام طریقے سے بھیجیں۔ کوئی ذاتی ڈیٹا اکٹھا نہیں کیا جائے گا۔</string>
-    <string name="license_summary">ٹاسکس ایک لیبرے اوپن سورس سافٹ وئیر ہےجو کہ جی این یو لائسنس v3.0 کے تحت لائسنس شدہ ہے</string>
-    <string name="restart_required">اس تبدیلی کو اثردار بنانے کیلئے ایپ ری سٹارٹ کریں</string>
-    <string name="restart_now">ابھی ری سٹارٹ کریں</string>
-    <string name="restart_later">بعد میں</string>
-    <string name="blog_feed_none">کوئی نہیں</string>
-    <string name="cannot_access_account">اکاونٹ تک رسائی نہیں ہو سکتی</string>
     <string name="new_list">نئی فہرست بنائیں</string>
     <string name="color">رنگ</string>
     <string name="icon">آئیکن</string>
-    <string name="list_settings">لسٹ سیٹنگ</string>
-    <string name="reinitialize_account">دوبارہ شروع کریں</string>
-    <string name="gtasks_GLA_errorIOAuth">معذرت ، گوگل سرورز کے ساتھ رابطہ نہیں ہو سکا براہ کرم کچھ دیر بعد کوشش کریں.</string>
     <string name="new_tag">نیا ٹیگ بنائیں</string>
     <string name="enter_tag_name">ٹیگ کا نام درج کریں</string>
     <string name="tag_already_exists">ٹیگ پہلے ہی موجود ہے</string>
-    <string name="tag_settings">ٹیگ سیٹنگ</string>
     <string name="priority_high">ہائی</string>
     <string name="priority_medium">درمیانہ</string>
     <string name="priority_low">کم</string>
@@ -133,7 +108,6 @@
     <string name="next_friday">اگلے جمعے</string>
     <string name="next_saturday">اگلے ہفتے</string>
     <string name="no_time">کوئی وقت نہیں</string>
-    <string name="TEA_note_label">تفصیل</string>
     <string name="start_date">تاریخ آغاز</string>
     <string name="repeat_monthly_first_week">پہلا</string>
     <string name="repeat_monthly_second_week">دوسرا</string>
@@ -295,9 +269,6 @@
     <string name="theme_wallpaper">وال پیپر</string>
     <string name="theme_day_night">دن/رات</string>
     <string name="theme_system_default">سسٹم ڈیفالٹ</string>
-    <string name="mcp_tools_group_tags">ٹیگز</string>
-    <string name="mcp_tools_group_reminders">یاد دہانی</string>
-    <string name="mcp_copy">کاپی کریں</string>
     <string name="new_filter">نیا فلٹر بنائیں</string>
     <string name="more_options">مزید اختیارات</string>
 </resources>

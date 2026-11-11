@@ -1,9 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="SSD_sort_alpha">Ayon sa pamagat</string>
-    <string name="SSD_sort_due">Ayon sa ukol na petsa</string>
-    <string name="SSD_sort_importance">Ayon sa prayoridad</string>
-    <string name="SSD_sort_modified">Ayon sa huling pagbago</string>
     <string name="FLA_search_filter">Tumutugma \'%s\'</string>
     <string name="TEA_title_hint">Pangalan ng gawain</string>
     <string name="TEA_importance_label">Prayoridad</string>
