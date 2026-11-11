@@ -6,9 +6,6 @@ import androidx.annotation.ColorRes
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.google.common.collect.ImmutableListMultimap
-import com.google.common.collect.ListMultimap
-import com.google.common.collect.Multimaps
 import com.todoroo.astrid.core.SortHelper
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -285,9 +282,10 @@ class Upgrader @Inject constructor(
     }
 
     private suspend fun removeDuplicateTags() {
-        val tagsByUuid: ListMultimap<String, TagData> = Multimaps.index(tagDataDao.tagDataOrderedByName()) { it!!.remoteId }
-        for (uuid in tagsByUuid.keySet()) {
-            removeDuplicateTagData(tagsByUuid[uuid])
+        val tagsByUuid: Map<String, List<TagData>> = tagDataDao.tagDataOrderedByName()
+            .groupBy { it.remoteId!! }
+        for ((uuid, tags) in tagsByUuid) {
+            removeDuplicateTagData(tags)
             removeDuplicateTagMetadata(uuid)
         }
     }
@@ -410,9 +408,8 @@ class Upgrader @Inject constructor(
 
     private suspend fun removeDuplicateTagMetadata(uuid: String) {
         val metadatas = tagDao.getByTagUid(uuid)
-        val metadataByTask: ImmutableListMultimap<Long, Tag> = Multimaps.index(metadatas) { it!!.task }
-        for (key in metadataByTask.keySet()) {
-            val tags = metadataByTask[key]
+        val metadataByTask: Map<Long, List<Tag>> = metadatas.groupBy { it.task }
+        for (tags in metadataByTask.values) {
             if (tags.size > 1) {
                 tagDao.delete(tags.subList(1, tags.size))
             }

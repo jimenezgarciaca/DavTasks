@@ -2,8 +2,6 @@ package org.tasks.widget
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import com.google.common.base.Joiner
-import com.google.common.base.Splitter
 import com.todoroo.astrid.core.SortHelper
 import com.todoroo.astrid.service.Upgrader.Companion.getLegacyColor
 import org.tasks.R
@@ -110,7 +108,7 @@ class WidgetPreferences(
             val value = getString(R.string.p_widget_collapsed)
             val collapsed = HashSet<Long>()
             if (value?.isNotBlank() == true) {
-                for (entry in Splitter.on(",").split(value)) {
+                for (entry in value.split(",")) {
                     try {
                         collapsed.add(entry.toLong())
                     } catch (e: NumberFormatException) {
@@ -121,7 +119,7 @@ class WidgetPreferences(
             return collapsed
         }
         set(collapsed) {
-            setString(R.string.p_widget_collapsed, Joiner.on(",").join(collapsed))
+            setString(R.string.p_widget_collapsed, collapsed.joinToString(","))
         }
     private fun getSpacing(pref: Int): Int {
         val spacing = getIntegerFromString(pref)

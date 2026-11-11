@@ -10,9 +10,6 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
-import com.google.common.collect.Iterables
-import com.google.common.io.ByteStreams
-import com.google.common.io.Files
 import com.todoroo.astrid.utility.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -133,7 +130,7 @@ object FileHelper {
         return if (!isNullOrEmpty(extension))
             extension
         else
-            Files.getFileExtension(getFilename(context, uri)!!)
+            getFilename(context, uri)!!.substringAfterLast('.', "")
     }
 
     suspend fun fileExists(context: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
@@ -211,7 +208,7 @@ object FileHelper {
 
     suspend fun copyToUri(context: Context, destination: Uri, input: Uri): Uri {
         val filename = getFilename(context, input)
-        val basename = Files.getNameWithoutExtension(filename!!)
+        val basename = filename!!.substringBeforeLast('.')
         try {
             val output = newFile(
                 context,
@@ -278,7 +275,7 @@ object FileHelper {
         try {
             val inputStream = contentResolver.openInputStream(input!!)
             val outputStream = contentResolver.openOutputStream(output!!)
-            ByteStreams.copy(inputStream!!, outputStream!!)
+            inputStream!!.copyTo(outputStream!!)
             inputStream.close()
             outputStream.close()
         } catch (e: IOException) {
@@ -300,7 +297,7 @@ object FileHelper {
                 val documentFiles = listOf(*dir!!.listFiles())
                 while (true) {
                     val result = tempName + extension
-                    if (Iterables.any(documentFiles) { f: DocumentFile? -> f!!.name == result }) {
+                    if (documentFiles.any { f: DocumentFile? -> f!!.name == result }) {
                         tempName = "$baseName-$tries"
                         tries++
                     } else {

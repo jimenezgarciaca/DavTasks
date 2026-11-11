@@ -6,7 +6,6 @@ import android.app.backup.BackupManager
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
-import com.google.common.io.Files
 import com.todoroo.andlib.utility.DialogUtilities
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -94,7 +93,7 @@ class TasksJsonExporter @Inject constructor(
                     context!!,
                     preferences.backupDirectory!!,
                     MIME,
-                    Files.getNameWithoutExtension(filename),
+                    filename.substringBeforeLast('.'),
                     EXTENSION)
             FileHelper.copyStream(context!!, internalStorageBackup, externalStorageBackup)
             workManager.scheduleDriveUpload(externalStorageBackup, exportType == ExportType.EXPORT_TYPE_SERVICE)
