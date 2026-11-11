@@ -1,0 +1,73 @@
+# guava
+-dontwarn sun.misc.Unsafe
+-dontwarn java.lang.ClassValue
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+-dontwarn com.google.j2objc.annotations.**
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn com.google.errorprone.annotations.**
+
+# https://github.com/square/okhttp/blob/0b74bba08805c28f6aede626cf06f213ef6480f2/README.md
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+-keepnames class com.franmontiel.persistentcookiejar.persistence.SerializableCookie
+-keepclassmembers class com.franmontiel.persistentcookiejar.persistence.SerializableCookie {
+    private static final long serialVersionUID;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+}
+
+# https://gitlab.com/bitfireAT/davdroid/blob/9fc3921b3293e19bd7be7bfc3f24d799ed2446bc/app/proguard-rules.txt
+-dontwarn aQute.**
+-dontwarn groovy.**                       # Groovy-based ContentBuilder not used
+-dontwarn javax.cache.**                  # no JCache support in Android
+-dontwarn net.fortuna.ical4j.model.**
+-dontwarn org.codehaus.groovy.**
+-dontwarn org.apache.log4j.**             # ignore warnings from log4j dependency
+-dontwarn com.github.erosb.jsonsKema.**   # ical4android
+-dontwarn org.jparsec.**                  # ical4android
+-keep class * implements at.bitfire.dav4jvm.PropertyFactory { *; }
+
+-keep class * implements net.fortuna.ical4j.model.ComponentFactory { <init>(); }
+-keep class * implements net.fortuna.ical4j.model.ParameterFactory { <init>(); }
+-keep class * implements net.fortuna.ical4j.model.PropertyFactory { <init>(); }
+-keep class * implements net.fortuna.ical4j.transform.rfc5545.Rfc5545ComponentRule { <init>(); }
+-keep class * implements net.fortuna.ical4j.transform.rfc5545.Rfc5545PropertyRule { <init>(); }
+-keep class * implements net.fortuna.ical4j.validate.CalendarValidatorFactory { <init>(); }
+-keepnames class net.fortuna.ical4j.transform.rfc5545.TzHelper
+-keep class at.bitfire.ical4android.AndroidCompatTimeZoneRegistry$Factory { *; }
+
+# https://github.com/google/google-api-java-client-samples/blob/34c3b43cb15f4ee1b636a0e01521cc81a2451dcd/tasks-android-sample/proguard-google-api-client.txt
+-keepclassmembers class * {
+  @com.google.api.client.util.Key <fields>;
+}
+-keep,allowobfuscation class * extends com.google.api.client.util.GenericData { <init>(); }
+-dontwarn com.google.api.client.extensions.android.**
+-dontwarn com.google.api.client.googleapis.extensions.android.**
+-dontwarn com.google.android.gms.**
+-dontnote java.nio.file.Files, java.nio.file.Path
+-dontnote **.ILicensingService
+-dontnote sun.misc.Unsafe
+-dontwarn sun.misc.Unsafe
+
+# errors from upgrading to AGP 8
+-dontwarn java.beans.Transient
+-dontwarn org.joda.convert.FromString
+-dontwarn org.joda.convert.ToString
+-dontwarn org.json.JSONString
+
+
+# microsoft authentication
+
+-dontwarn com.microsoft.device.display.DisplayMask
+-dontwarn com.google.android.libraries.identity.**
+-dontwarn edu.umd.cs.findbugs.annotations.**
+-dontwarn com.google.crypto.tink.subtle.**
+-dontwarn net.jcip.annotations.**
+
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite { <fields>; }

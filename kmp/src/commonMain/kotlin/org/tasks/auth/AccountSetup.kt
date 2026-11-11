@@ -1,0 +1,70 @@
+package org.tasks.auth
+
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import org.tasks.caldav.CaldavClientFactory
+import org.tasks.caldav.PurchaseTokenInUseException
+import org.tasks.data.UUIDHelper
+import org.tasks.data.dao.CaldavDao
+import org.tasks.data.entity.CaldavAccount
+import org.tasks.security.Encryption
+
+fun interface PurchaseClaim {
+    suspend fun claimHeldPurchase(username: String, token: String): HeldPurchaseClaim
+}
+
+sealed interface HeldPurchaseClaim {
+    data object Claimed : HeldPurchaseClaim
+
+    data object NotClaimed : HeldPurchaseClaim
+
+    data class CoveringAnotherAccount(val existingAccount: String) : HeldPurchaseClaim
+}
+
+private val accountSetupLock = Mutex()
+
+suspend fun setupTasksAccount(
+    oauthResult: OAuthResult,
+    issuer: String,
+    caldavUrl: String,
+    caldavDao: CaldavDao,
+    encryption: Encryption,
+    provider: CaldavClientFactory,
+    purchaseClaim: PurchaseClaim? = null,
+): CaldavAccount = accountSetupLock.withLock {
+    val idToken = oauthResult.idToken
+        ?: throw IllegalStateException("id_token required for tasks.org account setup")
+    val sub = idToken.sub
+        ?: throw IllegalStateException("id_token missing sub claim")
+    val username = "${issuer}_$sub"
+    val tokenString = oauthResult.accessToken
+    val password = encryption.encrypt(tokenString)
+    caldavDao.getAccount(CaldavAccount.TYPE_TASKS, username)
+        ?.let {
+            it.copy(error = null, password = password)
+                .also { updated -> caldavDao.update(updated) }
+        }
+        ?: run {
+            when (val claim = purchaseClaim?.claimHeldPurchase(username, tokenString)) {
+                is HeldPurchaseClaim.CoveringAnotherAccount ->
+                    throw PurchaseTokenInUseException(claim.existingAccount)
+                HeldPurchaseClaim.Claimed,
+                HeldPurchaseClaim.NotClaimed,
+                null -> Unit
+            }
+            val homeSet = provider
+                .forUrl(caldavUrl, username, tokenString)
+                .use { it.homeSet() }
+            CaldavAccount(
+                accountType = CaldavAccount.TYPE_TASKS,
+                uuid = UUIDHelper.newUUID(),
+                username = username,
+                password = password,
+                url = homeSet,
+                name = idToken.email ?: idToken.login,
+                serverType = CaldavAccount.SERVER_TASKS,
+            ).let {
+                it.copy(id = caldavDao.insert(it))
+            }
+        }
+}

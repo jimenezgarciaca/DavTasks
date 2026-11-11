@@ -1,0 +1,176 @@
+package org.tasks.injection
+
+import android.content.Context
+import com.google.android.gms.wearable.Wearable
+import com.google.android.material.color.DynamicColors
+import com.todoroo.andlib.utility.AndroidUtilities
+import com.google.android.horologist.annotations.ExperimentalHorologistApi
+import com.google.android.horologist.data.WearDataLayerRegistry
+import com.google.android.horologist.datalayer.phone.PhoneDataLayerAppHelper
+import dagger.Lazy
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.json.Json
+import org.tasks.AppStore
+import org.tasks.PlatformConfiguration
+import org.tasks.auth.TasksServerEnvironment
+import org.tasks.billing.DesktopLinkService
+import org.tasks.billing.DesktopLinkServiceImpl
+import org.tasks.billing.GooglePlayQrScanner
+import org.tasks.billing.QrScanner
+import org.tasks.billing.SubscriptionProvider
+import org.tasks.extensions.wearDataLayerRegistry
+import org.tasks.http.HttpClientFactory
+import org.tasks.location.Geocoder
+import org.tasks.location.GeocoderMapbox
+import org.tasks.location.GoogleMapFragment
+import org.tasks.location.LocationService
+import org.tasks.location.LocationServiceAndroid
+import org.tasks.location.LocationServiceGooglePlay
+import org.tasks.location.MapFragment
+import org.tasks.location.OsmMapFragment
+import org.tasks.play.PlayServices
+import org.tasks.wear.WearRefresher
+import org.tasks.wear.WearRefresherImpl
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+class FlavorModule {
+    @Provides
+    @Singleton
+    fun providePlayBilling(
+        @ApplicationContext context: Context,
+        purchases: org.tasks.billing.PlayPurchases,
+        firebase: org.tasks.analytics.Firebase,
+        @ApplicationScope scope: CoroutineScope,
+        workManager: org.tasks.jobs.WorkManager,
+    ): org.tasks.billing.PlayBilling = org.tasks.billing.PlayBillingClient(
+        context = context,
+        purchases = purchases,
+        reporting = firebase,
+        scope = scope,
+        onPurchasesUpdated = { workManager.updatePurchases() },
+    )
+
+    @Provides
+    @Singleton
+    fun providePlayPurchaseVerifier(): org.tasks.billing.PlayPurchaseVerifier =
+        org.tasks.billing.PlaySignatureVerifier()
+
+    @Provides
+    @Singleton
+    fun providePlayPurchaseStore(
+        store: org.tasks.billing.PreferencesPlayPurchaseStore,
+    ): org.tasks.billing.PlayPurchaseStore = store
+
+    @Provides
+    fun getPlatformConfiguration() = PlatformConfiguration(
+        supportsTasksOrg = true,
+        supportsCaldav = true,
+        supportsGoogleTasks = true,
+        supportsMicrosoft = true,
+        supportsOpenTasks = true,
+        supportsEteSync = true,
+        supportsBackupImport = true,
+        supportsGeofences = true,
+        supportsCalendarEvents = true,
+        billingProvider = org.tasks.billing.BillingProvider.GOOGLE_PLAY,
+        appStore = AppStore.GOOGLE_PLAY,
+        isAndroid = true,
+        supportsWidgets = true,
+        supportsDesktopLinking = true,
+        supportsLogExport = true,
+        supportsNotificationTroubleshooting = true,
+        supportsSystemNotificationSettings = true,
+        supportsOngoingNotifications = AndroidUtilities.preUpsideDownCake(),
+        supportsBundledNotifications = true,
+        supportsVoiceReminders = true,
+        supportsCompletionSound = true,
+        supportsSwipeToSnooze = true,
+        supportsRingMode = true,
+        supportsDynamicColor = DynamicColors.isDynamicColorAvailable(),
+        supportsLauncherIcon = true,
+        supportsMarkdownToggle = true,
+        supportsWallpaperTheme = true,
+        supportsAutoNightTheme = true,
+        supportsLanguageSelection = true,
+    )
+
+    @Provides
+    fun getLocationService(
+        google: Lazy<LocationServiceGooglePlay>,
+        android: Lazy<LocationServiceAndroid>,
+        playServices: PlayServices,
+    ): LocationService = if (playServices.isAvailable()) google.get() else android.get()
+
+    @Provides
+    fun getMapFragment(
+        osm: Lazy<OsmMapFragment>,
+        google: Lazy<GoogleMapFragment>,
+        playServices: PlayServices,
+    ): MapFragment = if (playServices.isAvailable()) google.get() else osm.get()
+
+    @Provides
+    fun getGeocoder(mapbox: GeocoderMapbox): Geocoder = mapbox
+
+    @OptIn(ExperimentalHorologistApi::class)
+    @Provides
+    fun wearDataLayerRegistry(
+        @ApplicationContext applicationContext: Context,
+        @ApplicationScope coroutineScope: CoroutineScope,
+    ) = applicationContext.wearDataLayerRegistry(coroutineScope)
+
+    @OptIn(ExperimentalHorologistApi::class)
+    @Provides
+    fun phoneDataLayerAppHelper(
+        @ApplicationContext applicationContext: Context,
+        wearDataLayerRegistry: WearDataLayerRegistry,
+    ) = PhoneDataLayerAppHelper(
+        context = applicationContext,
+        registry = wearDataLayerRegistry,
+    )
+
+    @OptIn(ExperimentalHorologistApi::class)
+    @Provides
+    @Singleton
+    fun getWearRefresher(
+        @ApplicationContext applicationContext: Context,
+        phoneDataLayerAppHelper: PhoneDataLayerAppHelper,
+        @ApplicationScope scope: CoroutineScope,
+    ): WearRefresher = WearRefresherImpl(
+        phoneDataLayerAppHelper,
+        Wearable.getMessageClient(applicationContext),
+        scope,
+    )
+
+    @Provides
+    fun getQrScanner(@ApplicationContext context: Context): QrScanner =
+        GooglePlayQrScanner(context)
+
+    @Provides
+    fun getDesktopLinkService(
+        httpClientFactory: HttpClientFactory,
+        serverEnvironment: TasksServerEnvironment,
+        subscriptionProvider: SubscriptionProvider,
+        json: Json,
+    ): DesktopLinkService = DesktopLinkServiceImpl(
+        httpClientFactory = httpClientFactory,
+        serverEnvironment = serverEnvironment,
+        subscriptionProvider = subscriptionProvider,
+        json = json,
+    )
+
+    @Provides
+    @Singleton
+    fun provideStoreSubscriptionProvider(
+        playPurchases: org.tasks.billing.PlayPurchases,
+        billing: org.tasks.billing.PlayBilling,
+    ): org.tasks.billing.StoreSubscriptionProvider =
+        org.tasks.billing.PlaySubscriptionProvider(playPurchases, billing)
+
+}
