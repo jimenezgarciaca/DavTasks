@@ -19,3 +19,9 @@ Thumbs.db
 .DS_Store
 
 xcuserdata/
+
+# Claves de firma: nunca en el repositorio
+*.jks
+*.keystore
+*.p12
+*.jks.b64

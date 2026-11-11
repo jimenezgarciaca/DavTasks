@@ -18,26 +18,46 @@ jobs:
   apk:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      # Con los secretos de firma configurados se compila la versión release firmada
+      # con tu clave (firma estable entre compilaciones). Sin ellos, la de depuración.
+      HAS_SIGNING_KEY: ${{ secrets.DAVTASKS_KEYSTORE != '' }}
     steps:
       - uses: actions/checkout@v7
 
       - uses: ./.github/actions/setup-gradle
 
+      - name: Compilar APK release firmado
+        if: ${{ env.HAS_SIGNING_KEY == 'true' }}
+        env:
+          DAVTASKS_KEYSTORE: ${{ secrets.DAVTASKS_KEYSTORE }}
+          ORG_GRADLE_PROJECT_tasksStoreFile: ${{ runner.temp }}/davtasks.jks
+          ORG_GRADLE_PROJECT_tasksStorePassword: ${{ secrets.DAVTASKS_KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_tasksKeyAlias: ${{ secrets.DAVTASKS_KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_tasksKeyPassword: ${{ secrets.DAVTASKS_KEY_PASSWORD }}
+        run: |
+          echo "$DAVTASKS_KEYSTORE" | base64 -d > "$RUNNER_TEMP/davtasks.jks"
+          ./gradlew --stacktrace :app:assembleGenericRelease
+          rm -f "$RUNNER_TEMP/davtasks.jks"
+
       - name: Compilar APK de depuración
+        if: ${{ env.HAS_SIGNING_KEY != 'true' }}
         run: ./gradlew --stacktrace :app:assembleGenericDebug
 
       - name: Verificar APK
         run: |
           apk=$(find app/build/outputs/apk -name '*.apk' | head -1)
-          aapt2="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt2"
-          "$aapt2" dump badging "$apk" | grep -E "^package:|^application-label:"
-          "$aapt2" dump xmltree --file AndroidManifest.xml "$apk" | grep -E "networkSecurityConfig" || true
-          "$aapt2" dump badging "$apk" | grep -q "name='io.github.jimenezgarciaca.davtasks'"
+          tools="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)"
+          "${tools}aapt2" dump badging "$apk" | grep -E "^package:|^application-label:"
+          "${tools}aapt2" dump xmltree --file AndroidManifest.xml "$apk" | grep -E "networkSecurityConfig" || true
+          "${tools}aapt2" dump badging "$apk" | grep -q "name='io.github.jimenezgarciaca.davtasks'"
+          # Huella del certificado: debe ser la misma en todas las compilaciones firmadas.
+          "${tools}apksigner" verify --print-certs "$apk" | grep -E "SHA-256"
 
       - name: Publicar APK
         uses: actions/upload-artifact@v7
         with:
-          name: davtasks-debug-apk
+          name: ${{ env.HAS_SIGNING_KEY == 'true' && 'davtasks-release-apk' || 'davtasks-debug-apk' }}
           path: app/build/outputs/apk/**/*.apk
           if-no-files-found: error
 
