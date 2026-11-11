@@ -65,7 +65,8 @@ class TasksServerEnvironment(
         const val ENV_DEV = "local"
 
         private const val PRODUCTION_CALDAV_URL = "https://caldav.tasks.org"
-        private const val PRODUCTION_NOMINATIM_URL = "https://nominatim.tasks.org"
+        // DavTasks usa el servicio público de OpenStreetMap en lugar del de Tasks.org.
+        private const val PRODUCTION_NOMINATIM_URL = "https://nominatim.openstreetmap.org"
         private const val PRODUCTION_PLACES_URL = "https://places.tasks.org"
         private const val STAGING_URL = "https://staging.tasks.org"
     }
