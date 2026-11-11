@@ -1,12 +1,14 @@
 package org.tasks.caldav
 
 import at.bitfire.dav4jvm.Property
+import at.bitfire.dav4jvm.QuotedStringUtils
 import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.DavCalendar.Companion.MIME_ICALENDAR
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
 import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
+import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
 import at.bitfire.dav4jvm.ktor.exception.UnauthorizedException
 import at.bitfire.dav4jvm.property.caldav.CalendarColor
@@ -23,6 +25,8 @@ import org.tasks.service.TaskDeleter
 import org.tasks.data.dao.DirtyDao
 import io.ktor.client.HttpClient
 import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.headersOf
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
@@ -445,8 +449,15 @@ class CaldavSynchronizer(
                     httpClient = httpClient,
                     location = httpUrl.child(objectId),
                 )
-                remote.delete {}
+                remote.delete(additionalHeaders = ifMatch(caldavTask.etag)) {}
             }
+        } catch (e: PreconditionFailedException) {
+            // El servidor tiene una versión más reciente que la última que sincronizamos:
+            // no borramos a ciegas. Se vuelve a descargar en la siguiente sincronización
+            // y el borrado se reintenta con la ETag actualizada.
+            Logger.w(TAG) { "412 al borrar ${caldavTask.obj}; se reintentará tras volver a descargar" }
+            forceRefetch(calendar)
+            return false
         } catch (e: HttpException) {
             if (e.statusCode != 404) {
                 Logger.e(e) { e.message.orEmpty() }
@@ -477,6 +488,31 @@ class CaldavSynchronizer(
             }
             return
         }
+        try {
+            pushTaskConditionally(account, calendar, task, caldavTask, caldavTaskId, dirtyVersion, httpClient, httpUrl)
+        } catch (e: PreconditionFailedException) {
+            // Otro cliente modificó la tarea después de nuestra última descarga. No se
+            // sobrescribe: la tarea sigue marcada como pendiente, se fuerza la descarga del
+            // calendario en la siguiente sincronización, se fusionan los cambios con
+            // iCalendarMerge y se vuelve a subir con la ETag nueva.
+            Logger.w(TAG) { "412 al subir ${caldavTask.obj}; se fusionará en la siguiente sincronización" }
+            forceRefetch(calendar)
+            return
+        }
+        Logger.d(TAG) { "SENT $caldavTask" }
+    }
+
+    private suspend fun pushTaskConditionally(
+        account: CaldavAccount,
+        calendar: CaldavCalendar,
+        task: Task,
+        caldavTask: CaldavTask,
+        caldavTaskId: Long,
+        dirtyVersion: Long?,
+        httpClient: HttpClient,
+        httpUrl: Url
+    ) {
+        // Si el bloque lanza una excepción, withDirtyVersion no marca la tarea como subida.
         dirtyDao.withDirtyVersion(caldavTaskId, dirtyVersion) {
             val data = iCal.toVtodo(account, calendar, caldavTask, task)
             val requestBody = ByteArrayContent(data, MIME_ICALENDAR)
@@ -493,7 +529,11 @@ class CaldavSynchronizer(
                     httpClient = httpClient,
                     location = httpUrl.child(objPath),
                 )
-                remote.put(requestBody) {
+                // If-Match con la última ETag conocida; If-None-Match: * si el objeto es nuevo,
+                // para no pisar un recurso que ya exista en el servidor.
+                val conditions = ifMatch(caldavTask.etag)
+                    ?: headersOf(HttpHeaders.IfNoneMatch, "*")
+                remote.put(requestBody, additionalHeaders = conditions) {
                     fromHttpResponse(it)?.eTag?.takeIf(String::isNotBlank)?.let { etag ->
                         caldavTask.etag = etag
                     }
@@ -505,7 +545,11 @@ class CaldavSynchronizer(
             }
             caldavDao.update(caldavTask)
         }
-        Logger.d(TAG) { "SENT $caldavTask" }
+    }
+
+    private suspend fun forceRefetch(calendar: CaldavCalendar) {
+        calendar.ctag = null
+        caldavDao.update(calendar)
     }
 
     suspend fun Response.principals(
@@ -571,6 +615,15 @@ class CaldavSynchronizer(
                 ?: "HTTP $statusCode"
 
         private const val UNKNOWN_STATUS = "Unknown Status Code"
+
+        /**
+         * Cabecera If-Match en forma fuerte (RFC 9110 §8.8.3): sin el prefijo W/ y entre
+         * comillas. dav4jvm guarda la ETag ya sin W/ ni comillas. Devuelve null si no hay ETag.
+         */
+        internal fun ifMatch(etag: String?): Headers? =
+            etag?.takeIf { it.isNotBlank() }?.let {
+                headersOf(HttpHeaders.IfMatch, QuotedStringUtils.asQuotedString(it))
+            }
 
         val Response.ctag: String?
             get() = this[SyncToken::class]?.token ?: this[GetCTag::class]?.cTag
