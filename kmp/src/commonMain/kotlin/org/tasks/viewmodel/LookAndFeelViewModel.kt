@@ -66,7 +66,6 @@ open class LookAndFeelViewModel(
     open val launcherColor: Int get() = settings.themeColor
     open val dynamicColorAvailable: Boolean get() = platformConfiguration.supportsDynamicColor
     open val dynamicColorEnabled: Boolean get() = settings.dynamicColor
-    open val dynamicColorProOnly: Boolean get() = false
 
     open val localeName: String
         get() = settings.languageTag?.let { languageDisplayName(it) } ?: languageDisplayName(currentLocaleTag()).orEmpty()

@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tasks.analytics.AnalyticsEvents
 import org.tasks.analytics.Reporting
-import org.tasks.billing.PurchaseState
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.metadata.TagMetadataEditor
 import org.tasks.compose.settings.PickerColor
@@ -31,7 +30,6 @@ open class TagSettingsViewModel(
     private val tagDataDao: TagDataDao,
     private val refreshBroadcaster: RefreshBroadcaster,
     private val reporting: Reporting,
-    private val purchaseState: PurchaseState,
     private val tagMetadataSync: TagMetadataEditor,
     private val syncAdapters: SyncAdapters,
     isDark: Boolean,
@@ -49,7 +47,6 @@ open class TagSettingsViewModel(
         val showColorPicker: Boolean = false,
         val showIconPicker: Boolean = false,
         val pickerColors: List<PickerColor> = emptyList(),
-        val hasPro: Boolean = false,
         val hasColorWheel: Boolean = false,
         val showDiscardDialog: Boolean = false,
     ) {
@@ -73,7 +70,6 @@ open class TagSettingsViewModel(
             color = tagData.color ?: 0,
             icon = tagData.icon ?: TasksIcons.LABEL,
             pickerColors = buildPickerColors(isDark),
-            hasPro = purchaseState.purchasedThemes(),
             hasColorWheel = hasColorWheel,
         )
     )
@@ -81,9 +77,7 @@ open class TagSettingsViewModel(
 
     fun setName(value: String) = _viewState.update { it.copy(name = value, nameError = null) }
 
-    fun openColorPicker() = _viewState.update {
-        it.copy(showColorPicker = true, hasPro = purchaseState.purchasedThemes())
-    }
+    fun openColorPicker() = _viewState.update { it.copy(showColorPicker = true) }
 
     fun closeColorPicker() = _viewState.update { it.copy(showColorPicker = false) }
 
@@ -91,9 +85,7 @@ open class TagSettingsViewModel(
 
     fun setColor(color: Int) = _viewState.update { it.copy(color = color) }
 
-    fun openIconPicker() = _viewState.update {
-        it.copy(showIconPicker = true, hasPro = purchaseState.purchasedThemes())
-    }
+    fun openIconPicker() = _viewState.update { it.copy(showIconPicker = true) }
 
     fun closeIconPicker() = _viewState.update { it.copy(showIconPicker = false) }
 

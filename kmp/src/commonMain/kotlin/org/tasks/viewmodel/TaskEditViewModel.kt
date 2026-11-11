@@ -90,7 +90,6 @@ import org.tasks.repeats.anchoredToDueDate
 import org.tasks.resources.getString
 import org.tasks.service.TaskCompleter
 import org.tasks.service.TaskDeleter
-import org.tasks.time.DateTime
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import org.tasks.time.noon
 import org.tasks.time.startOfDay

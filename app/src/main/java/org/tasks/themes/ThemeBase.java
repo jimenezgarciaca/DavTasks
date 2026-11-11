@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import org.tasks.R;
-import org.tasks.billing.Inventory;
 import org.tasks.preferences.Preferences;
 
 public class ThemeBase implements Parcelable {
@@ -53,15 +52,11 @@ public class ThemeBase implements Parcelable {
       };
   private final int index;
 
-  public static ThemeBase getThemeBase(
-      Preferences preferences, Inventory inventory, @Nullable Intent intent) {
+  public static ThemeBase getThemeBase(Preferences preferences, @Nullable Intent intent) {
     if (intent != null && intent.hasExtra(EXTRA_THEME_OVERRIDE)) {
       return new ThemeBase(intent.getIntExtra(EXTRA_THEME_OVERRIDE, ThemeBase.DEFAULT_BASE_THEME));
     }
-    ThemeBase themeBase = new ThemeBase(preferences.getThemeBase());
-    return themeBase.isFree() || inventory.purchasedThemes()
-        ? themeBase
-        : new ThemeBase(ThemeBase.DEFAULT_BASE_THEME);
+    return new ThemeBase(preferences.getThemeBase());
   }
 
   public ThemeBase(int index) {
@@ -70,10 +65,6 @@ public class ThemeBase implements Parcelable {
 
   private ThemeBase(Parcel source) {
     index = source.readInt();
-  }
-
-  public boolean isFree() {
-    return BaseTheme.INSTANCE.isFree(index);
   }
 
   public int getIndex() {

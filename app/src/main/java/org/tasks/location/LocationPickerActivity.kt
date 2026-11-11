@@ -39,7 +39,6 @@ import com.todoroo.astrid.activity.MainActivity
 import com.todoroo.astrid.activity.TaskListFragment
 import org.tasks.activities.PlaceSettingsActivity
 import org.tasks.analytics.Firebase
-import org.tasks.billing.Inventory
 import org.tasks.caldav.toLikeString
 import org.tasks.data.PlaceUsage
 import org.tasks.data.dao.LocationDao
@@ -83,7 +82,6 @@ class LocationPickerActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListe
     @Inject lateinit var dialogBuilder: DialogBuilder
     @Inject lateinit var map: MapFragment
     @Inject lateinit var geocoder: Geocoder
-    @Inject lateinit var inventory: Inventory
     @Inject lateinit var colorProvider: ColorProvider
     @Inject lateinit var locationService: LocationService
     @Inject lateinit var firebase: Firebase
@@ -189,7 +187,7 @@ class LocationPickerActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListe
         }
         findViewById<View>(R.id.google_marker).visibility = View.VISIBLE
         searchAdapter = LocationSearchAdapter(viewModel.getAttributionRes(dark), this)
-        recentsAdapter = LocationPickerAdapter(this, inventory, colorProvider, this)
+        recentsAdapter = LocationPickerAdapter(this, colorProvider, this)
         recentsAdapter!!.setHasStableIds(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = if (search.isActionViewExpanded) searchAdapter else recentsAdapter

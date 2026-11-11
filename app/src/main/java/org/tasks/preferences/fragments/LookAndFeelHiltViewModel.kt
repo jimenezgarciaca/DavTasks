@@ -2,7 +2,6 @@ package org.tasks.preferences.fragments
 
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -13,13 +12,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import org.tasks.PlatformConfiguration
 import org.tasks.R
-import org.tasks.billing.Inventory
 import org.tasks.broadcast.RefreshBroadcaster
-import org.tasks.dialogs.ThemePickerDialog
 import org.tasks.filters.FilterPreferenceCodec
 import org.tasks.injection.ApplicationScope
 import org.tasks.preferences.Preferences
-import org.tasks.themes.BaseTheme
 import org.tasks.themes.ThemeColor
 import org.tasks.themes.ThemeColor.getLauncherColor
 import org.tasks.viewmodel.LookAndFeelViewModel
@@ -30,7 +26,6 @@ import javax.inject.Inject
 class LookAndFeelHiltViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: Preferences,
-    private val inventory: Inventory,
     private val locale: Locale,
     platformConfiguration: PlatformConfiguration,
     refreshBroadcaster: RefreshBroadcaster,
@@ -58,9 +53,7 @@ class LookAndFeelHiltViewModel @Inject constructor(
     override val dynamicColorAvailable: Boolean get() = DynamicColors.isDynamicColorAvailable()
 
     override val dynamicColorEnabled: Boolean
-        get() = dynamicColorAvailable && inventory.hasPro && settings.dynamicColor
-
-    override val dynamicColorProOnly: Boolean get() = dynamicColorAvailable && !inventory.hasPro
+        get() = dynamicColorAvailable && settings.dynamicColor
 
     override val localeName: String get() = locale.getDisplayName(locale)
 
@@ -81,32 +74,13 @@ class LookAndFeelHiltViewModel @Inject constructor(
         refreshState()
     }
 
-    fun updateDynamicColor(enabled: Boolean) {
-        if (!inventory.hasPro) {
-            return
-        }
-        setDynamicColor(enabled)
-    }
+    fun updateDynamicColor(enabled: Boolean) = setDynamicColor(enabled)
 
     fun setBaseTheme(index: Int): Boolean {
         setTheme(index)
         return currentThemeBaseIndex != index
     }
 
-    fun handleThemePickerResult(selectedIndex: Int): ThemePickerResult =
-        if (inventory.purchasedThemes() || BaseTheme.isFree(selectedIndex)) {
-            ThemePickerResult.ApplyTheme(selectedIndex)
-        } else {
-            ThemePickerResult.PurchaseRequired
-        }
-
-    fun handlePurchaseResult(data: Intent?): Int =
-        if (inventory.hasPro) {
-            data?.getIntExtra(ThemePickerDialog.EXTRA_SELECTED, BaseTheme.DEFAULT)
-                ?: currentThemeBaseIndex
-        } else {
-            preferences.themeBase
-        }
 
     fun handleColorPickerResult(selectedColor: Int): Boolean {
         if (preferences.defaultThemeColor == selectedColor) {
@@ -139,11 +113,6 @@ class LookAndFeelHiltViewModel @Inject constructor(
                 PackageManager.DONT_KILL_APP
             )
         }
-    }
-
-    sealed interface ThemePickerResult {
-        data class ApplyTheme(val index: Int) : ThemePickerResult
-        data object PurchaseRequired : ThemePickerResult
     }
 
     companion object {

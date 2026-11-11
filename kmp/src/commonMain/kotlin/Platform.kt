@@ -13,8 +13,6 @@ expect fun formatNumber(number: Int, languageTag: String? = null): String
 
 expect val PROD_ID: String
 
-expect val DEV_URL: String
-
 expect fun osDescription(): String
 
 expect fun languageDisplayName(languageTag: String): String?

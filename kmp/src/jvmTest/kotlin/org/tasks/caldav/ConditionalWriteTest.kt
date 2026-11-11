@@ -82,7 +82,7 @@ class ConditionalWriteTest : DatabaseTest() {
         server.enqueue(multiStatus(calendars("$HOME_SET$LIST/")))
         server.enqueue(MockResponse().setResponseCode(204).setHeader("ETag", "\"etag-2\""))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         server.takeRequest() // PROPFIND
         val put = server.takeRequest()
@@ -99,7 +99,7 @@ class ConditionalWriteTest : DatabaseTest() {
         server.enqueue(multiStatus(calendars("$HOME_SET$LIST/")))
         server.enqueue(MockResponse().setResponseCode(201).setHeader("ETag", "\"etag-1\""))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         server.takeRequest() // PROPFIND
         val put = server.takeRequest()
@@ -114,7 +114,7 @@ class ConditionalWriteTest : DatabaseTest() {
         server.enqueue(multiStatus(calendars("$HOME_SET$LIST/")))
         server.enqueue(MockResponse().setResponseCode(412))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertNull(caldavDao.getCalendarByUuid(CALENDAR)!!.ctag)

@@ -32,7 +32,7 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
     fun createNewAccounts() = runBlocking {
         openTaskDao.insertList()
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val accounts = caldavDao.getAccounts()
         assertEquals(1, accounts.size)
@@ -52,7 +52,7 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
             )
         )
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertTrue(caldavDao.getAccounts().isEmpty())
     }
@@ -61,7 +61,7 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
     fun createNewLists() = runBlocking {
         openTaskDao.insertList()
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val lists = caldavDao.getCalendarsByAccount("bitfire.at.davdroid:test_account")
         assertEquals(1, lists.size)
@@ -80,7 +80,7 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
             )
         )
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals(listOf(list), caldavDao.getCalendars())
     }
@@ -95,7 +95,7 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
                 with(TASK, taskId)
         ))
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertNotNull(openTaskDao.getTask(listId, "1234"))
     }
@@ -109,7 +109,7 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
                 with(TASK, taskId)
         ))
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val task = openTaskDao.getTasks().first()
         assertEquals("FREQ=WEEKLY", task.rRule?.value)
@@ -118,12 +118,12 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
     @Test
     fun pushLocalDeletionAfterFetch() = runBlocking {
         val (listId, list) = withVtodo(VTODO)
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
         val taskId = caldavDao.getTaskByRemoteId(list.uuid!!, UID)!!.task
 
         taskDeleter.markDeleted(listOf(taskId))
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertNull(openTaskDao.getTask(listId, UID))
     }
@@ -133,7 +133,7 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
         val (listId, list) = withVtodo(VTODO)
         openTaskDao.insertTaskWithoutUid(listId, "no uid")
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertNotNull(caldavDao.getTaskByRemoteId(list.uuid!!, UID))
         assertFalse(caldavDao.getAccounts().single().hasError)
@@ -143,12 +143,12 @@ class OpenTasksSynchronizerTest : OpenTasksTest() {
     fun moveBetweenListsRemovesFromSourceProvider() = runBlocking {
         val (sourceListId, source) = withVtodo(VTODO)
         val (_, destination) = openTaskDao.insertList()
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
         val taskId = caldavDao.getTaskByRemoteId(source.uuid!!, UID)!!.task
 
         taskMover.move(taskId, destination.uuid!!, 0L)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertNull(openTaskDao.getTask(sourceListId, UID))
         assertEquals(destination.uuid, caldavDao.getTask(taskId)?.calendar)

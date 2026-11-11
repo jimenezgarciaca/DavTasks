@@ -10,27 +10,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.data.dao.CaldavDao
-import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.Task
-import org.tasks.data.getOrCreateLocalAccount
 import org.tasks.filters.Filter
 import org.tasks.filters.SearchFilter
 import org.tasks.preferences.DefaultFilterProvider
-import org.tasks.preferences.TasksPreferences
 import org.tasks.viewmodel.OnboardingRouting
 import org.tasks.viewmodel.OnboardingState
 import org.tasks.viewmodel.DrawerViewModel
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,8 +30,6 @@ class MainActivityViewModel @Inject constructor(
     private val defaultFilterProvider: DefaultFilterProvider,
     @ApplicationContext private val applicationContext: Context,
     private val caldavDao: CaldavDao,
-    private val firebase: Firebase,
-    private val tasksPreferences: TasksPreferences,
     val drawerViewModel: DrawerViewModel,
 ) : ViewModel() {
 
@@ -64,46 +53,24 @@ class MainActivityViewModel @Inject constructor(
     companion object {
         private const val EXTRA_TASK = "extra_task"
         private const val KEY_WAS_IN_ONBOARDING = "was_in_onboarding"
-        private const val KEY_WAS_IN_CLOUD_ONBOARDING = "was_in_cloud_onboarding"
 
     }
 
     val accountExists: Flow<Boolean>
         get() = caldavDao.watchAccountExists()
 
-    val needsCloudOnboarding: StateFlow<Boolean?> =
-        tasksPreferences.flow(TasksPreferences.needsCloudOnboarding, false)
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-
     private var wasInOnboarding: Boolean
         get() = savedStateHandle[KEY_WAS_IN_ONBOARDING] ?: false
         set(value) { savedStateHandle[KEY_WAS_IN_ONBOARDING] = value }
 
-    private var wasInCloudOnboarding: Boolean
-        get() = savedStateHandle[KEY_WAS_IN_CLOUD_ONBOARDING] ?: false
-        set(value) { savedStateHandle[KEY_WAS_IN_CLOUD_ONBOARDING] = value }
-
-    fun routeOnboarding(
-        hasAccount: Boolean?,
-        needsCloudOnboarding: Boolean?,
-        isImporting: Boolean,
-    ): OnboardingRouting {
+    fun routeOnboarding(hasAccount: Boolean?, isImporting: Boolean): OnboardingRouting {
         val routing = org.tasks.viewmodel.routeOnboarding(
-            OnboardingState(wasInOnboarding, wasInCloudOnboarding),
+            OnboardingState(wasInOnboarding),
             hasAccount,
-            needsCloudOnboarding,
             isImporting,
         )
         wasInOnboarding = routing.state.wasInOnboarding
-        wasInCloudOnboarding = routing.state.wasInCloudOnboarding
         return routing
-    }
-
-    suspend fun logOnboardingComplete() {
-        if (!tasksPreferences.get(TasksPreferences.hasLoggedOnboardingComplete, false)) {
-            firebase.logEvent(R.string.event_onboarding_complete)
-            tasksPreferences.set(TasksPreferences.hasLoggedOnboardingComplete, true)
-        }
     }
 
     init {
@@ -141,10 +108,6 @@ class MainActivityViewModel @Inject constructor(
 
     suspend fun getAccount(id: Long) = caldavDao.getAccount(id)
 
-    suspend fun getOrCreateLocalAccount(): CaldavAccount = caldavDao.getOrCreateLocalAccount()
-
-    // DavTasks no incluye cuentas de Tasks.org.
-    suspend fun isTasksGuest(): Boolean = false
 
     fun openLastViewedFilter() = viewModelScope.launch {
         setFilter(defaultFilterProvider.getLastViewedFilter())

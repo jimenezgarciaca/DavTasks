@@ -765,10 +765,6 @@ class Preferences @JvmOverloads constructor(
     val markdown: Boolean
         get() = getBoolean(R.string.p_markdown, false)
 
-    var lastReviewRequest: Long
-        get() = getLong(R.string.p_last_review_request, 0L)
-        set(value) = setLong(R.string.p_last_review_request, value)
-
     var warnNotificationsDisabled: Boolean
         get() = getBoolean(R.string.p_warn_notifications_disabled, true)
         set(value) = setBoolean(R.string.p_warn_notifications_disabled, value)
@@ -776,18 +772,6 @@ class Preferences @JvmOverloads constructor(
     var warnAlarmsDisabled: Boolean
         get() = getBoolean(R.string.p_warn_alarms_disabled, true)
         set(value) = setBoolean(R.string.p_warn_alarms_disabled, value)
-
-    var warnMicrosoft: Boolean
-        get() = getBoolean(R.string.p_warn_microsoft, true)
-        set(value) = setBoolean(R.string.p_warn_microsoft, value)
-
-    var warnGoogleTasks: Boolean
-        get() = getBoolean(R.string.p_warn_google_tasks, true)
-        set(value) = setBoolean(R.string.p_warn_google_tasks, value)
-
-    var lastSubscribeRequest: Long
-        get() = getLong(R.string.p_last_subscribe_request, 0L)
-        set(value) = setLong(R.string.p_last_subscribe_request, value)
 
     val linkify: Boolean
         get() = getBoolean(R.string.p_linkify_task_edit, false)

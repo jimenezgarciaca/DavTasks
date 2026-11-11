@@ -153,18 +153,6 @@ public class ThemeColor implements Pickable {
     return colorPrimary;
   }
 
-  @Override
-  public boolean isFree() {
-    switch (original) {
-      case -14575885: // blue_500
-      case -10453621: // blue_grey_500
-      case -14606047: // grey_900
-        return true;
-      default:
-        return false;
-    }
-  }
-
   public int getOriginalColor() {
     return original;
   }

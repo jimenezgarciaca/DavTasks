@@ -10,7 +10,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.tasks.analytics.AnalyticsEvents
 import org.tasks.analytics.Reporting
-import org.tasks.billing.PurchaseState
 import org.tasks.data.UUIDHelper
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
@@ -26,12 +25,11 @@ open class LocalListSettingsViewModel(
     private val taskDeleter: TaskDeleter,
     private val reporting: Reporting,
     private val tasksPreferences: TasksPreferences,
-    purchaseState: PurchaseState,
     isDark: Boolean,
     account: CaldavAccount,
     calendar: CaldavCalendar,
     hasColorWheel: Boolean = false,
-    internal val stateManager: ListSettingsStateManager = ListSettingsStateManager(isDark, purchaseState, account, calendar, hasColorWheel),
+    internal val stateManager: ListSettingsStateManager = ListSettingsStateManager(isDark, account, calendar, hasColorWheel),
 ) : ViewModel(), ListSettingsCallbacks by stateManager {
 
     protected val _showBanner = MutableStateFlow(

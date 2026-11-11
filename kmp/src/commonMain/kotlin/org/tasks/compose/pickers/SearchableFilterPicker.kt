@@ -20,12 +20,10 @@ import org.tasks.compose.components.SearchBar
 import org.tasks.compose.drawer.DrawerItem
 import org.tasks.compose.drawer.FilterItem
 import org.tasks.compose.drawer.HeaderItem
-import org.tasks.compose.drawer.SignInItem
 import org.tasks.filters.CaldavFilter
 import org.tasks.filters.Filter
 import org.tasks.filters.FilterListItem
 import org.tasks.filters.NavigationDrawerSubheader
-import org.tasks.filters.SignInPrompt
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.search
 
@@ -39,7 +37,6 @@ fun SearchableFilterPicker(
     getIcon: @Composable (Filter) -> String?,
     getColor: (Filter) -> Int,
     onAddClick: (NavigationDrawerSubheader) -> Unit = {},
-    onSignIn: () -> Unit = {},
 ) {
     Surface(
         modifier = Modifier
@@ -82,18 +79,14 @@ fun SearchableFilterPicker(
                 key = { _, item ->
                     when (item) {
                         is NavigationDrawerSubheader -> "header_${item.subheaderType}_${item.id}"
-                        is SignInPrompt -> "sign_in"
                         is Filter -> "filter_${item.title}_${item.sql}"
                         else -> item.hashCode()
                     }
                 },
             ) { index, item ->
-                val isFirst = index == 0 ||
-                        item is NavigationDrawerSubheader ||
-                        item is SignInPrompt
+                val isFirst = index == 0 || item is NavigationDrawerSubheader
                 val isLast = index == displayedFilters.lastIndex ||
-                        displayedFilters[index + 1] is NavigationDrawerSubheader ||
-                        displayedFilters[index + 1] is SignInPrompt
+                        displayedFilters[index + 1] is NavigationDrawerSubheader
                 val shape = when {
                     isFirst && isLast -> RoundedCornerShape(cornerRadius)
                     isFirst -> RoundedCornerShape(
@@ -135,8 +128,6 @@ fun SearchableFilterPicker(
                                 onErrorClick = {},
                             )
                         }
-
-                        is SignInPrompt -> SignInItem(onClick = onSignIn)
 
                         is Filter -> {
                             val icon = getIcon(item)

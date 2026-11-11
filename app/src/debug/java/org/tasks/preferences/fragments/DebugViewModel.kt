@@ -1,33 +1,24 @@
 package org.tasks.preferences.fragments
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import org.tasks.R
-import org.tasks.billing.PlayBilling
-import org.tasks.billing.PlayPurchase
-import org.tasks.billing.Inventory
 import org.tasks.data.createDueDate
 import org.tasks.data.entity.Task
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.TasksPreferences
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.min
 
 @HiltViewModel
 class DebugViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val inventory: Inventory,
-    private val billing: PlayBilling,
     private val preferences: Preferences,
     private val tasksPreferences: TasksPreferences,
     private val taskCreator: com.todoroo.astrid.service.TaskCreator,
@@ -41,11 +32,7 @@ class DebugViewModel @Inject constructor(
         private set
     var crashOnViolationEnabled by mutableStateOf(false)
         private set
-    var unlockProEnabled by mutableStateOf(false)
-        private set
     var showDebugFilters by mutableStateOf(false)
-        private set
-    var iapTitle by mutableStateOf("")
         private set
     var showRestartDialog by mutableStateOf(false)
         private set
@@ -54,8 +41,6 @@ class DebugViewModel @Inject constructor(
         strictModeVmEnabled = preferences.getBoolean(R.string.p_strict_mode_vm, false)
         strictModeThreadEnabled = preferences.getBoolean(R.string.p_strict_mode_thread, false)
         crashOnViolationEnabled = preferences.getBoolean(R.string.p_crash_main_queries, false)
-        unlockProEnabled = preferences.getBoolean(R.string.p_debug_pro, false)
-        refreshIapTitle()
         viewModelScope.launch {
             showDebugFilters = tasksPreferences.get(TasksPreferences.showDebugFilters, false)
         }
@@ -79,11 +64,6 @@ class DebugViewModel @Inject constructor(
         showRestartDialog = true
     }
 
-    fun updateUnlockPro(enabled: Boolean) {
-        preferences.setBoolean(R.string.p_debug_pro, enabled)
-        unlockProEnabled = enabled
-    }
-
     fun updateShowDebugFilters(enabled: Boolean) {
         viewModelScope.launch {
             tasksPreferences.set(TasksPreferences.showDebugFilters, enabled)
@@ -95,36 +75,11 @@ class DebugViewModel @Inject constructor(
         showRestartDialog = false
     }
 
-    fun toggleIap(activity: android.app.Activity, onComplete: () -> Unit) {
-        viewModelScope.launch {
-            try {
-                val purchase = inventory.getPurchase(PlayPurchase.SKU_THEMES)
-                if (purchase == null) {
-                    billing.launchPurchaseFlow(
-                        activity = activity,
-                        sku = PlayPurchase.SKU_THEMES,
-                        subscription = false,
-                    )
-                } else {
-                    billing.consume(purchase)
-                }
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-            refreshIapTitle()
-            onComplete()
-        }
-    }
-
     fun clearHints() {
         preferences.installDate = min(
             preferences.installDate,
             currentTimeMillis() - TimeUnit.DAYS.toMillis(14),
         )
-        preferences.lastSubscribeRequest = 0L
-        preferences.lastReviewRequest = 0L
-        preferences.warnMicrosoft = true
-        preferences.warnGoogleTasks = true
         preferences.setBoolean(R.string.p_just_updated, true)
         preferences.setBoolean(R.string.p_local_list_banner_dismissed, false)
         preferences.warnAlarmsDisabled = true
@@ -145,15 +100,6 @@ class DebugViewModel @Inject constructor(
                 taskSaver.save(task, null)
             }
             onComplete(count)
-        }
-    }
-
-    private fun refreshIapTitle() {
-        val sku = PlayPurchase.SKU_THEMES
-        iapTitle = if (inventory.getPurchase(sku) == null) {
-            context.getString(R.string.debug_purchase, sku)
-        } else {
-            context.getString(R.string.debug_consume, sku)
         }
     }
 }

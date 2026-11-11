@@ -34,9 +34,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.tasks.analytics.Firebase
-import org.tasks.billing.Inventory
 import org.tasks.caldav.CaldavClient
 import org.tasks.jobs.WorkManager
 import org.tasks.location.LocationService
@@ -61,7 +59,6 @@ class TasksApplication : Application(), Configuration.Provider {
     @Inject lateinit var preferences: Preferences
     @Inject lateinit var tasksPreferences: TasksPreferences
     @Inject lateinit var buildSetup: BuildSetup
-    @Inject lateinit var inventory: Inventory
     @Inject lateinit var localBroadcastManager: LocalBroadcastManager
     @Inject lateinit var upgrader: Lazy<Upgrader>
     @Inject lateinit var workManager: Lazy<WorkManager>
@@ -82,9 +79,8 @@ class TasksApplication : Application(), Configuration.Provider {
             defaultExceptionHandler?.uncaughtException(thread, throwable) ?: throw throwable
         }
         upgrade()
-        ThemeBase.getThemeBase(preferences, inventory, null).setDefaultNightMode()
+        ThemeBase.getThemeBase(preferences, null).setDefaultNightMode()
         localBroadcastManager.registerRefreshReceiver(RefreshBroadcastReceiver())
-        inventory.subscription.observeForever { firebase.setSku(it?.sku) }
         backgroundWork()
         ProcessLifecycleOwner.get().lifecycle.addObserver(
             object : DefaultLifecycleObserver {
@@ -129,12 +125,7 @@ class TasksApplication : Application(), Configuration.Provider {
             upgrader.get().upgrade(lastVersion, currentVersion)
             scope.launch {
                 preferences.setDefaults()
-                withContext(Dispatchers.Main) {
-                    firebase.registerPrefChangeListener()
-                }
             }
-        } else {
-            firebase.registerPrefChangeListener()
         }
     }
 
@@ -175,12 +166,9 @@ class TasksApplication : Application(), Configuration.Provider {
         tasksPreferences.set(TasksPreferences.syncOngoing, false)
         tasksPreferences.set(TasksPreferences.syncOngoingAndroid, false)
         tasksPreferences.set(TasksPreferences.syncSource, SyncSource.NONE.name)
-        inventory.updateTasksAccount()
         NotificationSchedulerWork.enqueueWork(context)
         workManager.get().apply {
             scheduleBackup()
-            scheduleConfigRefresh()
-            updatePurchases()
             scheduleRefresh()
         }
         OpenTaskContentObserver.registerObserver(context, contentObserver.get())

@@ -82,7 +82,7 @@ fun MenuPreview() {
                         count = 5,
                     ),
                     DrawerItem.Header(
-                        title = "tasks.org",
+                        title = "CalDAV",
                         collapsed = false,
                         canAdd = true,
                         hasError = true,
@@ -91,7 +91,7 @@ fun MenuPreview() {
                             null,
                             true,
                             false,
-                            NavigationDrawerSubheader.SubheaderType.TASKS,
+                            NavigationDrawerSubheader.SubheaderType.CALDAV,
                             "1",
                             accountIcon = AccountIcon(Res.drawable.ic_round_icon, true),
                         ),

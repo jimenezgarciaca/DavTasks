@@ -48,10 +48,8 @@ private fun ThemeColor.toPickerColor() = PickerColor(
 
 @Composable
 fun SelectColorRow(
-    hasPro: Boolean,
     color: Int,
     colors: List<ThemeColor>,
-    purchase: () -> Unit,
     selectColor: (Int) -> Unit,
 ) {
     val pickerColors = remember(colors) { colors.map { it.toPickerColor() } }
@@ -62,22 +60,11 @@ fun SelectColorRow(
             showColorPicker = false
         }
         ColorPickerDialog(
-            hasPro = hasPro,
             colors = pickerColors,
             onDismiss = { showColorPicker = false },
-            onColorSelected = {
-                if (hasPro || it.isFree) {
-                    selectColor(it.originalColor)
-                } else {
-                    purchase()
-                }
-            },
+            onColorSelected = { selectColor(it.originalColor) },
             onColorWheelSelected = {
-                if (hasPro) {
-                    showColorWheel = true
-                } else {
-                    purchase()
-                }
+                showColorWheel = true
                 showColorPicker = false
             },
         )
@@ -180,9 +167,7 @@ fun SelectColorRow(
 private fun ColorSelectPreview () {
     TasksTheme {
         SelectColorRow(
-            hasPro = true,
             colors = emptyList(),
-            purchase = {},
             color = Color.Red.toArgb(),
             selectColor = {},
         )

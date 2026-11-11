@@ -27,6 +27,5 @@ data class NavigationDrawerSubheader(
     enum class SubheaderType {
         PREFERENCE,
         CALDAV,
-        TASKS,
     }
 }

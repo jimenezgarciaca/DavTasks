@@ -7,7 +7,6 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
@@ -16,8 +15,6 @@ import androidx.fragment.compose.content
 import com.todoroo.andlib.utility.AndroidUtilities.atLeastTiramisu
 import dagger.hilt.android.AndroidEntryPoint
 import org.tasks.R
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel
 import org.tasks.compose.FilterSelectionActivity.Companion.launch
 import org.tasks.compose.FilterSelectionActivity.Companion.registerForFilterPickerResult
 import org.jetbrains.compose.resources.stringResource
@@ -51,11 +48,6 @@ class LookAndFeel : Fragment() {
         viewModel.setDefaultOpenFilter(it)
     }
 
-    private val purchaseLauncher = registerForActivityResult(StartActivityForResult()) { result ->
-        val index = viewModel.handlePurchaseResult(result.data)
-        applyBaseTheme(index)
-    }
-
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,17 +58,7 @@ class LookAndFeel : Fragment() {
                 ThemePickerDialog.EXTRA_SELECTED,
                 ThemeBase.DEFAULT_BASE_THEME
             )
-            when (val result = viewModel.handleThemePickerResult(selectedIndex)) {
-                is LookAndFeelHiltViewModel.ThemePickerResult.ApplyTheme -> {
-                    applyBaseTheme(result.index)
-                }
-                is LookAndFeelHiltViewModel.ThemePickerResult.PurchaseRequired -> {
-                    purchaseLauncher.launch(
-                        Intent(context, PurchaseActivity::class.java)
-                            .putExtra(PurchaseActivityViewModel.EXTRA_SOURCE, "themes"),
-                    )
-                }
-            }
+            applyBaseTheme(selectedIndex)
         }
         parentFragmentManager.setFragmentResultListener(
             REQUEST_KEY_COLOR, this
@@ -119,7 +101,6 @@ class LookAndFeel : Fragment() {
                 themeName = baseThemeName(viewModel.themeIndex),
                 dynamicColorAvailable = viewModel.dynamicColorAvailable,
                 dynamicColorEnabled = viewModel.dynamicColorEnabled,
-                dynamicColorProOnly = viewModel.dynamicColorProOnly,
                 themeColor = viewModel.themeColor,
                 launcherColor = viewModel.launcherColor,
                 markdownEnabled = viewModel.settings.markdown,

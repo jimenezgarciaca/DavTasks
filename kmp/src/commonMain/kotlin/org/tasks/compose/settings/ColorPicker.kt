@@ -1,7 +1,5 @@
 package org.tasks.compose.settings
 
-import org.tasks.themes.TasksIcons
-import org.tasks.compose.components.SymbolIcon
 import org.tasks.kmp.org.tasks.themes.ColorProvider as KmpColorProvider
 import org.tasks.themes.contentColor
 import androidx.compose.foundation.background
@@ -17,10 +15,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -47,10 +43,8 @@ fun buildPickerColors(isDark: Boolean): List<PickerColor> =
 
 @Composable
 fun ColorPicker(
-    hasPro: Boolean,
     colors: List<PickerColor>,
     onSelected: (PickerColor) -> Unit,
-    onSubscribe: () -> Unit = {},
     onColorWheelSelected: () -> Unit = {},
     showColorWheel: Boolean = true,
 ) {
@@ -63,18 +57,13 @@ fun ColorPicker(
     ) {
         if (showColorWheel) {
             item {
-                ColorWheelCircle(
-                    onClick = if (hasPro) onColorWheelSelected else onSubscribe,
-                    hasPro = hasPro,
-                )
+                ColorWheelCircle(onClick = onColorWheelSelected)
             }
         }
         items(colors) { color ->
-            val locked = !(hasPro || color.isFree)
             ColorCircle(
                 color = color,
-                locked = locked,
-                onClick = { if (locked) onSubscribe() else onSelected(color) }
+                onClick = { onSelected(color) }
             )
         }
     }
@@ -83,7 +72,6 @@ fun ColorPicker(
 @Composable
 private fun ColorCircle(
     color: PickerColor,
-    locked: Boolean,
     onClick: () -> Unit
 ) {
     Box(
@@ -98,19 +86,11 @@ private fun ColorCircle(
                 color = MaterialTheme.colorScheme.outline,
                 shape = CircleShape
             ),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (locked) {
-            LockIcon(tint = Color(color.colorOnPrimary))
-        }
-    }
+    )
 }
 
 @Composable
-private fun ColorWheelCircle(
-    onClick: () -> Unit,
-    hasPro: Boolean,
-) {
+private fun ColorWheelCircle(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .aspectRatio(1f)
@@ -135,20 +115,5 @@ private fun ColorWheelCircle(
                 color = MaterialTheme.colorScheme.outline,
                 shape = CircleShape
             ),
-        contentAlignment = Alignment.Center
-    ) {
-        if (!hasPro) {
-            LockIcon(tint = Color.Black)
-        }
-    }
-}
-
-@Composable
-private fun LockIcon(tint: Color) {
-    SymbolIcon(
-        name = TasksIcons.LOCK,
-        contentDescription = null,
-        tint = tint,
-        modifier = Modifier.size(24.dp)
     )
 }

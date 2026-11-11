@@ -8,7 +8,6 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.Request
 import org.tasks.BuildConfig
-import org.tasks.auth.TasksServerEnvironment
 import org.tasks.data.entity.Place
 import org.tasks.http.HttpClientFactory
 import org.tasks.http.HttpException
@@ -17,13 +16,12 @@ import javax.inject.Inject
 
 class GeocoderNominatim @Inject constructor(
         private val httpClientFactory: HttpClientFactory,
-        private val environment: TasksServerEnvironment,
 ) : Geocoder {
 
     override suspend fun reverseGeocode(mapPosition: MapPosition): Place? =
             withContext(Dispatchers.IO) {
                 val client = httpClientFactory.newClient(foreground = true)
-                val url = "${environment.nominatimUrl}/reverse?format=geocodejson&lat=${mapPosition.latitude}&lon=${mapPosition.longitude}"
+                val url = "$NOMINATIM_URL/reverse?format=geocodejson&lat=${mapPosition.latitude}&lon=${mapPosition.longitude}"
                 val response = client.newCall(
                         Request.Builder().get().url(url).addHeader(USER_AGENT, UA_VALUE).build()
                 ).execute()
@@ -35,6 +33,7 @@ class GeocoderNominatim @Inject constructor(
             }
 
     companion object {
+        private const val NOMINATIM_URL = "https://nominatim.openstreetmap.org"
         private const val USER_AGENT = "User-Agent"
         private const val UA_VALUE = "${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME} (${BuildConfig.FLAVOR}-${BuildConfig.BUILD_TYPE})"
 

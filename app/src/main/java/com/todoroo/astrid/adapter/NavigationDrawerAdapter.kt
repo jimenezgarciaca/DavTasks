@@ -16,7 +16,6 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import org.tasks.R
 import org.tasks.activities.DragAndDropDiffer
-import org.tasks.billing.Inventory
 import org.tasks.filters.Filter
 import org.tasks.filters.FilterListItem
 import org.tasks.filters.NavigationDrawerSubheader
@@ -31,7 +30,6 @@ import kotlin.math.max
 class NavigationDrawerAdapter @Inject constructor(
     private val activity: Activity,
     private val locale: Locale,
-    private val inventory: Inventory,
     private val colorProvider: ColorProvider,
     private val subheaderClickHandler: SubheaderClickHandler,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
@@ -66,7 +64,7 @@ class NavigationDrawerAdapter @Inject constructor(
         val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
         return when (type) {
             FilterListItem.Type.ITEM -> FilterViewHolder(
-                        view, true, locale, activity, inventory, colorProvider) { onClickFilter(it) }
+                        view, true, locale, activity, colorProvider) { onClickFilter(it) }
             FilterListItem.Type.SUBHEADER -> SubheaderViewHolder(view, subheaderClickHandler)
         }
     }

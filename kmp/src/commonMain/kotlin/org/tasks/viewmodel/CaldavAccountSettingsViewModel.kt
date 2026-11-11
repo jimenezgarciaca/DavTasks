@@ -25,7 +25,6 @@ import org.tasks.compose.settings.CaldavAccountState
 import org.tasks.data.UUIDHelper
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.SERVER_UNKNOWN
 import org.tasks.http.ConnectionException
 import org.tasks.http.HttpException
 import org.tasks.resources.getString

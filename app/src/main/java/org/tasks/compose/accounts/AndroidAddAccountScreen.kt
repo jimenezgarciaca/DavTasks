@@ -1,38 +1,29 @@
 package org.tasks.compose.accounts
 
+import android.content.Context
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import org.tasks.PlatformConfiguration
+import org.tasks.R
+import org.tasks.caldav.CaldavSignInActivity
+import org.tasks.extensions.Context.openUri
 import org.tasks.themes.TasksSettingsTheme
 
+/** Pantalla de alta de cuentas con el comportamiento de Android para CalDAV y DAVx⁵. */
 @Composable
 fun AddAccountScreenWrapper(
-    configuration: PlatformConfiguration,
-    hasTasksAccount: Boolean,
-    hasPro: Boolean,
-    needsConsent: Boolean,
+    context: Context,
     onBack: () -> Unit,
-    signIn: (Platform) -> Unit,
-    openUrl: (Platform) -> Unit,
-    openLegalUrl: (String) -> Unit,
-    onConsent: suspend () -> Unit = {},
-    onNameYourPriceInfo: () -> Unit = {},
+    signInCaldav: (Intent) -> Unit,
 ) {
     BackHandler(onBack = onBack)
     AddAccountScreen(
-        configuration = configuration,
-        hasTasksAccount = hasTasksAccount,
-        hasPro = hasPro,
-        needsConsent = needsConsent,
         onBack = onBack,
-        signIn = signIn,
-        openUrl = openUrl,
-        openLegalUrl = openLegalUrl,
-        onConsent = onConsent,
-        onNameYourPriceInfo = onNameYourPriceInfo,
+        onCaldav = { signInCaldav(Intent(context, CaldavSignInActivity::class.java)) },
+        onDavx5 = { context.openUri(context.getString(R.string.url_davx5)) },
     )
 }
 
@@ -42,23 +33,6 @@ fun AddAccountScreenWrapper(
 @Composable
 fun AddAccountPreview() {
     TasksSettingsTheme {
-        AddAccountScreen(
-            configuration = PlatformConfiguration(
-                supportsTasksOrg = true,
-                supportsCaldav = true,
-                supportsGoogleTasks = true,
-                supportsMicrosoft = true,
-                supportsOpenTasks = true,
-                supportsEteSync = true,
-                billingProvider = org.tasks.billing.BillingProvider.GOOGLE_PLAY,
-            ),
-            hasTasksAccount = false,
-            hasPro = false,
-            needsConsent = false,
-            onBack = {},
-            signIn = {},
-            openUrl = {},
-            openLegalUrl = {},
-        )
+        AddAccountScreen(onBack = {}, onCaldav = {}, onDavx5 = {})
     }
 }

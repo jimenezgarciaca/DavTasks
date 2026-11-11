@@ -34,7 +34,6 @@ import tasks.kmp.generated.resources.markdown_description
 import tasks.kmp.generated.resources.on_launch
 import tasks.kmp.generated.resources.open_last_viewed_list
 import tasks.kmp.generated.resources.settings_localization
-import tasks.kmp.generated.resources.subscription_required
 import tasks.kmp.generated.resources.theme
 import tasks.kmp.generated.resources.theme_black
 import tasks.kmp.generated.resources.theme_dark
@@ -51,7 +50,6 @@ fun LookAndFeelScreen(
     themeName: String,
     dynamicColorAvailable: Boolean,
     dynamicColorEnabled: Boolean,
-    dynamicColorProOnly: Boolean,
     themeColor: Int,
     launcherColor: Int,
     showLauncherIcon: Boolean = true,
@@ -100,12 +98,7 @@ fun LookAndFeelScreen(
                     SwitchPreferenceRow(
                         title = stringResource(Res.string.theme_dynamic),
                         checked = dynamicColorEnabled,
-                        enabled = !dynamicColorProOnly,
                         onCheckedChange = onDynamicColor,
-                        summary = if (dynamicColorProOnly)
-                            stringResource(Res.string.subscription_required)
-                        else
-                            null,
                     )
                 }
             }

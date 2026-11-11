@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.scopes.ActivityScoped
-import org.tasks.billing.Inventory
 import org.tasks.preferences.Preferences
 import org.tasks.themes.ColorProvider
 import org.tasks.themes.ThemeBase
@@ -20,8 +19,8 @@ class ActivityModule {
 
     @Provides
     @ActivityScoped
-    fun getThemeBase(activity: Activity, preferences: Preferences, inventory: Inventory): ThemeBase
-            = ThemeBase.getThemeBase(preferences, inventory, activity.intent)
+    fun getThemeBase(activity: Activity, preferences: Preferences): ThemeBase
+            = ThemeBase.getThemeBase(preferences, activity.intent)
 
     @Provides
     @ActivityScoped

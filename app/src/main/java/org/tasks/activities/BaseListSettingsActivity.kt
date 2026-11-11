@@ -1,7 +1,6 @@
 package org.tasks.activities
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -21,10 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.tasks.R
 import org.tasks.analytics.Firebase
-import org.tasks.billing.Inventory
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel
 import org.tasks.compose.DeleteButton
 import org.tasks.compose.IconPickerActivity.Companion.launchIconPicker
 import org.tasks.compose.IconPickerActivity.Companion.registerForIconPickerResult
@@ -45,7 +41,6 @@ abstract class BaseListSettingsActivity : AppCompatActivity() {
     @Inject lateinit var tasksTheme: Theme
     @Inject lateinit var defaultFilterProvider: DefaultFilterProvider
     @Inject lateinit var firebase: Firebase
-    @Inject lateinit var inventory: Inventory
     @Inject lateinit var colorProvider: ColorProvider
 
     protected val baseViewModel: BaseListSettingsViewModel by viewModels()
@@ -127,7 +122,6 @@ abstract class BaseListSettingsActivity : AppCompatActivity() {
             fab = fab,
         ) {
             ListSettingsContent(
-                hasPro = remember { inventory.purchasedThemes() },
                 color = viewState.color,
                 colors = remember { colorProvider.getThemeColors() },
                 icon = viewState.icon ?: defaultIcon,
@@ -152,12 +146,6 @@ abstract class BaseListSettingsActivity : AppCompatActivity() {
                 addWidgetToHome = { createWidget() },
                 headerContent = headerContent,
                 extensionContent = extensionContent,
-                purchase = {
-                    startActivity(
-                        Intent(this@BaseListSettingsActivity, PurchaseActivity::class.java)
-                            .putExtra(PurchaseActivityViewModel.EXTRA_SOURCE, "list_colors")
-                    )
-                },
             )
         }
     }

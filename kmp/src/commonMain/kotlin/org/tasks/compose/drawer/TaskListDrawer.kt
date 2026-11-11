@@ -39,7 +39,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
@@ -82,9 +81,6 @@ import androidx.compose.ui.platform.testTag
 import org.tasks.themes.TestTags
 import org.tasks.compose.components.Chevron
 import org.tasks.data.AccountIcon
-import org.tasks.data.composeIcon
-import org.tasks.data.composeTitle
-import org.tasks.data.entity.CaldavAccount
 import org.tasks.filters.FilterProvider
 import org.tasks.filters.NavigationDrawerSubheader
 import org.tasks.compose.components.SearchBar
@@ -102,9 +98,7 @@ import tasks.kmp.generated.resources.new_filter
 import tasks.kmp.generated.resources.new_list
 import tasks.kmp.generated.resources.new_place
 import tasks.kmp.generated.resources.new_tag
-import tasks.kmp.generated.resources.not_signed_in
 import tasks.kmp.generated.resources.search
-import tasks.kmp.generated.resources.sign_in
 
 val DrawerItemInset = 8.dp
 
@@ -120,7 +114,6 @@ fun TaskListDrawer(
     onClick: (DrawerItem) -> Unit,
     onAddClick: (DrawerItem.Header) -> Unit,
     onErrorClick: () -> Unit,
-    onSignIn: () -> Unit = {},
     expanded: Boolean = true,
     onExpandDrawer: () -> Unit = {},
     listState: LazyListState = rememberLazyListState(),
@@ -175,12 +168,9 @@ fun TaskListDrawer(
             verticalArrangement = arrangement,
         ) {
             itemsIndexed(items = displayedFilters, key = { _, it -> it.key() }) { index, item ->
-                val isFirst = index == 0 ||
-                        item is DrawerItem.Header ||
-                        item is DrawerItem.SignIn
+                val isFirst = index == 0 || item is DrawerItem.Header
                 val isLast = index == displayedFilters.lastIndex ||
-                        displayedFilters[index + 1] is DrawerItem.Header ||
-                        displayedFilters[index + 1] is DrawerItem.SignIn
+                        displayedFilters[index + 1] is DrawerItem.Header
                 val cornerRadius = 16.dp
                 val shape = when {
                     isFirst && isLast -> RoundedCornerShape(cornerRadius)
@@ -211,11 +201,6 @@ fun TaskListDrawer(
                             onAddClick = { onAddClick(item) },
                             onExpandDrawer = onExpandDrawer,
                             onErrorClick = onErrorClick,
-                        )
-                        is DrawerItem.SignIn -> SignInItem(
-                            expanded = expanded,
-                            onClick = onSignIn,
-                            onExpandDrawer = onExpandDrawer,
                         )
                     }
                 }
@@ -509,32 +494,6 @@ fun HeaderItem(
                     tint = MaterialTheme.colorScheme.error,
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun SignInItem(
-    modifier: Modifier = Modifier,
-    expanded: Boolean = true,
-    onClick: () -> Unit,
-    onExpandDrawer: () -> Unit = {},
-) {
-    val account = remember { CaldavAccount(accountType = CaldavAccount.TYPE_TASKS) }
-    DrawerRow(
-        modifier = modifier,
-        icon = account.composeIcon,
-        iconLabel = null,
-        title = account.composeTitle?.let { stringResource(it) } ?: "",
-        subtitle = stringResource(Res.string.not_signed_in),
-        expanded = expanded,
-        onClick = if (expanded) onClick else onExpandDrawer,
-    ) {
-        TextButton(onClick = onClick) {
-            Text(
-                text = stringResource(Res.string.sign_in),
-                style = MaterialTheme.typography.labelLarge,
-            )
         }
     }
 }

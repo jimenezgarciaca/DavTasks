@@ -40,22 +40,16 @@ class Debug : Fragment() {
                 strictModeVmEnabled = viewModel.strictModeVmEnabled,
                 strictModeThreadEnabled = viewModel.strictModeThreadEnabled,
                 crashOnViolationEnabled = viewModel.crashOnViolationEnabled,
-                unlockProEnabled = viewModel.unlockProEnabled,
                 showDebugFilters = viewModel.showDebugFilters,
-                iapTitle = viewModel.iapTitle,
                 onStrictModeVm = { viewModel.updateStrictModeVm(it) },
                 onStrictModeThread = { viewModel.updateStrictModeThread(it) },
                 onCrashOnViolation = { viewModel.updateCrashOnViolation(it) },
-                onUnlockPro = { viewModel.updateUnlockPro(it) },
                 onShowDebugFilters = { viewModel.updateShowDebugFilters(it) },
                 onCrashApp = {
                     throw RuntimeException("Crashed app from debug preferences")
                 },
                 onRestartApp = {
                     kotlin.system.exitProcess(0)
-                },
-                onIap = {
-                    viewModel.toggleIap(requireActivity()) {}
                 },
                 onClearHints = {
                     viewModel.clearHints()

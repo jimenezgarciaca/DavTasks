@@ -34,7 +34,7 @@ class OpenTasksMergeTest : OpenTasksTest() {
 
         openTaskDao.setDescription(listId, UID, "remote notes") // concurrent remote edit
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         // Local wins; the remote edit is dropped this round.
         val merged = taskDao.fetch(taskId)!!
@@ -49,14 +49,14 @@ class OpenTasksMergeTest : OpenTasksTest() {
     @Test
     fun unknownPropertyIsNotClobberedByMerge() = runBlocking {
         val (listId, list) = withVtodo(TASK_WITH_X_PROP)
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val caldavTask = caldavDao.getTaskByRemoteId(list.uuid!!, UID)!!
         val local = taskDao.fetch(caldavTask.task)!!
         local.title = "local title"
         taskDao.update(local, markDirty = true)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val provider = openTaskDao.getTask(listId, UID)!!.task!!
         assertEquals("local title", provider.summary)

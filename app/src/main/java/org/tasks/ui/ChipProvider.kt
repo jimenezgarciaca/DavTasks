@@ -2,7 +2,6 @@ package org.tasks.ui
 
 import android.app.Activity
 import org.tasks.R
-import org.tasks.billing.Inventory
 import org.tasks.compose.chips.ChipDataProvider
 import org.tasks.themes.ColorProvider
 import org.tasks.themes.chipColors
@@ -11,7 +10,6 @@ import javax.inject.Inject
 @Deprecated("remove me")
 class ChipProvider @Inject constructor(
     private val activity: Activity,
-    private val inventory: Inventory,
     val lists: ChipDataProvider,
     private val colorProvider: ColorProvider,
 ) {
@@ -19,10 +17,7 @@ class ChipProvider @Inject constructor(
 
     fun getColor(theme: Int): Int {
         if (theme != 0) {
-            val color = colorProvider.getChipColor(theme)
-            if (color.isFree || inventory.purchasedThemes()) {
-                return color.primaryColor
-            }
+            return colorProvider.getChipColor(theme).primaryColor
         }
         return chipColors(activity.getColor(org.tasks.kmp.R.color.grey_300), isDark).backgroundColor
     }

@@ -124,15 +124,12 @@ fun registerBuildConfig(objectName: String) = tasks.register("generate${objectNa
     val versionCode = appVersionCode
     val versionName = appVersionName
     val applicationId = libs.versions.applicationId.get()
-    val tasks_dev_url: String? by project
-    val devUrl = tasks_dev_url ?: ""
     val debug = providers.gradleProperty("release")
         .map { it.isNotEmpty() && !it.toBoolean() }
         .orElse(true)
     inputs.property("versionCode", versionCode)
     inputs.property("versionName", versionName)
     inputs.property("applicationId", applicationId)
-    inputs.property("devUrl", devUrl)
     inputs.property("debug", debug)
     outputs.dir(outputDir)
     doLast {
@@ -145,7 +142,6 @@ fun registerBuildConfig(objectName: String) = tasks.register("generate${objectNa
                 |    const val VERSION_CODE = $versionCode
                 |    const val VERSION_NAME = "$versionName"
                 |    const val APPLICATION_ID = "$applicationId"
-                |    const val DEV_URL = "$devUrl"
                 |    const val DEBUG = ${debug.get()}
                 |}
             """.trimMargin())
@@ -177,8 +173,6 @@ android {
         buildConfigField("int", "VERSION_CODE", "$appVersionCode")
         buildConfigField("String", "VERSION_NAME", "\"$appVersionName\"")
         buildConfigField("String", "APPLICATION_ID", "\"${libs.versions.applicationId.get()}\"")
-        val tasks_dev_url: String? by project
-        buildConfigField("String", "DEV_URL", "\"${tasks_dev_url ?: ""}\"")
     }
 
     packaging {

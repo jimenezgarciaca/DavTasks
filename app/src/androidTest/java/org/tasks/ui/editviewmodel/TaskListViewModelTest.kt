@@ -8,7 +8,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.tasks.analytics.Firebase
-import org.tasks.billing.Inventory
 import org.tasks.broadcast.ComposeRefreshBroadcaster
 import org.tasks.data.TaskSaver
 import org.tasks.data.dao.CaldavDao
@@ -35,7 +34,6 @@ class TaskListViewModelTest : InjectingTestCase() {
     @Inject lateinit var deletionDao: DeletionDao
     @Inject lateinit var taskSaver: TaskSaver
     @Inject lateinit var taskCompleter: TaskCompleter
-    @Inject lateinit var inventory: Inventory
     @Inject lateinit var firebase: Firebase
     @Inject lateinit var caldavDao: CaldavDao
     @Inject lateinit var tasksPreferences: TasksPreferences
@@ -53,7 +51,6 @@ class TaskListViewModelTest : InjectingTestCase() {
             taskSaver = taskSaver,
             taskCompleter = taskCompleter,
             composeRefreshBroadcaster = ComposeRefreshBroadcaster(),
-            inventory = inventory,
             firebase = firebase,
             permissionChecker = PermissivePermissionChecker(context),
             caldavDao = caldavDao,

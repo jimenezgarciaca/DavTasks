@@ -23,11 +23,8 @@ import org.tasks.data.entity.OpenTaskProvider
 import org.tasks.data.entity.Task
 import org.tasks.data.entity.Task.Companion.NO_ID
 import org.tasks.icalendar.serialize
-import org.tasks.resources.getString
 import org.tasks.service.TaskDeleter
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
-import tasks.kmp.generated.resources.Res
-import tasks.kmp.generated.resources.subscription_required
 
 class OpenTasksSynchronizer(
     private val caldavDao: CaldavDao,
@@ -39,7 +36,7 @@ class OpenTasksSynchronizer(
     private val openTaskDao: OpenTaskDao,
 ) : OpenTasksSyncer {
 
-    override suspend fun sync(hasPro: Boolean) {
+    override suspend fun sync() {
         Logger.d("OpenTasksSynchronizer") { "Starting OpenTasks sync..." }
         val lists = openTaskDao.getListsByAccount().filterActive(caldavDao)
         lists.keys
@@ -64,8 +61,6 @@ class OpenTasksSynchronizer(
             if (entries == null) {
                 Logger.d("OpenTasksSynchronizer") { "Removing $account" }
                 taskDeleter.delete(account)
-            } else if (!hasPro) {
-                setError(account, getString(Res.string.subscription_required))
             } else {
                 try {
                     sync(account, entries)

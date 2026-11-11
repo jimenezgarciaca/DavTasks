@@ -34,7 +34,6 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.content.ByteArrayContent
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.password_required
-import tasks.kmp.generated.resources.subscription_required
 import org.tasks.analytics.AnalyticsEvents.INITIAL_SYNC_COMPLETE
 import org.tasks.analytics.AnalyticsEvents.PARAM_TASK_COUNT
 import org.tasks.analytics.AnalyticsEvents.PARAM_TYPE
@@ -63,8 +62,6 @@ import org.tasks.data.UUIDHelper
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.dao.PrincipalDao
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.data.entity.CaldavAccount.Companion.ERROR_PURCHASE_TOKEN_IN_USE
-import org.tasks.data.entity.CaldavAccount.Companion.ERROR_UNAUTHORIZED
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_NEXTCLOUD
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_OPEN_XCHANGE
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_OWNCLOUD
@@ -104,12 +101,8 @@ class CaldavSynchronizer(
     private val vtodoCache: VtodoCache,
     private val tagMetadataSync: TagMetadataSync,
 ) {
-    suspend fun sync(account: CaldavAccount, hasPro: Boolean) {
+    suspend fun sync(account: CaldavAccount) {
         Logger.d(TAG) { "Synchronizing $account" }
-        if (!hasPro) {
-            setError(account, getString(Res.string.subscription_required))
-            return
-        }
         if (account.password.isNullOrBlank()) {
             setError(account, getString(Res.string.password_required))
             return

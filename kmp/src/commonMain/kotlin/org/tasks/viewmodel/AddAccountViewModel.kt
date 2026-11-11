@@ -7,19 +7,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.tasks.billing.PurchaseState
 import org.tasks.data.dao.CaldavDao
 
 open class AddAccountViewModel(
     caldavDao: CaldavDao,
-    private val purchaseState: PurchaseState,
 ) : ViewModel() {
-
-    val hasTasksAccount: Boolean get() = purchaseState.hasTasksAccount
-
-    val hasPro: Boolean get() = purchaseState.hasPro
-
-    val hasTasksSubscription: Boolean get() = purchaseState.hasTasksSubscription
 
     private val _accountAdded = MutableSharedFlow<Unit>(replay = 1)
     val accountAdded: SharedFlow<Unit> = _accountAdded

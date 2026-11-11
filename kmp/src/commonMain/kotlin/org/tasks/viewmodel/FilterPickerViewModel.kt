@@ -1,5 +1,6 @@
 package org.tasks.viewmodel
 
+import org.tasks.filters.getIcon
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tasks.billing.PurchaseState
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.compose.throttleLatest
 import org.tasks.data.dao.CaldavDao
@@ -30,7 +30,6 @@ open class FilterPickerViewModel(
     private val filterProvider: FilterProvider,
     private val caldavDao: CaldavDao,
     private val tasksPreferences: TasksPreferences,
-    private val purchaseState: PurchaseState,
     private val refreshBroadcaster: RefreshBroadcaster,
     private val listsOnly: Boolean = false,
     refreshFlow: Flow<Unit> = emptyFlow(),
@@ -103,10 +102,10 @@ open class FilterPickerViewModel(
         }
     }
 
-    fun getIcon(filter: Filter): String? = filter.resolveIcon(purchaseState)
+    fun getIcon(filter: Filter): String? = filter.getIcon()
 
     fun getColor(tint: Int, isDark: Boolean): Int? =
-        resolveColor(tint, isDark, purchaseState)
+        resolveColor(tint, isDark)
 
     fun onQueryChange(query: String) {
         _viewState.update { it.copy(query = query) }

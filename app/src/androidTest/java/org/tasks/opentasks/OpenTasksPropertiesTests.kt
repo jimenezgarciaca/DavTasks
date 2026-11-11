@@ -49,7 +49,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
     fun loadRemoteParentInfo() = runBlocking {
         val (_, list) = withVtodo(SUBTASK)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val task = caldavDao.getTaskByRemoteId(list.uuid!!, "dfede1b0-435b-4bba-9708-2422e781747c")
         assertEquals("7daa4a5c-cc76-4ddf-b4f8-b9d3a9cb00e7", task?.remoteParent)
@@ -67,7 +67,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
                 with(CaldavTaskMaker.REMOTE_PARENT, "1234")
         ))
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals("1234", openTaskDao.getTask(listId, "abcd")?.task?.toVTodo()?.parent)
     }
@@ -76,7 +76,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
     fun createNewTags() = runBlocking {
         val (_, list) = withVtodo(TWO_TAGS)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals(
                 setOf("Tag1", "Tag2"),
@@ -93,7 +93,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         val (_, list) = withVtodo(ONE_TAG)
         val tag = TagData(name = "Tag1").let { it.copy(id = tagDataDao.insert(it)) }
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals(
                 listOf(tag),
@@ -115,7 +115,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         insertTag(task, "Tag1")
         insertTag(task, "Tag2")
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals(
                 setOf("Tag1", "Tag2"),
@@ -127,7 +127,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
     fun loadOrder() = runBlocking {
         val (_, list) = withVtodo(ONE_TAG)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val task = caldavDao.getTaskByRemoteId(list.uuid!!, "3076145036806467726")!!.task
         assertEquals(633734058L, taskDao.fetch(task)?.order)
@@ -144,7 +144,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
                 with(CaldavTaskMaker.TASK, task.id)
         ))
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals(
                 5678L,
@@ -156,7 +156,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
     fun readCollapsedState() = runBlocking {
         val (_, list) = withVtodo(HIDE_SUBTASKS)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val task = caldavDao
                 .getTaskByRemoteId(list.uuid!!, "2822976a-b71e-4962-92e4-db7297789c20")
@@ -175,7 +175,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
                 with(REMOTE_ID, "abcd")
         ))
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertTrue(openTaskDao.getTask(listId, "abcd")?.task!!.toVTodo().collapsed)
     }
@@ -184,13 +184,13 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
     fun removeCollapsedState() = runBlocking {
         val (listId, list) = withVtodo(HIDE_SUBTASKS)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val task = caldavDao.getTaskByRemoteId(list.uuid!!, "2822976a-b71e-4962-92e4-db7297789c20")
 
         taskSaver.setCollapsed(task!!.task, false)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertFalse(
                 openTaskDao
@@ -204,7 +204,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         val (_, list) = withVtodo(SNOOZED)
 
         withTZ(CHICAGO) {
-            synchronizer.sync(hasPro = true)
+            synchronizer.sync()
         }
 
         val task = caldavDao
@@ -243,7 +243,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         ))
 
         freezeAt(DateTime(2021, 2, 4, 12, 30, 45, 125)) {
-            synchronizer.sync(hasPro = true)
+            synchronizer.sync()
         }
 
         assertEquals(1612467000000, openTaskDao.getTask(listId, "abcd")?.task!!.toVTodo().snooze)
@@ -268,7 +268,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         ))
 
         freezeAt(DateTime(2021, 2, 4, 13, 30, 45, 125)) {
-            synchronizer.sync(hasPro = true)
+            synchronizer.sync()
         }
 
         assertNull(openTaskDao.getTask(listId, "abcd")?.task!!.toVTodo().snooze)
@@ -279,7 +279,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         val (_, list) = withVtodo(SNOOZED)
 
         withTZ(CHICAGO) {
-            synchronizer.sync(hasPro = true)
+            synchronizer.sync()
         }
 
         val task = caldavDao
@@ -302,7 +302,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         ))
 
         freezeAt(DateTime(2021, 2, 4, 12, 30, 45, 125)) {
-            synchronizer.sync(hasPro = true)
+            synchronizer.sync()
         }
 
         assertEquals(
@@ -315,7 +315,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
     fun removeSnoozeTime() = withTZ(CHICAGO) {
         val (listId, list) = withVtodo(SNOOZED)
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         val task = caldavDao.getTaskByRemoteId(list.uuid!!, "4CBBC669-70E3-474D-A0A3-0FC42A14A5A5")
             ?: throw IllegalStateException("Missing task")
@@ -326,7 +326,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         alarmDao.deleteSnoozed(listOf(1))
         dirtyDao.setDirty(listOf(task.task))
 
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertNull(
                 openTaskDao
@@ -341,7 +341,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
 
         val caldavTask = caldavDao.getTaskByRemoteId(synced.list.uuid!!, "abcd")!!
         caldavDao.update(caldavTask.copy(etag = null)) // force the flattened task to be re-fetched
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals(15, alarmDao.getAlarms(synced.taskId).single().repeat)
     }
@@ -353,7 +353,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         val synced = syncTaskWithRepeatingAlarm()
 
         openTaskDao.setDescription(synced.listId, "abcd", "remote notes")
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertEquals("remote notes", taskDao.fetch(synced.taskId)!!.notes)
         assertEquals(15, alarmDao.getAlarms(synced.taskId).single().repeat)
@@ -378,7 +378,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
             with(CaldavTaskMaker.TASK, taskId),
             with(REMOTE_ID, "abcd"),
         ))
-        synchronizer.sync(hasPro = true) // push flattens the alarm into dmfs
+        synchronizer.sync() // push flattens the alarm into dmfs
         return SyncedTask(listId, list, taskId)
     }
 
@@ -387,7 +387,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         val (listId, list) = syncTaskWithTags("Tag1")
 
         replaceRemoteTask(listId, vtodo("Tag1,Tag2"))
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertTags(list, "Tag1", "Tag2")
     }
@@ -397,7 +397,7 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         val (listId, list) = syncTaskWithTags("Tag1,Tag2")
 
         replaceRemoteTask(listId, vtodo("Tag1"))
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertTags(list, "Tag1")
     }
@@ -407,14 +407,14 @@ class OpenTasksPropertiesTests : OpenTasksTest() {
         val (listId, list) = syncTaskWithTags("Tag1")
 
         replaceRemoteTask(listId, vtodo("Tag3"))
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
 
         assertTags(list, "Tag3")
     }
 
     private suspend fun syncTaskWithTags(categories: String): Pair<Long, CaldavCalendar> {
         val result = withVtodo(vtodo(categories))
-        synchronizer.sync(hasPro = true)
+        synchronizer.sync()
         return result
     }
 

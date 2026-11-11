@@ -102,7 +102,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         enqueueCalendars("$HOME_SET$LIST/")
 
         Upgrade_15_13(caldavDao).canonicalizeUrls()
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(listOf("calendar"), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
@@ -121,7 +121,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         val task = insertSyncedTask(calendar)
         enqueueCalendars("${server.url(HOME_SET)}$LIST/")
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(listOf("calendar"), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
@@ -141,7 +141,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         val task = insertSyncedTask(calendar)
         enqueueCalendars("http://LOCALHOST:${server.port}$HOME_SET$LIST/")
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(listOf("calendar"), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
@@ -161,7 +161,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         enqueueCalendars("$HOME_SET$LIST/")
         server.enqueue(multiStatus(collection("$HOME_SET$LIST/")))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         val stored = caldavDao.getCalendarsByAccount(account.uuid!!).single()
@@ -184,7 +184,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         server.enqueue(multiStatus(collection("http://LOCALHOST:${server.port}$HOME_SET$LIST/")))
         server.enqueue(multiStatus(etags()))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         val stored = caldavDao.getCalendarsByAccount(account.uuid!!)
         assertEquals(listOf("calendar"), stored.map { it.uuid })
@@ -206,7 +206,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
             )
             redirected.enqueue(multiStatus(multistatus()).setHeader("x-sabre-version", "4.4.0"))
 
-            synchronizer.sync(account, hasPro = true)
+            synchronizer.sync(account)
 
             assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
             assertEquals(SERVER_SABREDAV, caldavDao.getAccountByUuid(account.uuid!!)!!.serverType)
@@ -227,7 +227,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         server.enqueue(multiStatus(etags("a.ics", "b.ics")))
         server.enqueue(multiStatus(calendarData("a.ics" to TWO_VTODOS, "b.ics" to ONE_VTODO)))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         verify(iCal, times(1)).fromVtodo(
@@ -255,7 +255,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         server.enqueue(multiStatus(etags("a.ics")))
         server.enqueue(multiStatus(calendarData("a.ics" to ONE_VTODO, etags = false)))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         verify(iCal, times(1)).fromVtodo(
@@ -291,7 +291,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
                 )
             )
 
-            synchronizer.sync(account, hasPro = true)
+            synchronizer.sync(account)
 
             assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
             verify(iCal, times(1)).fromVtodo(
@@ -320,7 +320,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
             server.enqueue(multiStatus(etags("a.ics", "b.ics")))
             server.enqueue(multiStatus(calendarData("a.ics" to "", "b.ics" to ONE_VTODO)))
 
-            synchronizer.sync(account, hasPro = true)
+            synchronizer.sync(account)
 
             assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
             verify(iCal, times(1)).fromVtodo(
@@ -342,7 +342,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         server.enqueue(multiStatus(etags("a.ics")))
         server.enqueue(multiStatus(calendarData("a.ics" to ONE_VTODO)))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(1, caldavDao.getCalendarsByAccount(account.uuid!!).size)
@@ -361,7 +361,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
     fun `list that only supports events is not synced`() = runBlocking {
         enqueueCalendars("$HOME_SET$LIST/", componentSet = VEVENT_COMPONENT_SET)
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(emptyList<String>(), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
@@ -379,7 +379,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         enqueueCalendars()
         server.enqueue(MockResponse().setResponseCode(404))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(emptyList<String>(), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
@@ -398,7 +398,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         enqueueCalendars()
         server.enqueue(multiStatus(notFound("$HOME_SET$LIST/")))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(emptyList<String>(), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
@@ -417,7 +417,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         enqueueCalendars()
         server.enqueue(MockResponse().setResponseCode(403))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
         assertEquals(emptyList<String>(), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
@@ -436,7 +436,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         enqueueCalendars()
         server.enqueue(MockResponse().setResponseCode(500))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertEquals(listOf("calendar"), caldavDao.getCalendarsByAccount(account.uuid!!).map { it.uuid })
         assertNotNull(taskDao.fetch(task))
@@ -447,7 +447,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
     fun `sync reports an unparseable url instead of crashing`() = runBlocking {
         val account = account.copy(url = "https://example.com:port/").also { caldavDao.update(it) }
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertEquals("Invalid URL: https://example.com:port/", caldavDao.getAccountByUuid(account.uuid!!)!!.error)
         verify(reporting, never()).reportException(any(), any())

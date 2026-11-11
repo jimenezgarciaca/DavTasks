@@ -8,7 +8,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.rules.Timeout
-import org.tasks.R
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.dao.CaldavDao
 import org.tasks.injection.InjectingTestCase
@@ -32,7 +31,6 @@ abstract class CaldavTest : InjectingTestCase() {
     override fun setUp() {
         super.setUp()
 
-        preferences.setBoolean(R.string.p_debug_pro, true)
         server.start()
         headers.clear()
     }
@@ -41,7 +39,7 @@ abstract class CaldavTest : InjectingTestCase() {
     fun after() = server.shutdown()
 
     protected suspend fun sync(account: CaldavAccount = this.account) {
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
     }

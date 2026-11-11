@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import org.tasks.R
-import org.tasks.billing.Inventory
 import org.tasks.compose.components.TasksIcon
 import org.tasks.databinding.FilterAdapterRowBinding
 import org.tasks.extensions.formatNumber
@@ -29,7 +28,6 @@ class FilterViewHolder internal constructor(
     private val navigationDrawer: Boolean,
     private val locale: Locale,
     private val context: Context,
-    private val inventory: Inventory,
     private val colorProvider: ColorProvider,
     private val onClick: (Filter) -> Unit,
 ) : RecyclerView.ViewHolder(itemView) {
@@ -74,7 +72,7 @@ class FilterViewHolder internal constructor(
         } else {
             text.isChecked = selected
         }
-        icon.update { filter.getIcon(inventory) }
+        icon.update { filter.getIcon() }
         color.update { getColor(filter) }
         text.text = filter.title
         if (count == null || count == 0) {
@@ -99,10 +97,7 @@ class FilterViewHolder internal constructor(
 
     private fun getColor(filter: Filter): Int {
         if (filter.tint != 0) {
-            val color = colorProvider.getThemeColor(filter.tint, true)
-            if (color.isFree || inventory.purchasedThemes()) {
-                return color.primaryColor
-            }
+            return colorProvider.getThemeColor(filter.tint, true).primaryColor
         }
         return MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurface, 0)
     }

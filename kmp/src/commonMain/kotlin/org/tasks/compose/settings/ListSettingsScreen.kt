@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.tasks.compose.PlatformBackHandler
-import org.tasks.compose.components.TasksIcon
 import org.tasks.compose.pickers.IconPicker
 import org.tasks.compose.pickers.IconPickerViewModel
 import org.tasks.data.PrincipalWithAccess
@@ -109,7 +108,6 @@ data class ListSettingsState(
     val showIconPicker: Boolean = false,
     val showColorPicker: Boolean = false,
     val pickerColors: List<PickerColor> = emptyList(),
-    val hasPro: Boolean = false,
     val hasColorWheel: Boolean = false,
     val showDiscardDialog: Boolean = false,
 ) {
@@ -149,7 +147,6 @@ fun ListSettingsScreen(
     onNavigateBack: () -> Unit,
     onSelectColor: (PickerColor?) -> Unit,
     onColorWheelSelected: () -> Unit,
-    onSubscribe: (String) -> Unit,
     onAddShortcut: (() -> Unit)? = null,
     onAddWidget: (() -> Unit)? = null,
     headerContent: @Composable () -> Unit = {},
@@ -178,7 +175,6 @@ fun ListSettingsScreen(
         onOpenIconPicker = viewModel::openIconPicker,
         onCloseIconPicker = viewModel::closeIconPicker,
         onSelectIcon = viewModel::selectIcon,
-        onSubscribe = onSubscribe,
         onAddShortcut = onAddShortcut,
         onAddWidget = onAddWidget,
         headerContent = headerContent,
@@ -207,7 +203,6 @@ fun ListSettingsScreen(
     onOpenIconPicker: () -> Unit,
     onCloseIconPicker: () -> Unit,
     onSelectIcon: (String) -> Unit,
-    onSubscribe: (String) -> Unit,
     onAddShortcut: (() -> Unit)? = null,
     onAddWidget: (() -> Unit)? = null,
     headerContent: @Composable () -> Unit = {},
@@ -391,11 +386,9 @@ fun ListSettingsScreen(
     // Color picker dialog
     if (state.showColorPicker) {
         ColorPickerDialog(
-            hasPro = state.hasPro,
             colors = state.pickerColors,
             onDismiss = onCloseColorPicker,
             onColorSelected = onSelectColor,
-            onSubscribe = { onSubscribe("list_colors") },
             onColorWheelSelected = onColorWheelSelected,
             showColorWheel = state.hasColorWheel,
         )
@@ -418,8 +411,6 @@ fun ListSettingsScreen(
                 onQueryChange = iconPickerViewModel::onQueryChange,
                 onSelected = { onSelectIcon(it.name) },
                 toggleCollapsed = iconPickerViewModel::setCollapsed,
-                hasPro = state.hasPro,
-                subscribe = { onSubscribe("icons") },
             )
         }
     }

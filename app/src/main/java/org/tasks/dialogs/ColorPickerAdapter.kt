@@ -2,24 +2,14 @@ package org.tasks.dialogs
 
 import android.app.Activity
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.tasks.R
-import org.tasks.billing.Inventory
 import org.tasks.databinding.DialogIconPickerCellBinding
 import org.tasks.dialogs.ColorPalettePicker.Pickable
-import org.tasks.extensions.Context.toast
-import org.tasks.resources.getString
-import tasks.kmp.generated.resources.Res
-import tasks.kmp.generated.resources.subscription_required
 
 class ColorPickerAdapter(
     private val activity: Activity,
-    private val inventory: Inventory,
-    private val scope: CoroutineScope,
     private val onSelected: (Int) -> Unit
 ) : ListAdapter<Pickable, IconPickerHolder>(DiffCallback()) {
 
@@ -34,25 +24,10 @@ class ColorPickerAdapter(
             activity,
             DialogIconPickerCellBinding.inflate(activity.layoutInflater, parent, false),
             onSelected
-        ) {
-            scope.launch {
-                activity.toast(
-                    getString(Res.string.subscription_required),
-                    Toast.LENGTH_SHORT
-                )
-            }
-        }
+        )
 
     override fun onBindViewHolder(holder: IconPickerHolder, position: Int) {
-        val pickable = getItem(position)
-        val available = inventory.purchasedThemes() || pickable.isFree
-        holder.bind(
-            position,
-            if (available) R.drawable.color_picker else R.drawable.ic_outline_vpn_key_24px,
-            pickable.pickerColor,
-            1f,
-            available
-        )
+        holder.bind(position, R.drawable.color_picker, getItem(position).pickerColor)
     }
 
     private class DiffCallback : DiffUtil.ItemCallback<Pickable>() {

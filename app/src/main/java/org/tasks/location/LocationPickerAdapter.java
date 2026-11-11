@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import org.tasks.R;
-import org.tasks.billing.Inventory;
 import org.tasks.data.PlaceUsage;
 import org.tasks.data.entity.Place;
 import org.tasks.filters.FilterExtensionsKt;
@@ -27,24 +26,20 @@ import org.tasks.icons.MaterialSymbolsGlyphs;
 import org.tasks.location.LocationPickerAdapter.PlaceViewHolder;
 import org.tasks.themes.ColorProvider;
 import org.tasks.themes.TasksIcons;
-import org.tasks.themes.ThemeColor;
 import timber.log.Timber;
 
 public class LocationPickerAdapter extends ListAdapter<PlaceUsage, PlaceViewHolder> {
 
   private final Context context;
-  private final Inventory inventory;
   private final ColorProvider colorProvider;
   private final OnLocationPicked callback;
 
   LocationPickerAdapter(
       Context context,
-      Inventory inventory,
       ColorProvider colorProvider,
       OnLocationPicked callback) {
     super(new DiffCallback());
     this.context = context;
-    this.inventory = inventory;
     this.colorProvider = colorProvider;
 
     this.callback = callback;
@@ -68,16 +63,13 @@ public class LocationPickerAdapter extends ListAdapter<PlaceUsage, PlaceViewHold
   public void onBindViewHolder(@NonNull PlaceViewHolder holder, int position) {
     PlaceUsage place = getItem(position);
     PlaceFilter filter = new PlaceFilter(place.getPlace(), 0);
-    String icon = FilterExtensionsKt.getIcon(filter, inventory);
+    String icon = FilterExtensionsKt.getIcon(filter);
     holder.bind(place, getColor(place.getColor()), icon);
   }
 
   private int getColor(int tint) {
     if (tint != 0) {
-      ThemeColor color = colorProvider.getThemeColor(tint, true);
-      if (color.isFree() || inventory.purchasedThemes()) {
-        return color.getPrimaryColor();
-      }
+      return colorProvider.getThemeColor(tint, true).getPrimaryColor();
     }
     return MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurface, 0);
   }

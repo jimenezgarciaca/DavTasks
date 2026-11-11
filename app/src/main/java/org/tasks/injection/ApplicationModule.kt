@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.runBlocking
 import org.tasks.LocalBroadcastManager
 import com.todoroo.astrid.gcal.GCalHelper
 import com.todoroo.astrid.repeats.RepeatTaskHelper
@@ -25,17 +24,9 @@ import org.tasks.audio.SoundPlayer
 import org.tasks.calendars.CalendarHelper
 import org.tasks.filters.CaldavListCache
 import org.tasks.service.TaskCompleter
-import org.tasks.billing.PurchaseState
 import org.tasks.viewmodel.DrawerViewModel
 import org.tasks.broadcast.ComposeRefreshBroadcaster
 import org.tasks.analytics.Reporting
-import org.tasks.fcm.FcmTokenProvider
-import org.tasks.auth.TasksServerEnvironment
-import org.tasks.billing.Inventory
-import org.tasks.billing.PlayPurchaseStore
-import org.tasks.billing.PlayPurchaseVerifier
-import org.tasks.billing.PlayPurchases
-import org.tasks.billing.StoreSubscriptionProvider
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.CaldavClientProvider
 import org.tasks.http.HttpClientFactory
@@ -47,7 +38,6 @@ import org.tasks.analytics.CrashReporting
 import org.tasks.caldav.VtodoCache
 import org.tasks.caldav.metadata.TagMetadataSync
 import org.tasks.compose.drawer.DrawerConfiguration
-import org.tasks.R
 import org.tasks.data.OpenTaskDao
 import org.tasks.opentasks.OpenTaskContentObserver
 import org.tasks.opentasks.OpenTasksSynchronizer
@@ -88,11 +78,8 @@ import org.tasks.security.KeyStoreEncryption
 import org.tasks.service.TaskCleanup
 import org.tasks.service.TaskDeleter
 import org.tasks.sync.SyncAdapters
-import org.tasks.preferences.DefaultFilterProvider
-import org.tasks.themes.ColorProvider
 import org.tasks.compose.chips.ChipDataProvider
 import org.tasks.tasklist.HeaderFormatter
-import com.todoroo.astrid.service.TaskCreator
 import kotlinx.serialization.json.Json
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -210,13 +197,6 @@ class ApplicationModule {
     @Singleton
     fun getCompletionDao(db: Database) = db.completionDao()
 
-    @Provides
-    @Singleton
-    fun providePlayPurchases(
-        store: PlayPurchaseStore,
-        verifier: PlayPurchaseVerifier,
-    ) = PlayPurchases(store, verifier).also { runBlocking { it.load() } }
-
     @Singleton
     @ApplicationScope
     @Provides
@@ -241,7 +221,6 @@ class ApplicationModule {
         locationDao: LocationDao,
         taskDao: TaskDao,
         tasksPreferences: TasksPreferences,
-        purchaseState: PurchaseState,
     ) = FilterProvider(
         filterDao = filterDao,
         tagDataDao = tagDataDao,
@@ -250,7 +229,6 @@ class ApplicationModule {
         locationDao = locationDao,
         taskDao = taskDao,
         tasksPreferences = tasksPreferences,
-        purchaseState = purchaseState,
     )
 
     @Provides
@@ -300,9 +278,6 @@ class ApplicationModule {
     )
 
     @Provides
-    fun providesPurchaseState(inventory: Inventory): PurchaseState = inventory
-
-    @Provides
     fun providesCalendarHelper(gcalHelper: GCalHelper): CalendarHelper = gcalHelper
 
     @Provides
@@ -342,14 +317,12 @@ class ApplicationModule {
         taskDao: TaskDao,
         caldavDao: CaldavDao,
         tasksPreferences: TasksPreferences,
-        purchaseState: PurchaseState,
         composeRefreshBroadcaster: ComposeRefreshBroadcaster,
     ) = DrawerViewModel(
         filterProvider = filterProvider,
         taskDao = taskDao,
         caldavDao = caldavDao,
         tasksPreferences = tasksPreferences,
-        purchaseState = purchaseState,
         refreshFlow = composeRefreshBroadcaster.refreshes,
     )
 
@@ -536,9 +509,6 @@ class ApplicationModule {
     )
 
     @Provides
-    fun providesFcmTokenProvider(firebase: Firebase): FcmTokenProvider = firebase
-
-    @Provides
     fun providesApiTaskFactory(impl: org.tasks.api.AppApiTaskFactory): org.tasks.api.ApiTaskFactory = impl
 
     @Provides
@@ -608,22 +578,6 @@ class ApplicationModule {
         tasksPreferences: TasksPreferences,
         taskCleanup: TaskCleanup,
     ) = TaskDeleter(deletionDao, taskDao, caldavDao, refreshBroadcaster, vtodoCache, tasksPreferences, taskCleanup)
-
-    @Provides
-    fun providesTaskMigrator(
-        clientProvider: org.tasks.caldav.CaldavClientProvider,
-        caldavDao: CaldavDao,
-        syncAdapters: org.tasks.sync.SyncAdapters,
-        taskDeleter: TaskDeleter,
-    ) = org.tasks.service.TaskMigrator(clientProvider, caldavDao, syncAdapters, taskDeleter)
-
-    @Provides
-    @Singleton
-    fun providesTasksServerEnvironment(
-        tasksPreferences: TasksPreferences,
-    ) = TasksServerEnvironment(
-        tasksPreferences = tasksPreferences,
-    )
 
     @Provides
     @Singleton

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.rememberScrollState
@@ -18,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +60,6 @@ fun TagSettingsScreen(
     onSave: () -> Unit,
     onDelete: () -> Unit,
     onNavigateBack: () -> Unit,
-    onSubscribe: (String) -> Unit,
     onColorWheelSelected: () -> Unit = {},
     onAddShortcut: (() -> Unit)? = null,
     onAddWidget: (() -> Unit)? = null,
@@ -167,11 +164,9 @@ fun TagSettingsScreen(
 
     if (state.showColorPicker) {
         ColorPickerDialog(
-            hasPro = state.hasPro,
             colors = state.pickerColors,
             onDismiss = viewModel::closeColorPicker,
             onColorSelected = { viewModel.selectColor(it.originalColor) },
-            onSubscribe = { onSubscribe("list_colors") },
             onColorWheelSelected = onColorWheelSelected,
             showColorWheel = state.hasColorWheel,
         )
@@ -193,8 +188,6 @@ fun TagSettingsScreen(
                 onQueryChange = iconPickerViewModel::onQueryChange,
                 onSelected = { viewModel.selectIcon(it.name) },
                 toggleCollapsed = iconPickerViewModel::setCollapsed,
-                hasPro = state.hasPro,
-                subscribe = { onSubscribe("icons") },
             )
         }
     }

@@ -2,11 +2,9 @@ package org.tasks.viewmodel
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -14,16 +12,12 @@ import kotlinx.coroutines.withTimeout
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.tasks.InMemoryDataStore
-import org.tasks.billing.SubscriptionProvider
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.preferences.TasksPreferences
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AccountLoadedTest {
@@ -65,8 +59,6 @@ class AccountLoadedTest {
         val viewModel = LocalAccountViewModel(
             caldavDao = dao(),
             taskDeleter = mock(),
-            backgroundWork = mock(),
-            purchaseState = mock(),
         )
         viewModel.setAccountId(ACCOUNT_ID)
 
@@ -83,8 +75,6 @@ class AccountLoadedTest {
         val viewModel = LocalAccountViewModel(
             caldavDao = dao(),
             taskDeleter = mock(),
-            backgroundWork = mock(),
-            purchaseState = mock(),
         )
         viewModel.setAccountId(ACCOUNT_ID)
 

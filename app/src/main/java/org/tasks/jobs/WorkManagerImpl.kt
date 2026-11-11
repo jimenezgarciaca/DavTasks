@@ -5,7 +5,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -27,34 +26,22 @@ import org.tasks.BuildConfig
 import org.tasks.R
 import org.tasks.data.OpenTaskDao
 import org.tasks.data.dao.CaldavDao
-import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_ETEBASE
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_GOOGLE_TASKS
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_MICROSOFT
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.Task
 import org.tasks.date.DateTimeUtils.midnight
 import org.tasks.date.DateTimeUtils.newDateTime
-import org.tasks.jobs.MigrateLocalWork.Companion.EXTRA_ACCOUNT
-import org.tasks.jobs.MigrateLocalWork.Companion.EXTRA_LOCAL_ACCOUNT
 import org.tasks.sync.SyncSource
-import org.tasks.jobs.WorkManager.Companion.REMOTE_CONFIG_INTERVAL_HOURS
 import org.tasks.jobs.WorkManager.Companion.TAG_BACKGROUND_SYNC
 import org.tasks.jobs.WorkManager.Companion.TAG_BACKUP
-import org.tasks.jobs.WorkManager.Companion.TAG_MIGRATE_LOCAL
 import org.tasks.jobs.WorkManager.Companion.TAG_NOTIFICATIONS
 import org.tasks.jobs.WorkManager.Companion.TAG_REFRESH
-import org.tasks.jobs.WorkManager.Companion.TAG_REMOTE_CONFIG
 import org.tasks.jobs.WorkManager.Companion.TAG_SYNC
-import org.tasks.jobs.WorkManager.Companion.TAG_UPDATE_PURCHASES
 import org.tasks.notifications.Throttle
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.TasksPreferences
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import org.tasks.time.printTimestamp
 import timber.log.Timber
-import java.util.Random
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 
@@ -74,17 +61,6 @@ class WorkManagerImpl(
             OneTimeWorkRequest.Builder(UpdateCalendarWork::class.java)
                 .setInputData(UpdateCalendarWork.EXTRA_ID to task.id)
         )
-    }
-
-    @SuppressLint("EnqueueWork")
-    override fun migrateLocalTasks(localAccount: CaldavAccount, tasksAccount: CaldavAccount) {
-        val builder = OneTimeWorkRequest.Builder(MigrateLocalWork::class.java)
-                .setInputData(
-                    EXTRA_LOCAL_ACCOUNT to localAccount.uuid,
-                    EXTRA_ACCOUNT to tasksAccount.uuid,
-                )
-                .setConstraints(networkConstraints)
-        enqueue(workManager.beginUniqueWork(TAG_MIGRATE_LOCAL, APPEND_OR_REPLACE, builder.build()))
     }
 
     override suspend fun startEnqueuedSync() {
@@ -115,13 +91,7 @@ class WorkManagerImpl(
 
     override fun updateBackgroundSync() {
         throttle.run {
-            val enabled = caldavDao.getAccounts(
-                TYPE_GOOGLE_TASKS,
-                TYPE_CALDAV,
-                TYPE_TASKS,
-                TYPE_ETEBASE,
-                TYPE_MICROSOFT
-            ).isNotEmpty()
+            val enabled = caldavDao.getAccounts(TYPE_CALDAV).isNotEmpty()
             if (enabled) {
                 Timber.d("Enabling background sync")
                 val builder = PeriodicWorkRequest.Builder(SyncWork::class.java, 1, TimeUnit.HOURS)
@@ -171,24 +141,6 @@ class WorkManagerImpl(
                             .plusDays(1)
                             .millis
                             .coerceAtMost(midnight()))
-
-    override fun scheduleConfigRefresh() {
-        throttle.run {
-            workManager.enqueueUniquePeriodicWork(
-                    TAG_REMOTE_CONFIG,
-                    ExistingPeriodicWorkPolicy.UPDATE,
-                    PeriodicWorkRequest.Builder(
-                            RemoteConfigWork::class.java, REMOTE_CONFIG_INTERVAL_HOURS, TimeUnit.HOURS)
-                            .setConstraints(networkConstraints)
-                            .build())
-        }
-    }
-
-    // DavTasks no incluye la copia de seguridad en Google Drive.
-    override fun scheduleDriveUpload(uri: Uri, purge: Boolean) = Unit
-
-    override fun updatePurchases() =
-        enqueueUnique(TAG_UPDATE_PURCHASES, UpdatePurchaseWork::class.java)
 
     @SuppressLint("EnqueueWork")
     private fun enqueueUnique(

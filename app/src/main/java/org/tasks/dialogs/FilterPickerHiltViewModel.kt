@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.LocalBroadcastManager
-import org.tasks.billing.PurchaseState
 import org.tasks.broadcast.ComposeRefreshBroadcaster
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.compose.FilterSelectionActivity.Companion.EXTRA_LISTS_ONLY
@@ -26,7 +25,6 @@ class FilterPickerHiltViewModel @Inject constructor(
     filterProvider: FilterProvider,
     caldavDao: CaldavDao,
     tasksPreferences: TasksPreferences,
-    purchaseState: PurchaseState,
     refreshBroadcaster: RefreshBroadcaster,
     composeRefreshBroadcaster: ComposeRefreshBroadcaster,
     private val preferences: Preferences,
@@ -36,7 +34,6 @@ class FilterPickerHiltViewModel @Inject constructor(
     filterProvider = filterProvider,
     caldavDao = caldavDao,
     tasksPreferences = tasksPreferences,
-    purchaseState = purchaseState,
     refreshBroadcaster = refreshBroadcaster,
     listsOnly = savedStateHandle[EXTRA_LISTS_ONLY] ?: false,
     refreshFlow = composeRefreshBroadcaster.refreshes,

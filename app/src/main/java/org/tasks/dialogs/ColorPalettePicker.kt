@@ -2,23 +2,14 @@ package org.tasks.dialogs
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
 import org.tasks.R
 import org.tasks.resources.getString
-import tasks.kmp.generated.resources.Res
-import tasks.kmp.generated.resources.upgrade
-import org.tasks.billing.Inventory
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel
 import org.tasks.databinding.DialogIconPickerBinding
 import org.tasks.dialogs.ColorPickerAdapter.Palette
 import org.tasks.dialogs.ColorWheelPicker.Companion.newColorWheel
@@ -59,7 +50,6 @@ class ColorPalettePicker : DialogFragment() {
 
     interface Pickable : Parcelable {
         val pickerColor: Int
-        val isFree: Boolean
     }
 
     interface ColorPickedCallback {
@@ -67,7 +57,6 @@ class ColorPalettePicker : DialogFragment() {
     }
 
     @Inject lateinit var dialogBuilder: DialogBuilder
-    @Inject lateinit var inventory: Inventory
     @Inject lateinit var colorProvider: ColorProvider
 
     private lateinit var colors: List<Pickable>
@@ -88,12 +77,7 @@ class ColorPalettePicker : DialogFragment() {
             Palette.WIDGET -> colorProvider.getWidgetColors()
         }
 
-        val iconPickerAdapter = ColorPickerAdapter(
-            requireActivity(),
-            inventory,
-            lifecycleScope,
-            this::onSelected,
-        )
+        val iconPickerAdapter = ColorPickerAdapter(requireActivity(), this::onSelected)
         with(binding.icons) {
             layoutManager = IconLayoutManager(context)
             adapter = iconPickerAdapter
@@ -110,16 +94,7 @@ class ColorPalettePicker : DialogFragment() {
                     .show(parentFragmentManager, FRAG_TAG_COLOR_PICKER)
             }
         }
-        if (inventory.purchasedThemes()) {
-            builder.setNegativeButton(R.string.cancel, null)
-        } else {
-            builder.setPositiveButton(runBlocking { getString(Res.string.upgrade) }) { _: DialogInterface?, _: Int ->
-                startActivity(
-                    Intent(context, PurchaseActivity::class.java)
-                        .putExtra(PurchaseActivityViewModel.EXTRA_SOURCE, "colors")
-                )
-            }
-        }
+        builder.setNegativeButton(R.string.cancel, null)
         return builder.show()
     }
 

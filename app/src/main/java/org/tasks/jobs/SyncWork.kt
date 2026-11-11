@@ -18,15 +18,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.tasks.broadcast.RefreshBroadcaster
-import org.tasks.TasksApplication
 import org.tasks.analytics.Firebase
-import org.tasks.billing.Inventory
 import org.tasks.caldav.CaldavSynchronizer
 import org.tasks.data.OpenTaskDao
 import org.tasks.data.dao.CaldavDao
-import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.TYPE_CALDAV
-import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.extensions.Context.hasNetworkConnectivity
 import org.tasks.injection.BaseWorker
 import org.tasks.opentasks.OpenTasksSynchronizer
@@ -47,7 +43,6 @@ class SyncWork @AssistedInject constructor(
     private val caldavSynchronizer: Lazy<CaldavSynchronizer>,
     private val openTasksSynchronizer: Lazy<OpenTasksSynchronizer>,
     private val openTaskDao: OpenTaskDao,
-    private val inventory: Inventory,
     private val tasksPreferences: TasksPreferences,
 ) : BaseWorker(context, workerParams, firebase) {
 
@@ -95,27 +90,12 @@ class SyncWork @AssistedInject constructor(
     private suspend fun setSyncSource(source: SyncSource) =
         tasksPreferences.set(TasksPreferences.syncSource, source.name)
 
-    private suspend fun hasTosAcceptance(): Boolean {
-        if (!TasksApplication.IS_GOOGLE_PLAY && !inventory.hasTasksAccount) {
-            return true
-        }
-        val currentTosVersion = firebase.getTosVersion()
-        val acceptedTosVersion = tasksPreferences.get(TasksPreferences.acceptedTosVersion, 0)
-        return acceptedTosVersion >= currentTosVersion
-    }
-
     private suspend fun doSync() {
-        inventory.updateTasksAccount()
-        if (!inventory.hasTasksAccount && !inventory.awaitVerification()) {
-            Timber.e("Could not confirm subscription, syncing without pro")
-        }
-        val hasNetworkConnectivity = context.hasNetworkConnectivity()
-        if (hasNetworkConnectivity && hasTosAcceptance()) {
+        if (context.hasNetworkConnectivity()) {
             caldavJobs().awaitAll()
         }
-        inventory.updateTasksAccount()
         if (openTaskDao.shouldSync()) {
-            openTasksSynchronizer.get().sync(hasPro = inventory.hasPro)
+            openTasksSynchronizer.get().sync()
 
             if (source == SyncSource.USER_INITIATED) {
                 AccountManager
@@ -141,16 +121,15 @@ class SyncWork @AssistedInject constructor(
         getCaldavAccounts().map {
             async(Dispatchers.IO) {
                 Thread.currentThread().contextClassLoader = context.classLoader
-                when (it.accountType) {
-                    TYPE_TASKS,
-                    TYPE_CALDAV -> caldavSynchronizer.get().sync(it, inventory.hasPro)
+                if (it.accountType == TYPE_CALDAV) {
+                    caldavSynchronizer.get().sync(it)
                 }
             }
         }
     }
 
     private suspend fun getCaldavAccounts() =
-            caldavDao.getAccounts(TYPE_CALDAV, TYPE_TASKS)
+            caldavDao.getAccounts(TYPE_CALDAV)
 
     companion object {
         const val EXTRA_SOURCE = "extra_source"

@@ -6,11 +6,9 @@ import androidx.annotation.ColorInt
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.BuildConfig
 import org.tasks.R
-import org.tasks.billing.Inventory
 import org.tasks.data.TaskContainer
 import org.tasks.data.entity.Task
 import org.tasks.data.isHidden
-import org.tasks.extensions.Context.is24HourFormat
 import org.tasks.extensions.setColorFilter
 import org.tasks.themes.chipColors
 import org.tasks.filters.CaldavFilter
@@ -20,7 +18,6 @@ import org.tasks.filters.TagFilter
 import org.tasks.filters.getIcon
 import org.tasks.kmp.org.tasks.time.DateFormatter
 import org.tasks.kmp.formatNumber
-import org.tasks.kmp.formatTime
 import org.tasks.time.startOfDay
 import org.tasks.compose.chips.ChipDataProvider
 import javax.inject.Inject
@@ -28,7 +25,6 @@ import javax.inject.Inject
 class WidgetChipProvider @Inject constructor(
     @ApplicationContext private val context: Context,
     private val chipListCache: ChipDataProvider,
-    private val inventory: Inventory,
 ) {
     var isDark = false
 
@@ -110,7 +106,7 @@ class WidgetChipProvider @Inject constructor(
         newChip(filter.tint).apply {
             setTextViewText(R.id.chip_text, filter.title)
             filter
-                .getIcon(inventory)
+                .getIcon()
                 ?.let { iconName ->
                     try {
                         val iconUri = WidgetIconProvider.getIconUri(

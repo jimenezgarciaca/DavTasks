@@ -96,7 +96,6 @@ class TasksJsonExporter @Inject constructor(
                     filename.substringBeforeLast('.'),
                     EXTENSION)
             FileHelper.copyStream(context!!, internalStorageBackup, externalStorageBackup)
-            workManager.scheduleDriveUpload(externalStorageBackup, exportType == ExportType.EXPORT_TYPE_SERVICE)
             BackupManager(context).dataChanged()
             if (exportType == ExportType.EXPORT_TYPE_MANUAL) {
                 onFinishExport(filename)

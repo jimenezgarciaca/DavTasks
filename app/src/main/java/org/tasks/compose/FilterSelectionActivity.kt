@@ -126,8 +126,6 @@ class FilterSelectionActivity : AppCompatActivity() {
                                 )
                             }
                         },
-                        // DavTasks no incluye la cuenta de Tasks.org.
-                        onSignIn = {},
                         onClick = { filter ->
                             when (filter) {
                                 is NavigationDrawerSubheader -> {

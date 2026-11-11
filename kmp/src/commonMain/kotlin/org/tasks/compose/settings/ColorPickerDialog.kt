@@ -15,11 +15,9 @@ import androidx.compose.ui.window.DialogProperties
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPickerDialog(
-    hasPro: Boolean,
     colors: List<PickerColor>,
     onDismiss: () -> Unit,
     onColorSelected: (PickerColor) -> Unit,
-    onSubscribe: () -> Unit = {},
     onColorWheelSelected: () -> Unit = {},
     showColorWheel: Boolean = true,
 ) {
@@ -41,15 +39,10 @@ fun ColorPickerDialog(
                         onColorSelected(color)
                         onDismiss()
                     },
-                    onSubscribe = {
-                        onDismiss()
-                        onSubscribe()
-                    },
                     onColorWheelSelected = {
                         onColorWheelSelected()
                         onDismiss()
                     },
-                    hasPro = hasPro,
                     showColorWheel = showColorWheel,
                 )
             }

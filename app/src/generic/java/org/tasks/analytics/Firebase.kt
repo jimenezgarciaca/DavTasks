@@ -1,30 +1,21 @@
 package org.tasks.analytics
 
 import android.content.Context
-import org.tasks.fcm.FcmTokenProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.R
-import org.tasks.preferences.Preferences
 import org.tasks.preferences.TasksPreferences
-import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Suppress("UNUSED_PARAMETER")
 class Firebase @Inject constructor(
     @param:ApplicationContext val context: Context,
-    private val preferences: Preferences,
     override val tasksPreferences: TasksPreferences,
-) : Reporting, FcmTokenProvider {
+) : Reporting {
     override val analyticsEnabled: Boolean
         get() = false
 
     override fun reportException(t: Throwable, fatal: Boolean) = Timber.e(t)
-
-    fun reportIabResult(result: String, sku: String = "", state: String, orderId: String = "") {}
-
-    fun updateRemoteConfig() {}
 
     override fun logEvent(event: String, vararg params: Pair<String, Any>) {
         Timber.d("$event -> ${params.toMap()}")
@@ -56,22 +47,4 @@ class Firebase @Inject constructor(
     override fun setSku(sku: String?) {
         Timber.d("sku -> $sku")
     }
-
-    val subscribeCooldown: Boolean
-        get() = installCooldown
-                || preferences.lastSubscribeRequest + days(28L) > currentTimeMillis()
-
-    private val installCooldown: Boolean
-        get() = preferences.installDate + days(7L) > currentTimeMillis()
-
-    private fun days(default: Long): Long =
-        TimeUnit.DAYS.toMillis(default)
-
-    fun getTosVersion(): Int = 1
-
-    fun registerPrefChangeListener() {}
-
-    fun unregisterPrefChangeListener() {}
-
-    override suspend fun getToken(): String? = null
 }

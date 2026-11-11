@@ -27,16 +27,12 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import org.jetbrains.compose.resources.stringResource
-import org.tasks.compose.components.AnimatedBanner
 import org.tasks.compose.components.Chevron
 import org.tasks.compose.components.SearchBar
 import org.tasks.compose.components.TasksIcon
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.search
 import tasks.kmp.generated.resources.search_no_results
-import tasks.kmp.generated.resources.subscription_required
-import tasks.kmp.generated.resources.subscription_required_description
-import tasks.kmp.generated.resources.upgrade
 
 private val gridSize = 48.dp
 private val verticalSpacing = 8.dp
@@ -51,8 +47,6 @@ fun IconPicker(
     onQueryChange: (String) -> Unit,
     onSelected: (Icon) -> Unit,
     toggleCollapsed: (String, Boolean) -> Unit,
-    hasPro: Boolean,
-    subscribe: () -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val numColumns = maxOf(1, (maxWidth / gridSize).toInt())
@@ -80,18 +74,6 @@ fun IconPicker(
                     }
                 )
             }
-            if (!hasPro) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    AnimatedBanner(
-                        true,
-                        title = stringResource(Res.string.subscription_required),
-                        body = stringResource(Res.string.subscription_required_description),
-                        action = stringResource(Res.string.upgrade),
-                        onAction = { subscribe() },
-                        onDismiss = {},
-                    )
-                }
-            }
             if (query.isNotBlank()) {
                 if (searchResults.isEmpty()) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
@@ -104,7 +86,7 @@ fun IconPicker(
                 } else {
                     iconGrid(
                         icons = searchResults,
-                        onSelected = { if (hasPro) onSelected(it) else subscribe() },
+                        onSelected = onSelected,
                     )
                 }
             } else {
@@ -133,7 +115,7 @@ fun IconPicker(
                     if (!collapsed.contains(category)) {
                         iconGrid(
                             icons = items,
-                            onSelected = { if (hasPro) onSelected(it) else subscribe() },
+                            onSelected = onSelected,
                         )
                     }
                 }

@@ -83,7 +83,6 @@ import org.tasks.preferences.DefaultFilterProvider
 import org.tasks.preferences.PermissionChecker
 import org.tasks.preferences.Preferences
 import org.tasks.repeats.anchoredToDueDate
-import org.tasks.time.DateTime
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import org.tasks.time.startOfDay
 import timber.log.Timber

@@ -1,34 +1,22 @@
 package org.tasks.dialogs
 
 import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.app.Dialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.flask.colorpicker.ColorPickerView
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
 import org.tasks.R
 import org.tasks.resources.getString
-import tasks.kmp.generated.resources.Res
-import tasks.kmp.generated.resources.upgrade
-import org.tasks.billing.Inventory
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class ColorWheelPicker : DialogFragment() {
 
     companion object {
         const val EXTRA_SELECTED = "extra_selected"
         private const val EXTRA_REQUEST_KEY = "extra_request_key"
-        private const val REQUEST_PURCHASE = 10010
 
         fun newColorWheel(requestKey: String, selected: Int): ColorWheelPicker {
             val args = Bundle()
@@ -44,8 +32,6 @@ class ColorWheelPicker : DialogFragment() {
         fun onColorPicked(color: Int)
     }
 
-    @Inject lateinit var inventory: Inventory
-
     var dialog: AlertDialog? = null
     var selected = -1
     var callback: ColorPickedCallback? = null
@@ -56,11 +42,6 @@ class ColorWheelPicker : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         selected = savedInstanceState?.getInt(EXTRA_SELECTED) ?: requireArguments().getInt(EXTRA_SELECTED, 0)
 
-        val button = if (inventory.purchasedThemes()) {
-            getString(R.string.ok)
-        } else {
-            runBlocking { getString(Res.string.upgrade) }
-        }
         val builder = ColorPickerDialogBuilder
                 .with(activity)
                 .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
@@ -72,16 +53,8 @@ class ColorWheelPicker : DialogFragment() {
                     selected = which
                 }
                 .lightnessSliderOnly()
-                .setPositiveButton(button) { _, _, _ ->
-                    if (inventory.purchasedThemes()) {
-                        deliverSelection()
-                    } else {
-                        startActivityForResult(
-                            Intent(context, PurchaseActivity::class.java)
-                                .putExtra(PurchaseActivityViewModel.EXTRA_SOURCE, "colors"),
-                            REQUEST_PURCHASE
-                        )
-                    }
+                .setPositiveButton(getString(R.string.ok)) { _, _, _ ->
+                    deliverSelection()
                 }
                 .setNegativeButton(R.string.cancel, null)
         if (selected != 0) {
@@ -96,18 +69,6 @@ class ColorWheelPicker : DialogFragment() {
 
         if (activity is ColorPickedCallback) {
             callback = activity
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_PURCHASE) {
-            if (inventory.hasPro) {
-                deliverSelection()
-            } else {
-                dialog?.cancel()
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 

@@ -12,19 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dagger.hilt.android.AndroidEntryPoint
-import org.tasks.billing.Inventory
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel
 import org.tasks.compose.pickers.IconPicker
 import org.tasks.compose.pickers.IconPickerViewModel
 import org.tasks.themes.TasksTheme
@@ -33,7 +26,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class IconPickerActivity : AppCompatActivity() {
-    @Inject lateinit var inventory: Inventory
     @Inject lateinit var theme: Theme
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -44,10 +36,6 @@ class IconPickerActivity : AppCompatActivity() {
                 theme = theme.themeBase.index,
                 primary = theme.themeColor.primaryColor,
             ) {
-                var hasPro by remember { mutableStateOf(false) }
-                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                    hasPro = inventory.hasPro
-                }
                 val viewModel: IconPickerViewModel = viewModel()
                 val searchResults = viewModel.searchResults.collectAsStateWithLifecycle().value
                 val state = viewModel.viewState.collectAsStateWithLifecycle().value
@@ -67,13 +55,6 @@ class IconPickerActivity : AppCompatActivity() {
                         },
                         toggleCollapsed = { category, collapsed ->
                             viewModel.setCollapsed(category, collapsed)
-                        },
-                        hasPro = hasPro,
-                        subscribe = {
-                            startActivity(
-                                Intent(this, PurchaseActivity::class.java)
-                                    .putExtra(PurchaseActivityViewModel.EXTRA_SOURCE, "icons")
-                            )
                         },
                     )
                 }

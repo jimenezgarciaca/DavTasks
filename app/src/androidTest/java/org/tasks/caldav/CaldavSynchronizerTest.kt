@@ -46,7 +46,7 @@ class CaldavSynchronizerTest : CaldavTest() {
     fun setMessageOnError() = runBlocking {
         enqueue()
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertEquals("HTTP 500 - Internal Server Error", caldavDao.getAccounts().first().error)
     }

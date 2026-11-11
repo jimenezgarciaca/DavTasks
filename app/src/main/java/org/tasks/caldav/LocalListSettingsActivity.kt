@@ -19,8 +19,6 @@ import com.todoroo.astrid.activity.TaskListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.jetbrains.compose.resources.stringResource
 import org.tasks.analytics.Firebase
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel
 import org.tasks.compose.ColorWheelDialog
 import org.tasks.compose.components.AnimatedBanner
 import org.tasks.compose.settings.ListSettingsScreen
@@ -82,12 +80,6 @@ class LocalListSettingsActivity : AppCompatActivity() {
                     onColorWheelSelected = {
                         viewModel.closeColorPicker()
                         showColorWheel = true
-                    },
-                    onSubscribe = { source ->
-                        startActivity(
-                            Intent(this, PurchaseActivity::class.java)
-                                .putExtra(PurchaseActivityViewModel.EXTRA_SOURCE, source)
-                        )
                     },
                     onAddShortcut = remember { addShortcutCallback(viewModel.state::value, primaryColor, defaultFilterProvider, firebase) { onSaved -> viewModel.save(onDismiss = { viewModel.state.value.calendar?.let(onSaved) }, onComplete = { _, calendar -> onSaved(calendar) }) } },
                     onAddWidget = remember { addWidgetCallback(viewModel.state::value, defaultFilterProvider, firebase) { onSaved -> viewModel.save(onDismiss = { viewModel.state.value.calendar?.let(onSaved) }, onComplete = { _, calendar -> onSaved(calendar) }) } },

@@ -13,10 +13,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.tasks.billing.PurchaseState
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.jobs.BackgroundWork
 import org.tasks.resources.getString
 import org.tasks.service.TaskDeleter
 import tasks.kmp.generated.resources.Res
@@ -25,8 +23,6 @@ import tasks.kmp.generated.resources.name_cannot_be_empty
 open class LocalAccountViewModel(
     private val caldavDao: CaldavDao,
     private val taskDeleter: TaskDeleter,
-    private val backgroundWork: BackgroundWork,
-    private val purchaseState: PurchaseState,
 ) : ViewModel() {
     private val accountId = MutableStateFlow<Long?>(null)
     val displayName = MutableStateFlow("")
@@ -104,36 +100,6 @@ open class LocalAccountViewModel(
     fun delete(onComplete: () -> Unit) {
         viewModelScope.launch {
             account.value?.let { taskDeleter.delete(it) }
-            onComplete()
-        }
-    }
-
-    suspend fun canMigrate(
-        onPurchaseRequired: () -> Unit,
-        onSignInRequired: () -> Unit,
-    ): Boolean {
-        if (!purchaseState.hasTasksSubscription) {
-            onPurchaseRequired()
-            return false
-        }
-        val tasksAccount = caldavDao
-            .getAccounts(CaldavAccount.TYPE_TASKS)
-            .firstOrNull()
-        if (tasksAccount == null) {
-            onSignInRequired()
-            return false
-        }
-        return true
-    }
-
-    fun confirmMigration(onComplete: () -> Unit) {
-        val localAccount = account.value ?: return
-        viewModelScope.launch {
-            val tasksAccount = caldavDao
-                .getAccounts(CaldavAccount.TYPE_TASKS)
-                .firstOrNull()
-                ?: return@launch
-            backgroundWork.migrateLocalTasks(localAccount, tasksAccount)
             onComplete()
         }
     }

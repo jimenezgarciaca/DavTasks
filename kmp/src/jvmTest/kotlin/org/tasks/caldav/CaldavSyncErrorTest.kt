@@ -57,7 +57,7 @@ class CaldavSyncErrorTest : DatabaseTest() {
     fun `a propfind the server refuses is shown but not reported`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(405))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertEquals("HTTP 405 - Method Not Allowed", caldavDao.getAccountByUuid("account")!!.error)
         verify(reporting, never()).reportException(any(), any())
@@ -67,7 +67,7 @@ class CaldavSyncErrorTest : DatabaseTest() {
     fun `a request the server rejects as malformed is reported`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(400))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertEquals("HTTP 400 - Bad Request", caldavDao.getAccountByUuid("account")!!.error)
         verify(reporting).reportException(any(), any())
@@ -77,7 +77,7 @@ class CaldavSyncErrorTest : DatabaseTest() {
     fun `a home set the server no longer has is logged but not reported`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(404))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertEquals("HTTP 404 - Not Found", caldavDao.getAccountByUuid("account")!!.error)
         verify(reporting, never()).reportException(any(), any())
@@ -88,7 +88,7 @@ class CaldavSyncErrorTest : DatabaseTest() {
     fun `an unnamed status still names the code`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(499))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertEquals("HTTP 499", caldavDao.getAccountByUuid("account")!!.error)
     }
@@ -97,13 +97,13 @@ class CaldavSyncErrorTest : DatabaseTest() {
     fun `payment and terms statuses keep driving their screens`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(402))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertTrue(caldavDao.getAccountByUuid("account")!!.isPaymentRequired())
 
         server.enqueue(MockResponse().setResponseCode(451))
 
-        synchronizer.sync(account, hasPro = true)
+        synchronizer.sync(account)
 
         assertTrue(caldavDao.getAccountByUuid("account")!!.isTosRequired())
     }

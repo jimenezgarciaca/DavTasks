@@ -1,8 +1,6 @@
- package org.tasks.compose.accounts
+package org.tasks.compose.accounts
 
-import org.tasks.PlatformConfiguration
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,20 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.tasks.auth.EXTRA_AUTH_ERROR
 import dagger.hilt.android.AndroidEntryPoint
-import org.tasks.R
-import org.tasks.analytics.Firebase
-import org.tasks.billing.Inventory
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_FEATURE
-import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_NAME_YOUR_PRICE
-import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_SOURCE
-import org.tasks.caldav.CaldavSignInActivity
-import org.tasks.extensions.Context.openUri
-import org.tasks.preferences.TasksPreferences
 import org.tasks.themes.TasksSettingsTheme
 import org.tasks.themes.Theme
 import javax.inject.Inject
@@ -31,73 +16,19 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddAccountActivity : ComponentActivity() {
     @Inject lateinit var theme: Theme
-    @Inject lateinit var inventory: Inventory
-    @Inject lateinit var firebase: Firebase
-    @Inject lateinit var tasksPreferences: TasksPreferences
-    @Inject lateinit var configuration: PlatformConfiguration
 
     private val viewModel: AddAccountViewModel by viewModels()
 
-    private var pendingPlatform: Platform? = null
-
-    private val purchaseLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            pendingPlatform?.let { platform ->
-                pendingPlatform = null
-                when (platform) {
-                    Platform.TASKS_ORG -> finish()
-                    Platform.CALDAV,
-                    Platform.ETEBASE -> doSignIn(platform)
-                    Platform.DAVX5 -> doOpenUrl(platform)
-                    else -> {}
-                }
-            }
-        } else {
-            pendingPlatform = null
-        }
-    }
-
+    // El resultado del alta llega por accountAdded; aquí no hace falta tratarlo.
     private val syncLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode != Activity.RESULT_OK) {
-            result.data
-                ?.getStringExtra(EXTRA_AUTH_ERROR)
-                ?.let { /* ignore error, user can try again */ }
-        }
-    }
-
-    private fun doSignIn(platform: Platform) {
-        when (platform) {
-            Platform.CALDAV ->
-                syncLauncher.launch(Intent(this, CaldavSignInActivity::class.java))
-            else -> throw IllegalArgumentException()
-        }
-    }
-
-    private fun doOpenUrl(platform: Platform) = openUrl(platform)
-
-    private fun requirePurchase(platform: Platform, nameYourPrice: Boolean = true) {
-        pendingPlatform = platform
-        purchaseLauncher.launch(
-            Intent(this, PurchaseActivity::class.java)
-                .putExtra(EXTRA_NAME_YOUR_PRICE, nameYourPrice)
-                .putExtra(EXTRA_FEATURE, platform.featureTitle)
-                .putExtra(EXTRA_SOURCE, platform.name)
-        )
-    }
+    ) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
-            val currentTosVersion = firebase.getTosVersion()
-            val acceptedTosVersion by tasksPreferences
-                .flow(TasksPreferences.acceptedTosVersion, 0)
-                .collectAsStateWithLifecycle(0)
             LaunchedEffect(Unit) {
                 viewModel.accountAdded.collect {
                     setResult(Activity.RESULT_OK)
@@ -109,47 +40,9 @@ class AddAccountActivity : ComponentActivity() {
                 primary = theme.themeColor.primaryColor,
             ) {
                 AddAccountScreenWrapper(
-                    configuration = configuration,
-                    hasTasksAccount = viewModel.hasTasksAccount,
-                    hasPro = viewModel.hasPro,
-                    needsConsent = acceptedTosVersion < currentTosVersion,
+                    context = this,
                     onBack = { finish() },
-                    signIn = { platform ->
-                        firebase.logEvent(
-                            R.string.event_add_account,
-                            R.string.param_source to "settings",
-                            R.string.param_selection to platform
-                        )
-                        when (platform) {
-                            Platform.TASKS_ORG -> {
-                                if (inventory.hasTasksSubscription) doSignIn(platform) else requirePurchase(platform, nameYourPrice = false)
-                            }
-                            Platform.CALDAV, Platform.ETEBASE -> {
-                                if (inventory.hasPro) doSignIn(platform) else requirePurchase(platform)
-                            }
-                            else -> doSignIn(platform)
-                        }
-                    },
-                    openUrl = { platform ->
-                        firebase.logEvent(
-                            R.string.event_add_account,
-                            R.string.param_source to "settings",
-                            R.string.param_selection to platform.name
-                        )
-                        when (platform) {
-                            Platform.DAVX5 -> {
-                                if (inventory.hasPro) doOpenUrl(platform) else requirePurchase(platform)
-                            }
-                            else -> doOpenUrl(platform)
-                        }
-                    },
-                    openLegalUrl = { openUri(it) },
-                    onConsent = {
-                        tasksPreferences.set(TasksPreferences.acceptedTosVersion, currentTosVersion)
-                    },
-                    onNameYourPriceInfo = {
-                        firebase.logEvent(R.string.event_onboarding_name_your_price)
-                    },
+                    signInCaldav = { syncLauncher.launch(it) },
                 )
             }
         }

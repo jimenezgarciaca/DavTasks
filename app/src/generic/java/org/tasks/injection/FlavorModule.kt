@@ -2,13 +2,12 @@ package org.tasks.injection
 
 import com.google.android.material.color.DynamicColors
 import com.todoroo.andlib.utility.AndroidUtilities
-import org.tasks.AppStore
-import org.tasks.PlatformConfiguration
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import org.tasks.billing.QrScanner
+import org.tasks.AppStore
+import org.tasks.PlatformConfiguration
 import org.tasks.location.Geocoder
 import org.tasks.location.GeocoderNominatim
 import org.tasks.location.LocationService
@@ -16,45 +15,15 @@ import org.tasks.location.LocationServiceAndroid
 import org.tasks.location.MapFragment
 import org.tasks.location.OsmMapFragment
 
-import javax.inject.Singleton
-
 @Module
 @InstallIn(SingletonComponent::class)
 class FlavorModule {
     @Provides
-    @Singleton
-    fun providePlayBilling(
-        billing: org.tasks.billing.NoOpPlayBilling,
-    ): org.tasks.billing.PlayBilling = billing
-
-    @Provides
-    @Singleton
-    fun providePlayPurchaseVerifier(): org.tasks.billing.PlayPurchaseVerifier =
-        org.tasks.billing.PlayPurchaseVerifier { true }
-
-    @Provides
-    @Singleton
-    fun providePlayPurchaseStore(
-        store: org.tasks.billing.NoOpPlayPurchaseStore,
-    ): org.tasks.billing.PlayPurchaseStore = store
-
-    @Provides
     fun getPlatformConfiguration() = PlatformConfiguration(
-        supportsTasksOrg = false,
-        supportsCaldav = true,
-        supportsGoogleTasks = false,
-        supportsMicrosoft = false,
-        supportsOpenTasks = true,
-        supportsEteSync = false,
-        supportsBackupImport = true,
         supportsGeofences = true,
         supportsCalendarEvents = true,
         appStore = AppStore.FDROID,
-        billingProvider = null,
-        isAndroid = true,
-        isLibre = true,
         supportsWidgets = true,
-        supportsLogExport = true,
         supportsNotificationTroubleshooting = true,
         supportsSystemNotificationSettings = true,
         supportsOngoingNotifications = AndroidUtilities.preUpsideDownCake(),
@@ -79,13 +48,4 @@ class FlavorModule {
 
     @Provides
     fun getGeocoder(nominatim: GeocoderNominatim): Geocoder = nominatim
-
-    @Provides
-    fun getQrScanner(): QrScanner = object : QrScanner {
-        override suspend fun scan(): String? = null
-    }
-
-    @Provides
-    @Singleton
-    fun provideStoreSubscriptionProvider(): org.tasks.billing.StoreSubscriptionProvider? = null
 }

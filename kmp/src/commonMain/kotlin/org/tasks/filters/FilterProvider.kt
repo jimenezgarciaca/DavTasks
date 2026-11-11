@@ -1,7 +1,6 @@
 package org.tasks.filters
 
 import org.jetbrains.compose.resources.StringResource
-import org.tasks.billing.PurchaseState
 import org.tasks.compose.drawer.DrawerConfiguration
 import org.tasks.data.LocationFilters
 import org.tasks.data.NO_ORDER
@@ -38,7 +37,7 @@ import tasks.kmp.generated.resources.this_device_only
 
 private fun CaldavAccount.drawerSubtitle(multipleTypes: Boolean): StringResource? = when {
     multipleTypes && isLocalList -> Res.string.this_device_only
-    multipleTypes || isGoogleTasks || isTasksOrg -> composeTitle
+    multipleTypes -> composeTitle
     else -> null
 }
 
@@ -50,14 +49,12 @@ class FilterProvider(
     private val locationDao: LocationDao,
     private val taskDao: TaskDao,
     private val tasksPreferences: TasksPreferences,
-    private val purchaseState: PurchaseState,
 ) {
     suspend fun listPickerItems(): List<FilterListItem> {
         val accounts = caldavDao.getAccounts()
         val singleAccount = accounts.size == 1
-        val signIn = signInAccount(accounts)
-        val multipleTypes = multipleTypes(accounts, signIn)
-        return signIn + accounts.flatMap { account ->
+        val multipleTypes = multipleTypes(accounts)
+        return accounts.flatMap { account ->
             caldavFilter(
                 account = account,
                 showCreate = true,
@@ -69,7 +66,7 @@ class FilterProvider(
     }
 
     suspend fun drawerItems(): List<FilterListItem> =
-        getAllFilters(showCreate = true, hideUnused = true, showSignIn = true)
+        getAllFilters(showCreate = true, hideUnused = true)
 
     suspend fun allLists(): List<Filter> =
         caldavFilters(showCreate = false, forceExpand = true)
@@ -80,10 +77,7 @@ class FilterProvider(
             .filterIsInstance<Filter>()
 
     suspend fun filterPickerItems(): List<FilterListItem> =
-            getAllFilters(showCreate = false, showCreateList = true, showSignIn = true)
-
-    suspend fun wearableFilters(): List<FilterListItem> =
-            getAllFilters(showCreate = false, forceExpand = true, hideUnused = true)
+            getAllFilters(showCreate = false, showCreateList = true)
 
     suspend fun drawerCustomizationItems(forceExpand: Boolean = false): List<FilterListItem> =
             getAllFilters(showBuiltIn = false, showCreate = true, forceExpand = forceExpand)
@@ -215,7 +209,6 @@ class FilterProvider(
         hideUnused: Boolean = false,
         forceExpand: Boolean = false,
         showCreateList: Boolean = showCreate,
-        showSignIn: Boolean = false,
     ): List<FilterListItem> =
             if (showBuiltIn) {
                 arrayListOf(MyTasksFilter.create())
@@ -225,7 +218,7 @@ class FilterProvider(
                     .asSequence()
                     .plus(addFilters(showCreate, showBuiltIn, forceExpand))
                     // DavTasks: las listas de las cuentas van antes que etiquetas y lugares.
-                    .plus(caldavFilters(showCreateList, forceExpand, showSignIn))
+                    .plus(caldavFilters(showCreateList, forceExpand))
                     .plus(addTags(showCreate, hideUnused, forceExpand))
                     .plus(addPlaces(showCreate, hideUnused, forceExpand))
                     .toList()
@@ -234,12 +227,10 @@ class FilterProvider(
     private suspend fun caldavFilters(
         showCreate: Boolean,
         forceExpand: Boolean,
-        showSignIn: Boolean = false,
     ): List<FilterListItem> {
         val accounts = caldavDao.getAccounts()
-        val signIn = if (showSignIn) signInAccount(accounts) else emptyList()
-        val multipleTypes = multipleTypes(accounts, signIn)
-        return signIn + accounts.flatMap { account ->
+        val multipleTypes = multipleTypes(accounts)
+        return accounts.flatMap { account ->
             caldavFilter(
                 account = account,
                 showCreate = showCreate,
@@ -249,17 +240,8 @@ class FilterProvider(
         }
     }
 
-    private fun signInAccount(accounts: List<CaldavAccount>): List<FilterListItem> =
-            if (purchaseState.hasTasksSubscription && accounts.none { it.isTasksOrg }) {
-                listOf(SignInPrompt)
-            } else {
-                emptyList()
-            }
-
-    private fun multipleTypes(
-        accounts: List<CaldavAccount>,
-        signIn: List<FilterListItem>,
-    ): Boolean = accounts.distinctBy { it.composeTitle }.size + signIn.size > 1
+    private fun multipleTypes(accounts: List<CaldavAccount>): Boolean =
+        accounts.distinctBy { it.composeTitle }.size > 1
 
     private suspend fun caldavFilter(
         account: CaldavAccount,
@@ -294,10 +276,7 @@ class FilterProvider(
                 },
                 account.error?.isNotBlank() ?: false,
                 collapsed,
-                when {
-                    account.isTasksOrg -> SubheaderType.TASKS
-                    else -> SubheaderType.CALDAV
-                },
+                SubheaderType.CALDAV,
                 account.id.toString(),
                 if (showCreate
                     && (account.isLocalList || (account.lastSync > 0 && account.error.isNullOrBlank()))

@@ -7,7 +7,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.R
 import org.tasks.activities.TagSettingsActivity.Companion.EXTRA_TAG_DATA
 import org.tasks.analytics.Reporting
-import org.tasks.billing.PurchaseState
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.metadata.TagMetadataSync
 import org.tasks.data.dao.TagDataDao
@@ -22,7 +21,6 @@ class TagSettingsHiltViewModel @Inject constructor(
     tagDataDao: TagDataDao,
     refreshBroadcaster: RefreshBroadcaster,
     reporting: Reporting,
-    purchaseState: PurchaseState,
     tagMetadataSync: TagMetadataSync,
     syncAdapters: SyncAdapters,
     @ApplicationContext context: Context,
@@ -30,7 +28,6 @@ class TagSettingsHiltViewModel @Inject constructor(
     tagDataDao = tagDataDao,
     refreshBroadcaster = refreshBroadcaster,
     reporting = reporting,
-    purchaseState = purchaseState,
     tagMetadataSync = tagMetadataSync,
     syncAdapters = syncAdapters,
     isDark = context.resources.getBoolean(R.bool.is_dark),

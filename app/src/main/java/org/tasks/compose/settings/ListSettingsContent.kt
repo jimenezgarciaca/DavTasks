@@ -9,7 +9,6 @@ import org.tasks.themes.ThemeColor
 
 @Composable
 fun ColumnScope.ListSettingsContent(
-    hasPro: Boolean,
     color: Int,
     colors: List<ThemeColor>,
     icon: String,
@@ -24,7 +23,6 @@ fun ColumnScope.ListSettingsContent(
     addWidgetToHome: () -> Unit,
     headerContent: @Composable ColumnScope.() -> Unit = {},
     extensionContent: @Composable ColumnScope.() -> Unit,
-    purchase: () -> Unit,
 ) {
     headerContent()
     TitleInput(
@@ -35,11 +33,9 @@ fun ColumnScope.ListSettingsContent(
         setText = { setText(it) },
     )
     SelectColorRow(
-        hasPro = hasPro,
         color = color,
         colors = colors,
         selectColor = { setColor(it) },
-        purchase = { purchase() },
     )
     SelectIconRow(
         icon = icon,

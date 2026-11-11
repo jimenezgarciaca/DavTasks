@@ -5,10 +5,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tasks.billing.PurchaseState
 import org.tasks.compose.settings.ListSettingsState
 import org.tasks.compose.settings.buildPickerColors
-import org.tasks.data.PrincipalWithAccess
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavCalendar
@@ -16,7 +14,6 @@ import org.tasks.themes.TasksIcons
 
 class ListSettingsStateManager(
     isDark: Boolean,
-    private val purchaseState: PurchaseState,
     account: CaldavAccount,
     calendar: CaldavCalendar,
     hasColorWheel: Boolean = false,
@@ -32,7 +29,6 @@ class ListSettingsStateManager(
             calendar = calendar,
             account = account,
             pickerColors = pickerColors,
-            hasPro = purchaseState.purchasedThemes(),
             hasColorWheel = hasColorWheel,
         )
     )
@@ -55,7 +51,7 @@ class ListSettingsStateManager(
     }
 
     override fun openColorPicker() {
-        _state.update { it.copy(showColorPicker = true, hasPro = purchaseState.purchasedThemes()) }
+        _state.update { it.copy(showColorPicker = true) }
     }
 
     override fun closeColorPicker() {
@@ -67,7 +63,7 @@ class ListSettingsStateManager(
     }
 
     override fun openIconPicker() {
-        _state.update { it.copy(showIconPicker = true, hasPro = purchaseState.purchasedThemes()) }
+        _state.update { it.copy(showIconPicker = true) }
     }
 
     override fun closeIconPicker() {

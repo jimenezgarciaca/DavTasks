@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tasks.analytics.AnalyticsEvents
 import org.tasks.analytics.Reporting
-import org.tasks.billing.PurchaseState
 import org.tasks.caldav.CaldavClientFactory
 import org.tasks.data.PrincipalWithAccess
 import org.tasks.data.UUIDHelper
@@ -50,12 +49,11 @@ open class CaldavCalendarSettingsViewModel(
     private val taskDeleter: TaskDeleter,
     private val syncAdapters: SyncAdapters,
     private val reporting: Reporting,
-    purchaseState: PurchaseState,
     isDark: Boolean,
     account: CaldavAccount,
     calendar: CaldavCalendar,
     hasColorWheel: Boolean = false,
-    internal val stateManager: ListSettingsStateManager = ListSettingsStateManager(isDark, purchaseState, account, calendar, hasColorWheel),
+    internal val stateManager: ListSettingsStateManager = ListSettingsStateManager(isDark, account, calendar, hasColorWheel),
 ) : ViewModel(), ListSettingsCallbacks by stateManager {
 
     private val calendarId = MutableStateFlow(calendar.id.takeIf { it != 0L })

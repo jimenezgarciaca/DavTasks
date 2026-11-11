@@ -1,5 +1,6 @@
 package org.tasks.viewmodel
 
+import org.tasks.filters.getIcon
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.tasks.billing.PurchaseState
 import org.tasks.compose.drawer.DrawerItem
 import org.tasks.compose.throttleLatest
 import org.tasks.data.NO_COUNT
@@ -28,9 +28,7 @@ import org.tasks.filters.CaldavFilter
 import org.tasks.filters.Filter
 import org.tasks.filters.FilterProvider
 import org.tasks.filters.NavigationDrawerSubheader
-import org.tasks.filters.SignInPrompt
 import org.tasks.preferences.TasksPreferences
-import org.tasks.kmp.org.tasks.themes.ColorProvider
 
 private const val TAG = "DrawerViewModel"
 
@@ -39,7 +37,6 @@ open class DrawerViewModel(
     private val taskDao: TaskDao,
     private val caldavDao: CaldavDao,
     private val tasksPreferences: TasksPreferences,
-    private val purchaseState: PurchaseState,
     refreshFlow: Flow<Unit> = emptyFlow(),
 ) : ViewModel() {
 
@@ -110,8 +107,8 @@ open class DrawerViewModel(
             .map { item ->
                 DrawerItem.Filter(
                     title = item.title,
-                    icon = item.resolveIcon(purchaseState),
-                    color = if (purchaseState.purchasedThemes() || ColorProvider.isFreeColor(item.tint)) item.tint else 0,
+                    icon = item.getIcon(),
+                    color = item.tint,
                     adjustColor = item.tint != 0,
                     count = item.count.takeIf { it != NO_COUNT } ?: try {
                         taskDao.count(item)
@@ -143,8 +140,8 @@ open class DrawerViewModel(
     ): DrawerItem = when (this) {
         is Filter -> DrawerItem.Filter(
             title = title,
-            icon = resolveIcon(purchaseState),
-            color = if (purchaseState.purchasedThemes() || ColorProvider.isFreeColor(tint)) tint else 0,
+            icon = getIcon(),
+            color = tint,
             adjustColor = tint != 0,
             count = count.takeIf { it != NO_COUNT } ?: try {
                 taskDao.count(this)
@@ -165,7 +162,6 @@ open class DrawerViewModel(
             openTaskApp = openTaskApp,
             header = this,
         )
-        is SignInPrompt -> DrawerItem.SignIn
         else -> throw IllegalArgumentException()
     }
 }
