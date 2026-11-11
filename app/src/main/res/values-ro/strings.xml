@@ -281,7 +281,6 @@
     <string name="action_new_task">Sarcină nouă</string>
     <string name="action_create_new_task">Creează o nouă sarcină</string>
     <string name="logout">Deconectează-te</string>
-    <string name="pro_dashclock_extension">Extinderea ceasului de bord</string>
     <string name="TPl_notification">Cronometre active pentru %s!</string>
     <string name="delete_tag_confirmation">Ștergi %s\?</string>
     <string name="new_list">Crează o nouă listă</string>

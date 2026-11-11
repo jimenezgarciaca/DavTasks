@@ -232,7 +232,6 @@ dependencies {
     implementation(libs.androidx.preference)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.timber)
-    implementation(libs.dashclock.api)
     implementation(libs.locale) {
         isTransitive = false
     }

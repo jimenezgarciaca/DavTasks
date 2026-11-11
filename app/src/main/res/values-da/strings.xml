@@ -123,7 +123,6 @@
     <string name="action_new_task">Ny opgave</string>
     <string name="action_create_new_task">Opret ny opgave</string>
     <string name="logout">Log ud</string>
-    <string name="pro_dashclock_extension">Dashclock-udvidelse</string>
     <string name="help_and_feedback">Hjælp og feedback</string>
     <string name="help">Hjælp</string>
     <string name="tasker_list_notification">Listemeddelelser</string>

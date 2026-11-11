@@ -16,15 +16,21 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
 - Sin Google Tasks, Microsoft To Do, EteSync ni cuenta de Tasks.org: se han eliminado su código y sus librerías (etebase, google-api-services-tasks/drive, google-auth-library, AppAuth). En el alta de cuentas quedan CalDAV y DAVx⁵.
 
-- Sin servicios de Tasks.org: ni copia de seguridad en Google Drive, ni pagos (Stripe, patrocinio de GitHub), ni vinculación con escritorio, ni notificaciones push, ni consulta del blog. La geocodificación inversa usa nominatim.openstreetmap.org y la búsqueda de lugares, Mapbox.
+- Sin servicios de Tasks.org: ni copia de seguridad en Google Drive, ni sistema de compras o suscripciones (Google Play, Stripe, patrocinio de GitHub), ni migración de listas locales a Tasks.org, ni configuración remota, ni vinculación con escritorio, ni notificaciones push, ni consulta del blog. Todas las funciones que Tasks.org reservaba a Pro están disponibles. La geocodificación inversa usa nominatim.openstreetmap.org y la búsqueda de lugares, Mapbox.
+
+- Sin extensión de DashClock (aplicación abandonada).
+
+- Las tareas escritas por DavTasks se identifican con `PRODID:+//IDN davtasks//android-<versión>//EN`. Se reconocen como cliente con sincronización de recordatorios tanto DavTasks como Tasks.org.
 
 - Se conservan las tablas de la base de datos de esas integraciones para no modificar el esquema.
 
 - Color dinámico (Material You) activado por defecto.
 
+- Bienvenida simplificada: conectar una cuenta (CalDAV o DAVx⁵), usar sin sincronizar o importar una copia de seguridad.
+
 - Interfaz ajustada a Material 3:
 
-  - Lista de tareas más compacta (encabezados de sección y separación entre filas menores), chips tonales pequeños y prioridad indicada también con "!", "!!" o "!!!" delante del título.
+  - Lista de tareas más compacta (encabezados de sección y separación entre filas menores), chips tonales pequeños y prioridad indicada con un icono de barras delante del título; la casilla de completar tiene el mismo color para todas las prioridades.
 
   - Ajustes y opciones de la lista en el menú de la barra inferior.
 

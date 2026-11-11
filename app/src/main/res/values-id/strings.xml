@@ -149,7 +149,6 @@
     <string name="badges_description">Tampilkan jumlah tugas pada ikon peluncur Tasks. Tidak semua peluncur mendukung fitur lencana ini.</string>
     <string name="tasker_create_task">Buat tugas</string>
     <string name="help">Bantuan</string>
-    <string name="pro_dashclock_extension">Ekstensi Dashclock</string>
     <string name="logout">Keluar</string>
     <string name="action_create_new_task">Buat tugas baru</string>
     <string name="show_description">Tampilkan deskripsi</string>

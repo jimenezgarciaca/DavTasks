@@ -27,7 +27,6 @@ data class PickerColor(
     val originalColor: Int,
     val primaryColor: Int,
     val colorOnPrimary: Int,
-    val isFree: Boolean,
 )
 
 fun buildPickerColors(isDark: Boolean): List<PickerColor> =
@@ -37,7 +36,6 @@ fun buildPickerColors(isDark: Boolean): List<PickerColor> =
             originalColor = originalColor,
             primaryColor = adjusted,
             colorOnPrimary = contentColor(adjusted),
-            isFree = KmpColorProvider.isFreeColor(originalColor),
         )
     }
 

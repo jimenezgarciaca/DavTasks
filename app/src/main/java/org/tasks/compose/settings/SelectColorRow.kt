@@ -43,7 +43,6 @@ private fun ThemeColor.toPickerColor() = PickerColor(
     originalColor = originalColor,
     primaryColor = pickerColor,
     colorOnPrimary = colorOnPrimary,
-    isFree = isFree,
 )
 
 @Composable

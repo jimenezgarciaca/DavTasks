@@ -204,7 +204,6 @@
     <string name="tasker_list_notification">Ծանուցումների ցուցակ</string>
     <string name="help">Օգնություն</string>
     <string name="help_and_feedback">Օգնություն և հետադարձ կապ</string>
-    <string name="pro_dashclock_extension">Dashclock ընդլայնումներ</string>
     <string name="logout">Դուրս գալ</string>
     <string name="delete_tasks_warning">%s կջնջվի։ Սա չեղարկել չի լինի։</string>
     <string name="action_create_new_task">Ստեղծել նոր անելիք</string>

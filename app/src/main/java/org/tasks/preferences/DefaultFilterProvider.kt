@@ -21,10 +21,6 @@ class DefaultFilterProvider @Inject constructor(
     private val codec: FilterPreferenceCodec,
 ) {
 
-    var dashclockFilter: Filter
-        @Deprecated("use coroutines") get() = runBlocking { getFilterFromPreference(R.string.p_dashclock_filter) }
-        set(filter) = setFilterPreference(filter, R.string.p_dashclock_filter)
-
     var defaultList: CaldavFilter
         @Deprecated("use coroutines") get() = runBlocking { getDefaultList() }
         set(filter) = setFilterPreference(filter, R.string.p_default_list)

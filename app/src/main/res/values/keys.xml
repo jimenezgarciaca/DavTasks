@@ -252,7 +252,6 @@
   <string name="p_widget_header_spacing">widget-header-spacing-</string>
   <string name="p_widget_spacing">widget-spacing-</string>
   <string name="p_widget_collapsed">widget-collapsed-</string>
-  <string name="p_dashclock_filter">dashclock_filter</string>
   <string name="p_default_list">default_remote_list</string>
   <string name="p_default_tags">default_tags</string>
   <string name="p_default_recurrence">default_recurrence</string>
@@ -300,7 +299,6 @@
   <string name="param_task_count">task_count</string>
   <string name="param_import_count">import_count</string>
   <string name="param_skip_count">skip_count</string>
-  <string name="event_dashclock">dashclock</string>
   <string name="event_add_task">add_task</string>
   <string name="event_complete_task">complete_task</string>
   <string name="event_create_shortcut">create_shortcut</string>

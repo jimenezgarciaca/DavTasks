@@ -222,7 +222,6 @@
     <string name="action_new_task">نیا ٹاسک</string>
     <string name="action_create_new_task">نیا ٹاسک بنائیں</string>
     <string name="logout">لاگ آؤٹ</string>
-    <string name="pro_dashclock_extension">ڈیش لاک ایکسٹنشن</string>
     <string name="collapse_subtasks">ذیلی ٹاسکس کو بند کریں</string>
     <string name="expand_subtasks">ذیلی ٹاسکس کو کھولیں</string>
     <string name="invalid_backup_file">غلط بیک اپ فائل</string>

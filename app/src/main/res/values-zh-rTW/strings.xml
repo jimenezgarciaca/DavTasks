@@ -275,7 +275,6 @@
     <string name="back">返回</string>
     <string name="place_settings">位置設定</string>
     <string name="places">地點</string>
-    <string name="pro_dashclock_extension">Dashclock 擴充</string>
     <string name="auto_dismiss_datetime_edit_summary">選擇任務編輯時自動關閉</string>
     <string name="snackbar_task_completed">任務已完成</string>
     <string name="sort_created_group">建立於 %s</string>

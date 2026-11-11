@@ -214,7 +214,6 @@
     <string name="theme_black">Qora</string>
     <string name="theme_light">**Yorug‘**</string>
     <string name="theme_dark">Qorongʻu</string>
-    <string name="pro_dashclock_extension">DashClock kengaytmasi</string>
     <string name="logout">Chiqish</string>
     <string name="delete_tasks_warning">%s o‘chirib tashlanadi. Bu amalni ortga qaytarib bo‘lmaydi!</string>
     <string name="action_create_new_task">Yangi vazifa yaratish</string>

@@ -155,7 +155,6 @@
     <string name="color_wheel">වර්ණ රෝදය</string>
     <string name="missing_permissions">අවසරය ලැබී නොමැත</string>
     <string name="location_arrived">%s වෙත පැමිණියේය</string>
-    <string name="pro_dashclock_extension">Dashclock දිගුව</string>
     <string name="list_separator_with_space">", "</string>
     <string name="repeats_from">පුනරාවර්තනය වනුයේ</string>
     <string name="date_shortcut_must_come_after">%1$s, %2$s ට පසුව පැමිණිය යුතුය</string>

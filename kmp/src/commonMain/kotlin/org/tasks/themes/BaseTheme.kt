@@ -9,6 +9,4 @@ object BaseTheme {
     const val SYSTEM_DEFAULT = 5
 
     const val DEFAULT = SYSTEM_DEFAULT
-
-    fun isFree(index: Int) = index < WALLPAPER || index == SYSTEM_DEFAULT
 }

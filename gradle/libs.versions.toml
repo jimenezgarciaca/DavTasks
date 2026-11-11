@@ -15,7 +15,6 @@ compose-multiplatform = "1.12.2"
 confettikit = "0.9.0"
 constraintlayout = "2.2.2"
 dagger-hilt = "2.60.1"
-dashclock-api = "2.0.0"
 desugar_jdk_libs = "2.1.5"
 etebase = "1.0.0-beta02"
 firebase = "35.0.2"
@@ -131,7 +130,6 @@ dagger-hilt = { module = "com.google.dagger:hilt-android", version.ref = "dagger
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger-hilt" }
 dagger-hilt-gradle = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger-hilt" }
 dagger-hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "dagger-hilt" }
-dashclock-api = { module = "com.google.android.apps.dashclock:dashclock-api", version.ref = "dashclock-api" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 #noinspection NewerVersionAvailable
 dmfs-jems = { module = "org.dmfs:jems", version = "1.33" }

@@ -295,7 +295,6 @@
     <string name="widget_due_date_below_title">Subtitola</string>
     <string name="android_auto_backup_device_summary">Vi devas ankaŭ doni permeson al savkopia servo per viaj aparataj agordoj. Ne ĉiuj aparatoj provizas savkopian servon.</string>
     <string name="badges_description">Vidigi nombro da taskoj sur lanĉpiktogramo de Tasks. Ne ĉiuj lanĉiloj subtenas ĉi tiajn simbolojn.</string>
-    <string name="pro_dashclock_extension">Dashclock kromprogramo</string>
     <string name="tasker_list_notification">Sciigo de listo</string>
     <string name="auto_dismiss_datetime_edit">Redakti taskon</string>
     <string name="chips">Elementoj</string>

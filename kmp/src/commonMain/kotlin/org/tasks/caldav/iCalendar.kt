@@ -2,7 +2,6 @@ package org.tasks.caldav
 
 import co.touchlab.kermit.Logger
 import com.todoroo.astrid.alarms.AlarmService
-import kotlinx.datetime.TimeZone
 import org.tasks.TasksBuildConfig
 import org.tasks.caldav.GeoUtils.equalish
 import org.tasks.caldav.GeoUtils.toGeo
@@ -377,6 +376,7 @@ class iCalendar(
         private val NEXTCLOUD_TASKS_VERSION = "Nextcloud Tasks v(\\d+)\\.(\\d+)".toRegex()
 
         private val CLIENTS_WITH_REMINDER_SYNC = listOf(
+            "davtasks",
             "tasks.org",
             "Mozilla.org",
             "Apple Inc.",
