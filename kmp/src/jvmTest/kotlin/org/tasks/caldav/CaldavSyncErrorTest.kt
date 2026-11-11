@@ -16,16 +16,13 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.tasks.DatabaseTest
-import org.tasks.InMemoryDataStore
 import org.tasks.analytics.AnalyticsEvents.SYNC_NOT_FOUND
 import org.tasks.analytics.Reporting
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.preferences.TasksPreferences
 
 class CaldavSyncErrorTest : DatabaseTest() {
     private val server = failFastServer()
     private val caldavDao = db.caldavDao()
-    private val preferences = TasksPreferences(InMemoryDataStore())
     private val encryption = testEncryption()
     private val reporting = mock<Reporting>()
     private val synchronizer = CaldavSynchronizer(
@@ -34,7 +31,7 @@ class CaldavSyncErrorTest : DatabaseTest() {
         refreshBroadcaster = mock(),
         taskDeleter = mock(),
         reporting = reporting,
-        provider = testClientProvider(preferences, encryption),
+        provider = testClientProvider(encryption),
         iCal = mock(),
         principalDao = db.principalDao(),
         vtodoCache = mock(),

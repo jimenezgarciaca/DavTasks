@@ -107,7 +107,6 @@ class TaskEditFragment : Fragment() {
                         clearTask()
                     }
                 },
-                dismissBeastMode = { editViewModel.hideBeastModeHint(click = false) },
                 deleteComment = {
                     lifecycleScope.launch {
                         userActivityDao.delete(it)

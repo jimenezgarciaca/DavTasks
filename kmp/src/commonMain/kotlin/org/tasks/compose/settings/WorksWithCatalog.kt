@@ -4,7 +4,6 @@ import org.tasks.themes.TasksIcons
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.tasks.AppStore
-import org.tasks.PlatformConfiguration
 import org.tasks.TasksUrls
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.acalendar
@@ -18,65 +17,39 @@ import tasks.kmp.generated.resources.decsync_selection_description
 import tasks.kmp.generated.resources.desktop
 import tasks.kmp.generated.resources.etesync
 import tasks.kmp.generated.resources.etesync_selection_description
-import tasks.kmp.generated.resources.google_tasks_selection_description
-import tasks.kmp.generated.resources.gtasks_GPr_header
 import tasks.kmp.generated.resources.ios
 import tasks.kmp.generated.resources.ic_davx5_icon_green_bg
 import tasks.kmp.generated.resources.ic_decsync
 import tasks.kmp.generated.resources.ic_etesync
 import tasks.kmp.generated.resources.ic_ksync
-import tasks.kmp.generated.resources.ic_google
-import tasks.kmp.generated.resources.ic_microsoft_tasks
-import tasks.kmp.generated.resources.ic_round_icon
 import tasks.kmp.generated.resources.ic_silentsuite
 import tasks.kmp.generated.resources.kvaesitso
 import tasks.kmp.generated.resources.ksync
-import tasks.kmp.generated.resources.mcp_server
-import tasks.kmp.generated.resources.microsoft
-import tasks.kmp.generated.resources.microsoft_selection_description
-import tasks.kmp.generated.resources.microsoft_selection_description_googleplay
-import tasks.kmp.generated.resources.pebble
 import tasks.kmp.generated.resources.radicale
 import tasks.kmp.generated.resources.silentsuite
 import tasks.kmp.generated.resources.tasker
-import tasks.kmp.generated.resources.tasks_org_account
 import tasks.kmp.generated.resources.thunderbird
 import tasks.kmp.generated.resources.todoagenda
-import tasks.kmp.generated.resources.wear_os
 import tasks.kmp.generated.resources.works_with_acalendar_description
-import tasks.kmp.generated.resources.works_with_android
-import tasks.kmp.generated.resources.works_with_android_description
 import tasks.kmp.generated.resources.works_with_apple_reminders_description
 import tasks.kmp.generated.resources.works_with_automation
 import tasks.kmp.generated.resources.works_with_calendars
 import tasks.kmp.generated.resources.works_with_content_provider
 import tasks.kmp.generated.resources.works_with_content_provider_description
-import tasks.kmp.generated.resources.works_with_coming_soon
-import tasks.kmp.generated.resources.works_with_cloud_description
-import tasks.kmp.generated.resources.works_with_desktop
 import tasks.kmp.generated.resources.works_with_desktop_apps
-import tasks.kmp.generated.resources.works_with_desktop_description
 import tasks.kmp.generated.resources.works_with_developers
-import tasks.kmp.generated.resources.works_with_ios
 import tasks.kmp.generated.resources.works_with_kvaesitso_description
 import tasks.kmp.generated.resources.works_with_mobile
 import tasks.kmp.generated.resources.works_with_ksync_description
 import tasks.kmp.generated.resources.works_with_launchers
-import tasks.kmp.generated.resources.works_with_mcp_description
 import tasks.kmp.generated.resources.works_with_nextcloud_description
-import tasks.kmp.generated.resources.works_with_pebble_description
 import tasks.kmp.generated.resources.works_with_radicale_description
-import tasks.kmp.generated.resources.works_with_tag_official
 import tasks.kmp.generated.resources.works_with_tag_sync
 import tasks.kmp.generated.resources.works_with_servers
-import tasks.kmp.generated.resources.works_with_services
 import tasks.kmp.generated.resources.works_with_sync
 import tasks.kmp.generated.resources.works_with_tasker_description
 import tasks.kmp.generated.resources.works_with_todoagenda_description
-import tasks.kmp.generated.resources.works_with_wear_requires_googleplay
-import tasks.kmp.generated.resources.works_with_wearables
 import tasks.kmp.generated.resources.works_with_thunderbird_description
-import tasks.kmp.generated.resources.works_with_wear_description
 
 data class WorksWithLinks(
     val web: String,
@@ -91,7 +64,6 @@ data class WorksWithLinks(
 }
 
 enum class WorksWithTag(val label: StringResource) {
-    OFFICIAL(Res.string.works_with_tag_official),
     ANDROID(Res.string.android),
     IOS(Res.string.ios),
     DESKTOP(Res.string.desktop),
@@ -101,46 +73,22 @@ enum class WorksWithTag(val label: StringResource) {
 data class WorksWithEntry(
     val title: StringResource,
     val description: StringResource,
-    val libreDescription: StringResource? = null,
     val links: WorksWithLinks? = null,
     val icon: String? = null,
     val iconDrawable: DrawableResource? = null,
     val tintIcon: Boolean = true,
     val tags: Set<WorksWithTag> = setOf(WorksWithTag.ANDROID),
-    val available: (PlatformConfiguration) -> Boolean = { true },
-    val requiresStore: AppStore? = null,
-    val requiresStoreDescription: StringResource? = null,
-    val showPricingIfUnsubscribed: Boolean = false,
-    val openMcpSettingsOnDesktop: Boolean = false,
 )
-
 
 data class WorksWithGroup(
     val title: StringResource,
     val entries: List<WorksWithEntry>,
-    val available: (PlatformConfiguration) -> Boolean = { true },
 )
 
 val worksWithCatalog = listOf(
     WorksWithGroup(
         title = Res.string.works_with_mobile,
         entries = listOf(
-            WorksWithEntry(
-                title = Res.string.works_with_android,
-                description = Res.string.works_with_android_description,
-                iconDrawable = Res.drawable.ic_round_icon,
-                tintIcon = false,
-                tags = setOf(WorksWithTag.ANDROID, WorksWithTag.OFFICIAL),
-                available = { !it.isAndroid },
-                links = WorksWithLinks(web = TasksUrls.DOWNLOAD),
-            ),
-            WorksWithEntry(
-                title = Res.string.works_with_ios,
-                description = Res.string.works_with_coming_soon,
-                iconDrawable = Res.drawable.ic_round_icon,
-                tintIcon = false,
-                tags = setOf(WorksWithTag.IOS, WorksWithTag.OFFICIAL),
-            ),
             WorksWithEntry(
                 title = Res.string.apple_reminders,
                 description = Res.string.works_with_apple_reminders_description,
@@ -154,16 +102,7 @@ val worksWithCatalog = listOf(
     ),
     WorksWithGroup(
         title = Res.string.works_with_desktop_apps,
-        available = { it.isAndroid },
         entries = listOf(
-            WorksWithEntry(
-                title = Res.string.works_with_desktop,
-                description = Res.string.works_with_desktop_description,
-                icon = TasksIcons.LAPTOP,
-                tags = setOf(WorksWithTag.DESKTOP, WorksWithTag.OFFICIAL),
-                available = { it.isAndroid },
-                links = WorksWithLinks(web = TasksUrls.DOWNLOAD),
-            ),
             WorksWithEntry(
                 title = Res.string.thunderbird,
                 description = Res.string.works_with_thunderbird_description,
@@ -179,63 +118,6 @@ val worksWithCatalog = listOf(
                 links = WorksWithLinks(
                     web = "https://support.apple.com/guide/reminders/welcome/mac",
                 ),
-            ),
-        ),
-    ),
-    WorksWithGroup(
-        title = Res.string.works_with_wearables,
-        entries = listOf(
-            WorksWithEntry(
-                title = Res.string.wear_os,
-                description = Res.string.works_with_wear_description,
-                icon = TasksIcons.WATCH,
-                tags = setOf(WorksWithTag.ANDROID, WorksWithTag.OFFICIAL),
-                requiresStore = AppStore.GOOGLE_PLAY,
-                requiresStoreDescription = Res.string.works_with_wear_requires_googleplay,
-                links = WorksWithLinks(
-                    web = TasksUrls.GOOGLE_PLAY_LISTING,
-                    play = "org.tasks",
-                ),
-            ),
-            WorksWithEntry(
-                title = Res.string.pebble,
-                description = Res.string.works_with_pebble_description,
-                icon = TasksIcons.DEVICES_OTHER,
-                tags = setOf(WorksWithTag.ANDROID, WorksWithTag.OFFICIAL),
-                links = WorksWithLinks(web = TasksUrls.PEBBLE_LISTING),
-            ),
-        ),
-    ),
-    WorksWithGroup(
-        title = Res.string.works_with_services,
-        entries = listOf(
-            WorksWithEntry(
-                title = Res.string.tasks_org_account,
-                description = Res.string.works_with_cloud_description,
-                iconDrawable = Res.drawable.ic_round_icon,
-                tintIcon = false,
-                tags = setOf(WorksWithTag.SYNC, WorksWithTag.OFFICIAL),
-                showPricingIfUnsubscribed = true,
-                links = WorksWithLinks(web = TasksUrls.SYNC),
-            ),
-            WorksWithEntry(
-                title = Res.string.gtasks_GPr_header,
-                description = Res.string.google_tasks_selection_description,
-                iconDrawable = Res.drawable.ic_google,
-                tintIcon = false,
-                tags = setOf(WorksWithTag.SYNC),
-                available = { it.supportsGoogleTasks },
-                links = WorksWithLinks(web = TasksUrls.GOOGLE_TASKS),
-            ),
-            WorksWithEntry(
-                title = Res.string.microsoft,
-                description = Res.string.microsoft_selection_description_googleplay,
-                libreDescription = Res.string.microsoft_selection_description,
-                iconDrawable = Res.drawable.ic_microsoft_tasks,
-                tintIcon = false,
-                tags = setOf(WorksWithTag.SYNC),
-                available = { it.supportsMicrosoft },
-                links = WorksWithLinks(web = TasksUrls.MICROSOFT),
             ),
         ),
     ),
@@ -372,14 +254,6 @@ val worksWithCatalog = listOf(
                     play = "net.dinglisch.android.taskerm",
                 ),
             ),
-            WorksWithEntry(
-                title = Res.string.mcp_server,
-                description = Res.string.works_with_mcp_description,
-                icon = TasksIcons.SMART_TOY,
-                tags = setOf(WorksWithTag.DESKTOP),
-                openMcpSettingsOnDesktop = true,
-                links = WorksWithLinks(web = TasksUrls.DOWNLOAD),
-            ),
         ),
     ),
     WorksWithGroup(
@@ -396,13 +270,8 @@ val worksWithCatalog = listOf(
     ),
 )
 
-fun worksWithGroups(
-    configuration: PlatformConfiguration,
-    tag: WorksWithTag? = null,
-): List<WorksWithGroup> = worksWithCatalog.mapNotNull { group ->
-    if (!group.available(configuration)) return@mapNotNull null
-    val entries = group.entries.filter { entry ->
-        entry.available(configuration) && (tag == null || tag in entry.tags)
+fun worksWithGroups(tag: WorksWithTag? = null): List<WorksWithGroup> =
+    worksWithCatalog.mapNotNull { group ->
+        val entries = group.entries.filter { entry -> tag == null || tag in entry.tags }
+        group.takeIf { entries.isNotEmpty() }?.copy(entries = entries)
     }
-    group.takeIf { entries.isNotEmpty() }?.copy(entries = entries)
-}

@@ -42,14 +42,6 @@
 -keepnames class net.fortuna.ical4j.transform.rfc5545.TzHelper
 -keep class at.bitfire.ical4android.AndroidCompatTimeZoneRegistry$Factory { *; }
 
-# https://github.com/google/google-api-java-client-samples/blob/34c3b43cb15f4ee1b636a0e01521cc81a2451dcd/tasks-android-sample/proguard-google-api-client.txt
--keepclassmembers class * {
-  @com.google.api.client.util.Key <fields>;
-}
--keep,allowobfuscation class * extends com.google.api.client.util.GenericData { <init>(); }
--dontwarn com.google.api.client.extensions.android.**
--dontwarn com.google.api.client.googleapis.extensions.android.**
--dontwarn com.google.android.gms.**
 -dontnote java.nio.file.Files, java.nio.file.Path
 -dontnote **.ILicensingService
 -dontnote sun.misc.Unsafe
@@ -61,13 +53,3 @@
 -dontwarn org.joda.convert.ToString
 -dontwarn org.json.JSONString
 
-
-# microsoft authentication
-
--dontwarn com.microsoft.device.display.DisplayMask
--dontwarn com.google.android.libraries.identity.**
--dontwarn edu.umd.cs.findbugs.annotations.**
--dontwarn com.google.crypto.tink.subtle.**
--dontwarn net.jcip.annotations.**
-
--keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite { <fields>; }

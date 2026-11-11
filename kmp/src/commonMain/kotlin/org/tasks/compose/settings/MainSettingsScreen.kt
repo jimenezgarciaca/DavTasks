@@ -28,15 +28,12 @@ import tasks.kmp.generated.resources.backup_BPr_header
 import tasks.kmp.generated.resources.date_and_time
 import tasks.kmp.generated.resources.debug
 import tasks.kmp.generated.resources.about
-import tasks.kmp.generated.resources.mcp_server
 import tasks.kmp.generated.resources.navigation_drawer
 import tasks.kmp.generated.resources.notifications
 import tasks.kmp.generated.resources.preferences_advanced
 import tasks.kmp.generated.resources.preferences_look_and_feel
 import tasks.kmp.generated.resources.task_defaults
 import tasks.kmp.generated.resources.task_list_options
-import tasks.kmp.generated.resources.link_desktop
-import tasks.kmp.generated.resources.link_desktop_description
 import tasks.kmp.generated.resources.widget_settings
 import tasks.kmp.generated.resources.works_with_tasks
 import tasks.kmp.generated.resources.works_with_tasks_description
@@ -63,8 +60,6 @@ sealed class SettingsDestination(val titleRes: StringResource) : SettingsPane {
     @CommonParcelize
     data object Widgets : SettingsDestination(Res.string.widget_settings)
     @CommonParcelize
-    data object McpServer : SettingsDestination(Res.string.mcp_server)
-    @CommonParcelize
     data object Advanced : SettingsDestination(Res.string.preferences_advanced)
     @CommonParcelize
     data object WorksWith : SettingsDestination(Res.string.works_with_tasks)
@@ -78,19 +73,7 @@ sealed class SettingsDestination(val titleRes: StringResource) : SettingsPane {
 data class LocalAccountSettingsPane(val accountId: Long) : SettingsPane
 
 @CommonParcelize
-data class TasksAccountSettingsPane(val uuid: String) : SettingsPane
-
-@CommonParcelize
 data class CaldavAccountSettingsPane(val accountId: Long) : SettingsPane
-
-@CommonParcelize
-data class EtebaseAccountSettingsPane(val accountId: Long) : SettingsPane
-
-@CommonParcelize
-data class GoogleTasksAccountSettingsPane(val accountId: Long) : SettingsPane
-
-@CommonParcelize
-data class MicrosoftAccountSettingsPane(val accountId: Long) : SettingsPane
 
 @CommonParcelize
 data class OpenTaskAccountSettingsPane(val accountId: Long) : SettingsPane
@@ -98,19 +81,13 @@ data class OpenTaskAccountSettingsPane(val accountId: Long) : SettingsPane
 @Composable
 fun MainSettingsScreen(
     accounts: List<CaldavAccount>,
-    proCardState: ProCardState?,
-    environmentLabel: String? = null,
     showBackupWarning: Boolean,
     showWidgets: Boolean,
     showNotifications: Boolean = true,
-    showMcpServer: Boolean = false,
     isDebug: Boolean = false,
     onAccountClick: (CaldavAccount) -> Unit,
     onAddAccountClick: () -> Unit,
     onSettingsClick: (SettingsDestination) -> Unit,
-    onProCardClick: () -> Unit,
-    showDesktopLinking: Boolean = false,
-    onLinkDesktopClick: () -> Unit = {},
     bottomContent: @Composable () -> Unit = {},
 ) {
     Column(
@@ -121,67 +98,38 @@ fun MainSettingsScreen(
     ) {
         Spacer(modifier = Modifier.height(SettingsContentPadding))
 
-        // Pro/tasks.org card
-        if (proCardState != null) {
-            AccountSettingsCard(
-                state = proCardState,
-                onClick = onProCardClick,
-                modifier = Modifier.padding(horizontal = SettingsContentPadding),
-                environmentLabel = environmentLabel,
-            )
-            Spacer(modifier = Modifier.height(SettingsContentPadding))
-        }
-
-        // Accounts card group
-        val hasTasksOrg = proCardState is ProCardState.TasksOrgAccount
-        if (accounts.isNotEmpty() || !hasTasksOrg) {
-            val totalAccountItems = accounts.size + if (!hasTasksOrg) 1 else 0
-            Column(
-                modifier = Modifier.padding(horizontal = SettingsContentPadding),
-                verticalArrangement = Arrangement.spacedBy(SettingsCardGap),
-            ) {
-                accounts.forEachIndexed { index, account ->
-                    SettingsItemCard(
-                        position = CardPosition.forIndex(index, totalAccountItems),
-                    ) {
-                        AccountRow(
-                            account = account,
-                            onClick = { onAccountClick(account) },
-                        )
-                    }
-                }
-                if (!hasTasksOrg) {
-                    SettingsItemCard(
-                        position = if (accounts.isEmpty()) CardPosition.Only else CardPosition.Last,
-                    ) {
-                        PreferenceRow(
-                            title = stringResource(Res.string.add_account),
-                            icon = TasksIcons.ADD,
-                            onClick = onAddAccountClick
-                        )
-                    }
+        // Cuentas
+        Column(
+            modifier = Modifier.padding(horizontal = SettingsContentPadding),
+            verticalArrangement = Arrangement.spacedBy(SettingsCardGap),
+        ) {
+            accounts.forEachIndexed { index, account ->
+                SettingsItemCard(
+                    position = CardPosition.forIndex(index, accounts.size + 1),
+                ) {
+                    AccountRow(
+                        account = account,
+                        onClick = { onAccountClick(account) },
+                    )
                 }
             }
-            Spacer(modifier = Modifier.height(SettingsContentPadding))
+            SettingsItemCard(
+                position = if (accounts.isEmpty()) CardPosition.Only else CardPosition.Last,
+            ) {
+                PreferenceRow(
+                    title = stringResource(Res.string.add_account),
+                    icon = TasksIcons.ADD,
+                    onClick = onAddAccountClick
+                )
+            }
         }
+        Spacer(modifier = Modifier.height(SettingsContentPadding))
 
         Column(
             modifier = Modifier.padding(horizontal = SettingsContentPadding),
             verticalArrangement = Arrangement.spacedBy(SettingsCardGap),
         ) {
-            if (showDesktopLinking) {
-                SettingsItemCard(position = CardPosition.First) {
-                    PreferenceRow(
-                        title = stringResource(Res.string.link_desktop),
-                        summary = stringResource(Res.string.link_desktop_description),
-                        icon = TasksIcons.LAPTOP,
-                        onClick = onLinkDesktopClick,
-                    )
-                }
-            }
-            SettingsItemCard(
-                position = if (showDesktopLinking) CardPosition.Last else CardPosition.Only,
-            ) {
+            SettingsItemCard(position = CardPosition.Only) {
                 PreferenceRow(
                     title = stringResource(Res.string.works_with_tasks),
                     summary = stringResource(Res.string.works_with_tasks_description),
@@ -196,7 +144,6 @@ fun MainSettingsScreen(
             showBackupWarning = showBackupWarning,
             showWidgets = showWidgets,
             showNotifications = showNotifications,
-            showMcpServer = showMcpServer,
             isDebug = isDebug,
             onSettingsClick = onSettingsClick,
         )
@@ -210,7 +157,6 @@ fun SettingsCategories(
     showBackupWarning: Boolean,
     showWidgets: Boolean,
     showNotifications: Boolean,
-    showMcpServer: Boolean = false,
     isDebug: Boolean,
     onSettingsClick: (SettingsDestination) -> Unit,
 ) {
@@ -304,15 +250,6 @@ fun SettingsCategories(
                     title = stringResource(Res.string.widget_settings),
                     icon = TasksIcons.WIDGETS,
                     onClick = { onSettingsClick(SettingsDestination.Widgets) }
-                )
-            }
-        }
-        if (showMcpServer) {
-            SettingsItemCard(position = CardPosition.Middle) {
-                PreferenceRow(
-                    title = stringResource(Res.string.mcp_server),
-                    icon = TasksIcons.TERMINAL,
-                    onClick = { onSettingsClick(SettingsDestination.McpServer) }
                 )
             }
         }

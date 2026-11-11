@@ -123,18 +123,12 @@ class DebugViewModel @Inject constructor(
         )
         preferences.lastSubscribeRequest = 0L
         preferences.lastReviewRequest = 0L
-        preferences.shownBeastModeHint = false
         preferences.warnMicrosoft = true
         preferences.warnGoogleTasks = true
         preferences.setBoolean(R.string.p_just_updated, true)
         preferences.setBoolean(R.string.p_local_list_banner_dismissed, false)
         preferences.warnAlarmsDisabled = true
         preferences.warnNotificationsDisabled = true
-        viewModelScope.launch {
-            tasksPreferences.set(TasksPreferences.blogLastChecked, 0L)
-            tasksPreferences.set(TasksPreferences.blogDismissedPostId, "")
-            tasksPreferences.set(TasksPreferences.blogPendingPost, "")
-        }
     }
 
     fun createTasks(onComplete: (Int) -> Unit) {

@@ -12,12 +12,10 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.tasks.DatabaseTest
-import org.tasks.InMemoryDataStore
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavCalendar
 import org.tasks.data.entity.CaldavTask
 import org.tasks.data.entity.Task
-import org.tasks.preferences.TasksPreferences
 
 /**
  * Escritura condicional (DavTasks): PUT con If-Match / If-None-Match y gestión del 412.
@@ -27,7 +25,6 @@ class ConditionalWriteTest : DatabaseTest() {
     private val caldavDao = db.caldavDao()
     private val dirtyDao = db.dirtyDao()
     private val taskDao = db.taskDao()
-    private val preferences = TasksPreferences(InMemoryDataStore())
     private val encryption = testEncryption()
     private val iCal = mock<iCalendar> {
         onBlocking {
@@ -40,7 +37,7 @@ class ConditionalWriteTest : DatabaseTest() {
         refreshBroadcaster = mock(),
         taskDeleter = mock(),
         reporting = mock(),
-        provider = testClientProvider(preferences, encryption),
+        provider = testClientProvider(encryption),
         iCal = iCal,
         principalDao = db.principalDao(),
         vtodoCache = mock(),

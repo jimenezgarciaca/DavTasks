@@ -4,12 +4,12 @@ object TasksUrls {
     const val CHANGELOG = "https://tasks.org/changelog"
     const val DOCUMENTATION = "https://tasks.org/"
     const val NOTIFICATIONS = "https://tasks.org/notifications"
-    const val ISSUE_TRACKER = "https://github.com/tasks/tasks/issues"
+    const val ISSUE_TRACKER = "https://github.com/jimenezgarciaca/DavTasks/issues"
     const val REDDIT = "https://reddit.com/r/tasks"
-    const val SOURCE_CODE = "https://tasks.org/source"
+    const val SOURCE_CODE = "https://github.com/jimenezgarciaca/DavTasks"
     const val PEBBLE_LISTING = "https://apps.repebble.com/13e39c547aee442eb19a4755"
     const val CONTENT_PROVIDER =
-        "https://github.com/tasks/tasks/blob/main/CONTENT_PROVIDER.md"
+        "https://github.com/jimenezgarciaca/DavTasks/blob/main/CONTENT_PROVIDER.md"
     const val WORKS_WITH_SOURCE =
         "https://github.com/tasks/tasks/blob/main/kmp/src/commonMain/kotlin/org/tasks/compose/settings/WorksWithCatalog.kt"
     const val DOWNLOAD = "https://tasks.org/download"

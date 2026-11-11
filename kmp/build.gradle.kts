@@ -2,7 +2,6 @@
 
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -16,20 +15,6 @@ plugins {
 val appVersionCode: Int by extra
 val appVersionName: String by extra
 
-val libicalDir = layout.buildDirectory.dir("libical")
-
-val buildLibical by tasks.registering(Exec::class) {
-    inputs.file("build-libical.sh").withPathSensitivity(PathSensitivity.NONE)
-    outputs.dir(libicalDir.map { it.dir("libical.xcframework") })
-    outputs.dir(libicalDir.map { it.dir("src/zoneinfo") })
-    outputs.cacheIf { true }
-    commandLine("./build-libical.sh", libicalDir.get().asFile.relativeTo(projectDir).path)
-}
-
-fun libicalSlice(target: KotlinNativeTarget) = libicalDir.map {
-    it.dir("libical.xcframework/" + if (target.name.contains("Simulator")) "ios-arm64-simulator" else "ios-arm64")
-}
-
 kotlin {
     applyDefaultHierarchyTemplate()
     androidTarget {
@@ -41,14 +26,6 @@ kotlin {
     jvm {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(libs.versions.jdk.get()))
-        }
-    }
-    listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
-        target.compilations.getByName("main").cinterops.create("libical") {
-            definitionFile.set(file("src/nativeInterop/cinterop/libical.def"))
-            includeDirs(libicalSlice(target).map { it.dir("Headers") })
-            extraOpts("-libraryPath", libicalSlice(target).get().asFile.path)
-            tasks.named(interopProcessingTaskName).configure { dependsOn(buildLibical) }
         }
     }
     sourceSets {
@@ -69,7 +46,6 @@ kotlin {
                     exclude(group = "org.slf4j", module = "slf4j-jdk14")
                 }
                 implementation(libs.persistent.cookiejar)
-                implementation(libs.pebblekit)
                 implementation(libs.dmfs.opentasks.provider.get().toString()) {
                     exclude("com.github.tasks.opentasks", "opentasks-contract")
                 }
@@ -114,9 +90,6 @@ kotlin {
             compileOnly(libs.slf4j.api)
             compileOnly(libs.xpp3)
         }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
         commonMain.dependencies {
             api(projects.cert4android)
             implementation(projects.data)
@@ -146,21 +119,6 @@ kotlin {
     tasks.register("testClasses")
 }
 
-val jvmTestJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("jvm-test")
-    from(kotlin.jvm().compilations.getByName("test").output.allOutputs)
-}
-
-val jvmTestOutput: Configuration by configurations.creating {
-    isCanBeResolved = false
-    isCanBeConsumed = true
-    extendsFrom(configurations.getByName("jvmTestImplementation"))
-}
-
-artifacts {
-    add(jvmTestOutput.name, jvmTestJar)
-}
-
 fun registerBuildConfig(objectName: String) = tasks.register("generate${objectName}") {
     val outputDir = layout.buildDirectory.dir("generated/${objectName}")
     val versionCode = appVersionCode
@@ -168,9 +126,6 @@ fun registerBuildConfig(objectName: String) = tasks.register("generate${objectNa
     val applicationId = libs.versions.applicationId.get()
     val tasks_dev_url: String? by project
     val devUrl = tasks_dev_url ?: ""
-    val posthogKey = providers.environmentVariable("POSTHOG_KEY")
-        .orElse(providers.gradleProperty("posthogKey"))
-        .orElse("")
     val debug = providers.gradleProperty("release")
         .map { it.isNotEmpty() && !it.toBoolean() }
         .orElse(true)
@@ -178,7 +133,6 @@ fun registerBuildConfig(objectName: String) = tasks.register("generate${objectNa
     inputs.property("versionName", versionName)
     inputs.property("applicationId", applicationId)
     inputs.property("devUrl", devUrl)
-    inputs.property("posthogKey", posthogKey)
     inputs.property("debug", debug)
     outputs.dir(outputDir)
     doLast {
@@ -192,7 +146,6 @@ fun registerBuildConfig(objectName: String) = tasks.register("generate${objectNa
                 |    const val VERSION_NAME = "$versionName"
                 |    const val APPLICATION_ID = "$applicationId"
                 |    const val DEV_URL = "$devUrl"
-                |    const val POSTHOG_KEY = "${posthogKey.get()}"
                 |    const val DEBUG = ${debug.get()}
                 |}
             """.trimMargin())
@@ -201,32 +154,14 @@ fun registerBuildConfig(objectName: String) = tasks.register("generate${objectNa
 }
 
 val generateJvmBuildConfig = registerBuildConfig("JvmBuildConfig")
-val generateIosBuildConfig = registerBuildConfig("IosBuildConfig")
 
 kotlin.sourceSets.named("jvmMain") {
     kotlin.srcDir(generateJvmBuildConfig)
 }
 
-kotlin.sourceSets.named("iosMain") {
-    kotlin.srcDir(generateIosBuildConfig)
-}
-
-val libicalZoneinfo by tasks.registering(Sync::class) {
-    dependsOn(buildLibical)
-    from(libicalDir.map { it.dir("src/zoneinfo") }) {
-        include("**/*.ics")
-        into("files/zoneinfo")
-    }
-    into(layout.buildDirectory.dir("generated/zoneinfo"))
-}
-
 compose.resources {
     publicResClass = true
     generateResClass = always
-    customDirectory(
-        sourceSetName = "iosMain",
-        directoryProvider = libicalZoneinfo.map { layout.buildDirectory.dir("generated/zoneinfo").get() },
-    )
 }
 
 android {

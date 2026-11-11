@@ -37,7 +37,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
     private val taskDao = db.taskDao()
     private val preferences = TasksPreferences(InMemoryDataStore())
     private val encryption = testEncryption()
-    private val provider = testClientProvider(preferences, encryption)
+    private val provider = testClientProvider(encryption)
     private val reporting = mock<Reporting>()
     private val iCal = mock<iCalendar>()
     private val synchronizer = CaldavSynchronizer(

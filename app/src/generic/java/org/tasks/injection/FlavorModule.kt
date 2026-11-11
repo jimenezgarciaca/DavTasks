@@ -15,7 +15,6 @@ import org.tasks.location.LocationService
 import org.tasks.location.LocationServiceAndroid
 import org.tasks.location.MapFragment
 import org.tasks.location.OsmMapFragment
-import org.tasks.wear.WearRefresher
 
 import javax.inject.Singleton
 
@@ -80,11 +79,6 @@ class FlavorModule {
 
     @Provides
     fun getGeocoder(nominatim: GeocoderNominatim): Geocoder = nominatim
-
-    @Provides
-    fun getWearRefresher(): WearRefresher = object : WearRefresher {
-        override suspend fun refresh() = Unit
-    }
 
     @Provides
     fun getQrScanner(): QrScanner = object : QrScanner {

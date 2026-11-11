@@ -36,7 +36,6 @@ import org.tasks.data.entity.CaldavAccount.Companion.TYPE_TASKS
 import org.tasks.data.entity.Task
 import org.tasks.date.DateTimeUtils.midnight
 import org.tasks.date.DateTimeUtils.newDateTime
-import org.tasks.feed.BlogFeedMode
 import org.tasks.jobs.MigrateLocalWork.Companion.EXTRA_ACCOUNT
 import org.tasks.jobs.MigrateLocalWork.Companion.EXTRA_LOCAL_ACCOUNT
 import org.tasks.sync.SyncSource
@@ -47,7 +46,6 @@ import org.tasks.jobs.WorkManager.Companion.TAG_MIGRATE_LOCAL
 import org.tasks.jobs.WorkManager.Companion.TAG_NOTIFICATIONS
 import org.tasks.jobs.WorkManager.Companion.TAG_REFRESH
 import org.tasks.jobs.WorkManager.Companion.TAG_REMOTE_CONFIG
-import org.tasks.jobs.WorkManager.Companion.TAG_BLOG_FEED
 import org.tasks.jobs.WorkManager.Companion.TAG_SYNC
 import org.tasks.jobs.WorkManager.Companion.TAG_UPDATE_PURCHASES
 import org.tasks.notifications.Throttle
@@ -192,11 +190,6 @@ class WorkManagerImpl(
     override fun updatePurchases() =
         enqueueUnique(TAG_UPDATE_PURCHASES, UpdatePurchaseWork::class.java)
 
-    override suspend fun scheduleBlogFeedCheck() {
-        // DavTasks no consulta el blog de Tasks.org.
-        workManager.cancelUniqueWork(TAG_BLOG_FEED)
-    }
-
     @SuppressLint("EnqueueWork")
     private fun enqueueUnique(
         key: String,
@@ -266,9 +259,3 @@ private fun printDuration(millis: Long): String = if (BuildConfig.DEBUG) {
 
 val networkConstraints: Constraints
     get() = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-
-val blogFeedConstraints: Constraints
-    get() = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.UNMETERED)
-        .setRequiresCharging(true)
-        .build()

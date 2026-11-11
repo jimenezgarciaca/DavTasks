@@ -43,17 +43,12 @@ class SettingsPaneParcelTest {
             SettingsDestination.NavigationDrawer,
             SettingsDestination.Backups,
             SettingsDestination.Widgets,
-            SettingsDestination.McpServer,
             SettingsDestination.Advanced,
             SettingsDestination.WorksWith,
             SettingsDestination.HelpAndFeedback,
             SettingsDestination.Debug,
             LocalAccountSettingsPane(accountId = 1),
-            TasksAccountSettingsPane(uuid = "account-uuid"),
             CaldavAccountSettingsPane(accountId = 2),
-            EtebaseAccountSettingsPane(accountId = 3),
-            GoogleTasksAccountSettingsPane(accountId = 4),
-            MicrosoftAccountSettingsPane(accountId = 5),
             OpenTaskAccountSettingsPane(accountId = 6),
         )
     }

@@ -84,20 +84,13 @@ android {
     buildTypes {
         debug {
             val tasks_mapbox_key_debug: String? by project
-            val tasks_google_key_debug: String? by project
             resValue("string", "mapbox_key", tasks_mapbox_key_debug ?: "")
-            resValue("string", "google_key", tasks_google_key_debug ?: "")
-            resValue("string", "posthog_key", "")
             enableUnitTestCoverage = project.hasProperty("coverage")
             enableAndroidTestCoverage = project.hasProperty("coverage")
         }
         release {
             val tasks_mapbox_key: String? by project
-            val tasks_google_key: String? by project
-            val tasks_posthog_key: String? by project
             resValue("string", "mapbox_key", tasks_mapbox_key ?: "")
-            resValue("string", "google_key", tasks_google_key ?: "")
-            resValue("string", "posthog_key", tasks_posthog_key ?: "")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard.pro")

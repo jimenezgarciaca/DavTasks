@@ -38,7 +38,6 @@ import org.tasks.billing.PlayPurchases
 import org.tasks.billing.StoreSubscriptionProvider
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.CaldavClientProvider
-import org.tasks.feed.BlogFeedChecker
 import org.tasks.http.HttpClientFactory
 import org.tasks.http.KtorClientFactory
 import org.tasks.http.OkHttpKtorClientFactory
@@ -78,9 +77,6 @@ import org.tasks.jobs.WorkManager
 import org.tasks.location.Geocoder
 import org.tasks.location.LocationService
 import org.tasks.notifications.Notifier
-import org.tasks.pebble.PebbleMessageHandler
-import org.tasks.pebble.PebbleRefresher
-import org.tasks.pebble.PebbleService
 import org.tasks.preferences.AppPreferences
 import org.tasks.preferences.InstallId
 import org.tasks.preferences.Preferences
@@ -96,7 +92,6 @@ import org.tasks.preferences.DefaultFilterProvider
 import org.tasks.themes.ColorProvider
 import org.tasks.compose.chips.ChipDataProvider
 import org.tasks.tasklist.HeaderFormatter
-import org.tasks.watch.WatchServiceLogic
 import com.todoroo.astrid.service.TaskCreator
 import kotlinx.serialization.json.Json
 import java.util.Locale
@@ -410,13 +405,9 @@ class ApplicationModule {
     @Provides
     fun providesCaldavClientProvider(
         encryption: KeyStoreEncryption,
-        tasksPreferences: TasksPreferences,
-        environment: TasksServerEnvironment,
         httpClientFactory: KtorClientFactory,
     ): CaldavClientProvider = CaldavClientProvider(
         encryption = encryption,
-        tasksPreferences = tasksPreferences,
-        environment = environment,
         httpClientFactory = httpClientFactory,
     )
 
@@ -449,15 +440,6 @@ class ApplicationModule {
     @Provides
     @Singleton
     fun providesBackgroundWork(workManager: WorkManager): BackgroundWork = workManager
-
-    @Provides
-    @Singleton
-    fun providesBlogFeedChecker(
-        httpClientFactory: HttpClientFactory,
-        tasksPreferences: TasksPreferences,
-        appPreferences: AppPreferences,
-        crashReporting: CrashReporting,
-    ) = BlogFeedChecker(httpClientFactory, tasksPreferences, appPreferences, crashReporting)
 
     @Provides
     fun providesTaskMover(
@@ -644,11 +626,6 @@ class ApplicationModule {
     )
 
     @Provides
-    fun providesPebbleRefresher(
-        @ApplicationContext context: Context,
-    ) = PebbleRefresher(context)
-
-    @Provides
     @Singleton
     fun providesCaldavListCache(caldavDao: CaldavDao) = CaldavListCache(caldavDao)
 
@@ -663,50 +640,4 @@ class ApplicationModule {
         tagDataDao: TagDataDao,
         refreshBroadcaster: RefreshBroadcaster,
     ) = ChipDataProvider(caldavLists, tagDataDao, refreshBroadcaster)
-
-    @Provides
-    fun providesWatchServiceLogic(
-        taskDao: TaskDao,
-        taskSaver: TaskSaver,
-        preferences: Preferences,
-        taskCompleter: TaskCompleter,
-        headerFormatter: HeaderFormatter,
-        analytics: Analytics,
-        filterProvider: FilterProvider,
-        purchaseState: PurchaseState,
-        colorProvider: ColorProvider,
-        defaultFilterProvider: DefaultFilterProvider,
-        taskCreator: TaskCreator,
-        @ApplicationContext context: Context,
-    ) = WatchServiceLogic(
-        taskDao = taskDao,
-        taskSaver = taskSaver,
-        appPreferences = preferences,
-        taskCompleter = taskCompleter,
-        headerFormatter = headerFormatter,
-        analytics = analytics,
-        filterProvider = filterProvider,
-        purchaseState = purchaseState,
-        colorProvider = colorProvider,
-        defaultFilterProvider = defaultFilterProvider,
-        taskCreator = taskCreator,
-        context = context,
-    )
-
-    @Provides
-    fun providesPebbleMessageHandler(
-        watchServiceLogic: WatchServiceLogic,
-        firebase: Firebase,
-    ) = PebbleMessageHandler(
-        watchService = watchServiceLogic,
-        analytics = firebase,
-    )
-
-    @Provides
-    @Singleton
-    fun providesPebbleService(
-        @ApplicationContext context: Context,
-        messageHandler: PebbleMessageHandler,
-        @ApplicationScope scope: CoroutineScope,
-    ) = PebbleService(context, messageHandler, scope)
 }

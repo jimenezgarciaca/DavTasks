@@ -2,22 +2,14 @@ package org.tasks.caldav
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
-import org.tasks.auth.TasksServerEnvironment
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.http.KtorClientFactory
 import org.tasks.http.installBasicDigestAuth
-import org.tasks.preferences.TasksPreferences
 import org.tasks.security.Encryption
 
-/**
- * Clientes CalDAV con autenticación Basic/Digest. DavTasks no incluye la cuenta de Tasks.org;
- * [tasksPreferences] y [environment] se mantienen solo por compatibilidad de firma.
- */
-@Suppress("unused")
+/** Clientes CalDAV con autenticación Basic/Digest. */
 class CaldavClientProvider(
     private val encryption: Encryption,
-    private val tasksPreferences: TasksPreferences,
-    private val environment: TasksServerEnvironment,
     private val httpClientFactory: KtorClientFactory,
 ) : CaldavClientFactory {
 

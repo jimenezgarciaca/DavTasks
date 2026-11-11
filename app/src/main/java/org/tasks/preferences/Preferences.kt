@@ -789,10 +789,6 @@ class Preferences @JvmOverloads constructor(
         get() = getLong(R.string.p_last_subscribe_request, 0L)
         set(value) = setLong(R.string.p_last_subscribe_request, value)
 
-    var shownBeastModeHint: Boolean
-        get() = getBoolean(R.string.p_shown_beast_mode_hint, false)
-        set(value) = setBoolean(R.string.p_shown_beast_mode_hint, value)
-
     val linkify: Boolean
         get() = getBoolean(R.string.p_linkify_task_edit, false)
 

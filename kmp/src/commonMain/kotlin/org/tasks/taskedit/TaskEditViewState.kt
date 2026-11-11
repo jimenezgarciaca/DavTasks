@@ -14,7 +14,6 @@ import org.tasks.filters.CaldavFilter
 data class TaskEditViewState(
     val task: Task,
     val displayOrder: ImmutableList<Int>,
-    val showBeastModeHint: Boolean,
     val showComments: Boolean,
     val showKeyboard: Boolean,
     val backButtonSavesTask: Boolean,

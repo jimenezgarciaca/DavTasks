@@ -14,11 +14,9 @@ import org.tasks.analytics.Firebase
 import org.tasks.data.count
 import org.tasks.data.dao.TaskDao
 import org.tasks.injection.BaseWorker
-import org.tasks.pebble.PebbleRefresher
 import org.tasks.preferences.DefaultFilterProvider
 import org.tasks.preferences.Preferences
 import org.tasks.provider.TasksContentProvider
-import org.tasks.wear.WearRefresher
 import timber.log.Timber
 
 @HiltWorker
@@ -29,8 +27,6 @@ class ExternalRefreshWork @AssistedInject constructor(
     private val defaultFilterProvider: DefaultFilterProvider,
     private val taskDao: TaskDao,
     private val preferences: Preferences,
-    private val wearRefresher: WearRefresher,
-    private val pebbleRefresher: PebbleRefresher,
 ) : BaseWorker(context, workerParams, firebase) {
 
     override suspend fun run(): Result {
@@ -45,8 +41,6 @@ class ExternalRefreshWork @AssistedInject constructor(
         } catch (e: Exception) {
             Timber.e(e)
         }
-        wearRefresher.refresh()
-        pebbleRefresher.refresh()
         return Result.success()
     }
 

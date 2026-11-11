@@ -41,7 +41,6 @@ import org.tasks.caldav.CaldavClient
 import org.tasks.jobs.WorkManager
 import org.tasks.location.LocationService
 import org.tasks.opentasks.OpenTaskContentObserver
-import org.tasks.pebble.PebbleService
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.TasksPreferences
 import org.tasks.receivers.ExternalRefreshWork
@@ -70,7 +69,6 @@ class TasksApplication : Application(), Configuration.Provider {
     @Inject lateinit var contentObserver: Lazy<OpenTaskContentObserver>
     @Inject lateinit var syncAdapters: Lazy<SyncAdapters>
     @Inject lateinit var firebase: Firebase
-    @Inject lateinit var pebbleService: PebbleService
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -184,12 +182,10 @@ class TasksApplication : Application(), Configuration.Provider {
             scheduleConfigRefresh()
             updatePurchases()
             scheduleRefresh()
-            scheduleBlogFeedCheck()
         }
         OpenTaskContentObserver.registerObserver(context, contentObserver.get())
         locationService.get().registerAllGeofences()
         CaldavClient.registerFactories()
-        pebbleService.register()
     }
 
     override val workManagerConfiguration: Configuration

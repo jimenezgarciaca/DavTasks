@@ -1,25 +1,14 @@
 package org.tasks.preferences
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceFragmentCompat
-import org.tasks.auth.EXTRA_AUTH_ERROR
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import org.tasks.LocalBroadcastManager
 import org.tasks.R
-import org.tasks.resources.getString
-import tasks.kmp.generated.resources.Res
-import tasks.kmp.generated.resources.tasks_org
-import org.tasks.extensions.Context.toast
 import org.tasks.preferences.fragments.MainSettingsComposeFragment
-import org.tasks.preferences.fragments.MainSettingsComposeFragment.Companion.REQUEST_GOOGLE_TASKS
-import org.tasks.preferences.fragments.MainSettingsComposeFragment.Companion.REQUEST_TASKS_ORG
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -50,18 +39,6 @@ class MainPreferences : BasePreferences() {
         super.onPause()
 
         localBroadcastManager.unregisterReceiver(refreshReceiver)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_GOOGLE_TASKS -> if (resultCode != Activity.RESULT_OK) {
-                data?.getStringExtra(EXTRA_AUTH_ERROR)?.let { toast(it) }
-            }
-            REQUEST_TASKS_ORG -> if (resultCode != Activity.RESULT_OK) {
-                data?.getStringExtra(EXTRA_AUTH_ERROR)?.let { toast(it) }
-            }
-            else -> super.onActivityResult(requestCode, resultCode, data)
-        }
     }
 
     private val refreshReceiver = object : BroadcastReceiver() {

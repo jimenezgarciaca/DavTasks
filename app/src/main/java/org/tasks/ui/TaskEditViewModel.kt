@@ -142,8 +142,6 @@ class TaskEditViewModel @Inject constructor(
     private val _originalState = MutableStateFlow(
         TaskEditViewState(
             task = task,
-            // DavTasks: sin el aviso "¿Demasiada información?"; los campos vacíos ya se pliegan.
-            showBeastModeHint = false,
             showComments = preferences.getBoolean(R.string.p_show_task_edit_comments, false),
             showKeyboard = task.isNew && task.title.isNullOrBlank(),
             backButtonSavesTask = preferences.backButtonSavesTask(),
@@ -187,16 +185,6 @@ class TaskEditViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow(originalState.value)
     val viewState: StateFlow<TaskEditViewState> = _viewState
-
-    init {
-        if (!preferences.shownBeastModeHint) {
-            firebase?.logEvent(
-                R.string.event_banner,
-                R.string.param_type to "beast_mode",
-                R.string.param_action to "shown",
-            )
-        }
-    }
 
     var eventUri = MutableStateFlow(task.calendarURI)
     val timerStarted = MutableStateFlow(task.timerStart)
@@ -556,21 +544,6 @@ class TaskEditViewModel @Inject constructor(
         userActivity.targetId = task.uuid
         userActivity.created = currentTimeMillis()
         userActivityDao.createNew(userActivity)
-    }
-
-    fun hideBeastModeHint(click: Boolean) {
-        _viewState.update {
-            it.copy(showBeastModeHint = false)
-        }
-        preferences.shownBeastModeHint = true
-        firebase?.logEvent(
-            R.string.event_banner,
-            R.string.param_type to "beast_mode",
-            R.string.param_action to if (click) "positive" else "negative",
-            R.string.param_label to resources.getResourceEntryName(
-                if (click) R.string.TLA_menu_settings else R.string.dismiss
-            ),
-        )
     }
 
     fun setPriority(priority: Int) {

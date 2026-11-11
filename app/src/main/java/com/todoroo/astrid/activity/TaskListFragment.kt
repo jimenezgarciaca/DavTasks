@@ -89,26 +89,16 @@ import kotlinx.coroutines.withContext
 import org.tasks.LocalBroadcastManager
 import org.tasks.R
 import org.tasks.ShortcutManager
-import org.tasks.TasksApplication
-import org.tasks.TasksUrls
 import org.tasks.activities.FilterSettingsActivity
 import org.tasks.activities.PlaceSettingsActivity
 import org.tasks.activities.TagSettingsActivity
 import org.tasks.analytics.Firebase
-import org.tasks.billing.PurchaseActivity
-import org.tasks.billing.PurchaseActivityViewModel
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity
 import org.tasks.caldav.LocalListSettingsActivity
 import org.tasks.compose.AlarmsDisabledBanner
-import org.tasks.compose.AppUpdatedBanner
-import org.tasks.compose.BlogBanner
 import org.tasks.compose.FilterSelectionActivity.Companion.launch
 import org.tasks.compose.FilterSelectionActivity.Companion.registerForListPickerResult
 import org.tasks.compose.NotificationsDisabledBanner
-import org.tasks.compose.SubscriptionNagBanner
-import org.tasks.compose.SubscriptionRequiredBanner
-import org.tasks.compose.SyncWarningGoogleTasks
-import org.tasks.compose.SyncWarningMicrosoft
 import org.tasks.data.TaskContainer
 import org.tasks.data.TaskSaver
 import org.tasks.data.dao.CaldavDao
@@ -170,7 +160,6 @@ import org.tasks.themes.ColorProvider
 import org.tasks.themes.TasksTheme
 import org.tasks.themes.Theme
 import org.tasks.themes.ThemeColor
-import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import org.tasks.ui.Banner
 import org.tasks.ui.TaskListEvent
 import org.tasks.ui.TaskListEventBus
@@ -589,93 +578,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                                     dismiss = { listViewModel.dismissBanner() },
                                 )
 
-                            is Banner.SubscriptionRequired ->
-                                SubscriptionRequiredBanner(
-                                    nameRes = banner.nameRes,
-                                    isTasksOrg = banner.isTasksOrg,
-                                    subscribe = {
-                                        val isTasksOrg = banner.isTasksOrg
-                                        listViewModel.dismissBanner(tookAction = true)
-                                        context.startActivity(
-                                            Intent(
-                                                context,
-                                                PurchaseActivity::class.java
-                                            ).apply {
-                                                putExtra(
-                                                    PurchaseActivityViewModel.EXTRA_NAME_YOUR_PRICE,
-                                                    !isTasksOrg
-                                                )
-                                                putExtra(
-                                                    PurchaseActivityViewModel.EXTRA_SOURCE,
-                                                    "banner"
-                                                )
-                                            }
-                                        )
-                                    },
-                                    dismiss = { listViewModel.dismissBanner() },
-                                )
-
-                            Banner.BegForMoney ->
-                                SubscriptionNagBanner(
-                                    subscribe = {
-                                        listViewModel.dismissBanner(tookAction = true)
-                                        if (TasksApplication.IS_GOOGLE_PLAY) {
-                                            context.startActivity(
-                                                Intent(
-                                                    context,
-                                                    PurchaseActivity::class.java
-                                                ).putExtra(
-                                                    PurchaseActivityViewModel.EXTRA_SOURCE,
-                                                    "nag"
-                                                )
-                                            )
-                                        } else {
-                                            preferences.lastSubscribeRequest = currentTimeMillis()
-                                            context.openUri(R.string.url_donate)
-                                        }
-                                    },
-                                    dismiss = { listViewModel.dismissBanner() },
-                                )
-
-                            Banner.WarnGoogleTasks ->
-                                SyncWarningGoogleTasks(
-                                    moreInfo = {
-                                        listViewModel.dismissBanner(tookAction = true)
-                                        context.openUri(R.string.url_google_tasks)
-                                    },
-                                    dismiss = { listViewModel.dismissBanner() },
-                                )
-
-                            Banner.WarnMicrosoft ->
-                                SyncWarningMicrosoft(
-                                    moreInfo = {
-                                        listViewModel.dismissBanner(tookAction = true)
-                                        context.openUri(R.string.url_microsoft)
-                                    },
-                                    dismiss = { listViewModel.dismissBanner() },
-                                )
-
-                            Banner.AppUpdated ->
-                                AppUpdatedBanner(
-                                    whatsNew = {
-                                        listViewModel.dismissBanner(tookAction = true)
-                                        context.openUri(TasksUrls.CHANGELOG)
-                                    },
-                                    dismiss = { listViewModel.dismissBanner() },
-                                )
-
-                            is Banner.BlogAnnouncement ->
-                                BlogBanner(
-                                    title = banner.post.title,
-                                    body = banner.post.description,
-                                    readMore = {
-                                        listViewModel.dismissBanner(tookAction = true)
-                                        context.openUri(banner.post.link)
-                                    },
-                                    dismiss = { listViewModel.dismissBanner() },
-                                )
-
-                            else -> {}
                         }
                     }
                 }

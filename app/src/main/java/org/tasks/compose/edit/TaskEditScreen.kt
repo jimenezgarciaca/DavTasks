@@ -2,7 +2,6 @@ package org.tasks.compose.edit
 
 import org.tasks.themes.TasksIcons
 import org.tasks.compose.components.SymbolIcon
-import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -48,8 +47,6 @@ import androidx.core.content.IntentCompat.getParcelableExtra
 import androidx.fragment.compose.AndroidFragment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.todoroo.andlib.utility.AndroidUtilities.atLeastOreoMR1
-import com.todoroo.astrid.activity.BeastModePreferences
-import com.todoroo.astrid.activity.MainActivity
 import com.todoroo.astrid.files.FilesControlSet
 import com.todoroo.astrid.repeats.RepeatControlSet
 import com.todoroo.astrid.tags.TagsControlSet
@@ -58,7 +55,6 @@ import com.todoroo.astrid.ui.ReminderControlSet
 import com.todoroo.astrid.ui.StartDateControlSet
 import kotlinx.coroutines.launch
 import org.tasks.R
-import org.tasks.compose.BeastModeBanner
 import org.tasks.compose.FilterSelectionActivity.Companion.EXTRA_FILTER
 import org.tasks.compose.FilterSelectionActivity.Companion.launch
 import org.tasks.compose.pickers.DueDatePickerSheet
@@ -108,7 +104,6 @@ fun TaskEditScreen(
     save: () -> Unit,
     discard: () -> Unit,
     delete: () -> Unit,
-    dismissBeastMode: () -> Unit,
     deleteComment: (UserActivity) -> Unit,
     onClickRepeat: () -> Unit,
     repeatRuleToString: (String?) -> String?,
@@ -386,19 +381,6 @@ fun TaskEditScreen(
                     openImage = { FileHelper.startActionView(context, it) },
                 )
             }
-            val beastMode = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartActivityForResult()
-            ) {
-                (context.findActivity() as? MainActivity)?.restartActivity()
-            }
-            BeastModeBanner(
-                visible = viewState.showBeastModeHint,
-                showSettings = {
-                    editViewModel.hideBeastModeHint(click = true)
-                    beastMode.launch(Intent(context, BeastModePreferences::class.java))
-                },
-                dismiss = dismissBeastMode,
-            )
         }
         if (showDueDatePicker) {
             val dueDate = editViewModel.dueDate.collectAsStateWithLifecycle().value
