@@ -265,7 +265,6 @@ fun TaskEditScreen(
                             markdownProvider = markdownProvider,
                             isCompleted = viewState.isCompleted,
                             isRecurring = viewState.task.isRecurring,
-                            priority = viewState.task.priority,
                             onComplete = {
                                 if (viewState.isCompleted) {
                                     editViewModel.setComplete(false)

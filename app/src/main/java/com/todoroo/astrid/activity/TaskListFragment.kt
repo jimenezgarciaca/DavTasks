@@ -926,11 +926,7 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
 
     private fun setupRefresh(layout: SwipeRefreshLayout) {
         layout.setOnRefreshListener(this)
-        layout.setColorSchemeColors(
-                colorProvider.getPriorityColor(0),
-                colorProvider.getPriorityColor(1),
-                colorProvider.getPriorityColor(2),
-                colorProvider.getPriorityColor(3))
+        layout.setColorSchemeColors(themeColor.primaryColor)
     }
 
     override fun onResume() {

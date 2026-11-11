@@ -2,12 +2,6 @@ package org.tasks.tasklist
 
 import android.app.Activity
 import android.graphics.Paint
-import android.graphics.Typeface
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.todoroo.astrid.core.SortHelper.SORT_DUE
 import com.todoroo.astrid.core.SortHelper.SORT_LIST
@@ -30,9 +25,9 @@ import org.tasks.compose.chips.ChipGroup
 import org.tasks.compose.chips.FilterChip
 import org.tasks.compose.StartDateChip
 import org.tasks.compose.chips.SubtaskChip
+import org.tasks.compose.edit.priorityIconRes
 import org.tasks.data.INDENT_STEP_DP
 import org.tasks.data.TaskContainer
-import org.tasks.data.entity.Task
 import org.tasks.data.hasNotes
 import org.tasks.data.isHidden
 import org.tasks.data.isOverdue
@@ -168,7 +163,7 @@ class TaskViewHolder internal constructor(
         }
         indent = task.indent
         markdown.setMarkdown(nameView, task.title)
-        addPriorityMarker()
+        setupPriorityIcon()
         setupTitleAndCheckbox()
         setupDueDate(sortMode == SORT_DUE)
         setupChips(
@@ -212,30 +207,21 @@ class TaskViewHolder internal constructor(
         }
     }
 
-    /**
-     * DavTasks: la prioridad no se indica solo con el color de la casilla; se antepone
-     * "!", "!!" o "!!!" al título (baja, media, alta).
-     */
-    private fun addPriorityMarker() {
-        if (task.isCompleted) return
-        val priority = task.task.priority
-        val marker = when (priority) {
-            Task.Priority.HIGH -> "!!!"
-            Task.Priority.MEDIUM -> "!!"
-            Task.Priority.LOW -> "!"
-            else -> return
-        }
-        val title = nameView.text ?: return
-        val prefix = SpannableString("$marker ").apply {
-            setSpan(
-                ForegroundColorSpan(checkBoxProvider.priorityColor(priority)),
-                0,
-                marker.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
-            )
-            setSpan(StyleSpan(Typeface.BOLD), 0, marker.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-        nameView.text = SpannableStringBuilder(prefix).append(title)
+    /** DavTasks: icono de nivel de prioridad delante del título, en color neutro. */
+    private fun setupPriorityIcon() {
+        val icon = priorityIconRes(task.task.priority)
+            ?.takeUnless { task.isCompleted }
+            ?.let { AppCompatResources.getDrawable(context, it)?.mutate() }
+            ?.apply {
+                setTint(
+                    MaterialColors.getColor(
+                        context,
+                        com.google.android.material.R.attr.colorOnSurfaceVariant,
+                        0,
+                    )
+                )
+            }
+        nameView.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null)
     }
 
     private fun setupTitleAndCheckbox() {

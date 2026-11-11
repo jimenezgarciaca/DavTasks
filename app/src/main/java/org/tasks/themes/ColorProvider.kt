@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.R
 import org.tasks.kmp.org.tasks.themes.ColorProvider as KmpColorProvider
-import org.tasks.kmp.org.tasks.themes.ColorProvider.priorityColor
 import javax.inject.Inject
 
 class ColorProvider @Inject constructor(
@@ -35,10 +34,7 @@ class ColorProvider @Inject constructor(
             KmpColorProvider.getColor(color, isDark, adjust, ColorTone.LIGHT_CHIP, ColorTone.DARK_CHIP),
         )
 
-    fun getPriorityColor(priority: Int) = priorityColor(
-        priority = priority,
-        isDarkMode = isDark,
-    )
+    fun getCheckboxColor() = KmpColorProvider.checkboxColor(isDarkMode = isDark)
 
     fun getThemeColors(adjust: Boolean = true) =
         (KmpColorProvider.PRESET_COLORS + KmpColorProvider.WHITE).map { c ->

@@ -57,7 +57,7 @@
           android:textAlignment="viewStart"
           android:textColor="?android:attr/textColorPrimary"
           android:textSize="@dimen/task_edit_text_size"
-          android:drawablePadding="2dp"
+          android:drawablePadding="6dp"
           app:drawableTint="?attr/colorOnSurfaceVariant"
           tools:text="Task title"
           />

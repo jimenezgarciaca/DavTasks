@@ -14,14 +14,12 @@ class CheckBoxProvider @Inject constructor(
     @param:ActivityContext private val context: Context,
     private val colorProvider: ColorProvider
 ) {
-    fun getCheckBox(task: Task) = getDrawable(task.getCheckboxRes(), task.priority)
+    fun getCheckBox(task: Task) = getDrawable(task.getCheckboxRes())
 
-    fun priorityColor(priority: Int): Int = colorProvider.getPriorityColor(priority)
-
-    private fun getDrawable(@DrawableRes resId: Int, priority: Int): Drawable {
+    private fun getDrawable(@DrawableRes resId: Int): Drawable {
         val original = AppCompatResources.getDrawable(context, resId)
         val wrapped = original!!.mutate()
-        wrapped.setTint(colorProvider.getPriorityColor(priority))
+        wrapped.setTint(colorProvider.getCheckboxColor())
         return wrapped
     }
 

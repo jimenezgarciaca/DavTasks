@@ -27,7 +27,6 @@ import org.tasks.extensions.setTextSize
 import org.tasks.extensions.strikethrough
 import org.tasks.filters.AstridOrderingFilter
 import org.tasks.filters.Filter
-import org.tasks.kmp.org.tasks.themes.ColorProvider.priorityColor
 import org.tasks.kmp.org.tasks.time.DateStyle
 import org.tasks.kmp.org.tasks.time.DateFormatter
 import org.tasks.kmp.formatTime
@@ -170,7 +169,7 @@ internal class TasksWidgetBuilder(
                         settings.vPad
                     )
                     setImageViewResource(R.id.widget_complete_box, task.getCheckboxRes())
-                    setColorFilter(R.id.widget_complete_box, priorityColor(task.priority))
+                    setColorFilter(R.id.widget_complete_box, onSurfaceVariant)
                     setOnClickFillInIntent(
                         R.id.widget_complete_box,
                         Intent(WidgetClickActivity.COMPLETE_TASK)

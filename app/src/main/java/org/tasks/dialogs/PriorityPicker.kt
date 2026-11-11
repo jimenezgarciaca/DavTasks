@@ -3,7 +3,10 @@ package org.tasks.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -14,9 +17,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import org.tasks.R
-import org.tasks.compose.edit.Priority
+import org.tasks.compose.edit.PriorityChips
 import org.tasks.data.entity.Task
 import org.tasks.databinding.DialogPriorityPickerBinding
+import org.tasks.themes.TasksTheme
+import org.tasks.themes.Theme
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,6 +29,7 @@ class PriorityPicker : DialogFragment() {
 
     @Inject lateinit var taskDao: TaskDao
     @Inject lateinit var taskSaver: TaskSaver
+    @Inject lateinit var theme: Theme
 
     private val taskIds: LongArray
         get() = arguments?.getLongArray(EXTRA_TASKS) ?: longArrayOf()
@@ -47,8 +53,19 @@ class PriorityPicker : DialogFragment() {
             val inflater = fragmentActivity.layoutInflater
             val binding = DialogPriorityPickerBinding.inflate(inflater, null, false)
             binding.priorityRow.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            binding.priorityRow.setContent { Priority(selected = priorityPickerViewModel.priority.collectAsStateWithLifecycle().value,
-                onClick = { priorityPickerViewModel.setPriority( it ) }) }
+            binding.priorityRow.setContent {
+                TasksTheme(
+                    theme = theme.themeBase.index,
+                    primary = theme.themeColor.primaryColor,
+                ) {
+                    PriorityChips(
+                        selected = priorityPickerViewModel.priority.collectAsStateWithLifecycle().value,
+                        onClick = { priorityPickerViewModel.setPriority(it) },
+                        showNone = true,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+                    )
+                }
+            }
             val builder = AlertDialog.Builder(fragmentActivity)
                 .setTitle(R.string.change_priority)
                 .setView(binding.root)

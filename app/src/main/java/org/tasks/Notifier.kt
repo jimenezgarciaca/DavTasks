@@ -19,11 +19,9 @@ import org.tasks.notifications.AudioManager
 import org.tasks.notifications.NotificationManager
 import org.tasks.notifications.TelephonyManager
 import org.tasks.preferences.Preferences
-import org.tasks.themes.ColorProvider
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.math.min
 
 class Notifier @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -34,7 +32,6 @@ class Notifier @Inject constructor(
     private val voiceOutputAssistant: VoiceOutputAssistant,
     private val preferences: Preferences) {
 
-    private val colorProvider: ColorProvider = ColorProvider(context)
 
     suspend fun triggerFilterNotification(filter: Filter) {
         val tasks = taskDao.fetchFiltered(filter)
@@ -51,10 +48,8 @@ class Notifier @Inject constructor(
         )
         val summaryTitle = context.resources.getQuantityString(R.plurals.task_count, count, count)
         val style = NotificationCompat.InboxStyle().setBigContentTitle(summaryTitle)
-        var maxPriority = 3
         for (task in tasks) {
             style.addLine(task.title)
-            maxPriority = min(maxPriority, task.priority)
         }
         val builder = NotificationCompat.Builder(context, NotificationManager.NOTIFICATION_CHANNEL_TASKER)
                 .setSmallIcon(R.drawable.ic_done_all_white_24dp)
@@ -66,7 +61,6 @@ class Notifier @Inject constructor(
                 .setAutoCancel(true)
                 .setWhen(currentTimeMillis())
                 .setShowWhen(true)
-                .setColor(colorProvider.getPriorityColor(maxPriority))
                 .setGroupSummary(true)
                 .setGroup(filter.title)
                 .setStyle(style)

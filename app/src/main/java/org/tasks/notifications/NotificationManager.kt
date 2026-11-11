@@ -37,7 +37,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.tasks.reminders.SnoozeOption
 import org.tasks.reminders.snoozeOptions
 import org.tasks.resources.getString
-import org.tasks.themes.ColorProvider
 import org.tasks.time.DateTime
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import tasks.kmp.generated.resources.Res
@@ -47,7 +46,6 @@ import timber.log.Timber
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.min
 
 @Singleton
 class NotificationManager @Inject constructor(
@@ -66,7 +64,6 @@ class NotificationManager @Inject constructor(
     val currentInterruptionFilter: Int
         get() = notificationManager.currentInterruptionFilter
 
-    private val colorProvider = ColorProvider(context)
 
     @Volatile
     private var cachedLocaleContext: Pair<Locale, Context>? = null
@@ -375,7 +372,6 @@ class NotificationManager @Inject constructor(
         }
         Timber.d("Updating summary taskCount=$taskCount notify=$notify nonStop=$nonStop fiveTimes=$fiveTimes newNotifications=$newNotifications")
         val taskIds = tasks.map { it.id }
-        var maxPriority = 3
         val localized = localeContext
         val summaryTitle =
             localized.resources.getQuantityString(R.plurals.task_count, taskCount, taskCount)
@@ -386,7 +382,6 @@ class NotificationManager @Inject constructor(
             val title = task.title
             style.addLine(title)
             titles.add(title)
-            maxPriority = min(maxPriority, task.priority)
         }
         for (notification in newNotifications) {
             tasks.find { it.id == notification.taskId }?.let { ticker.add(it.title) }
@@ -398,7 +393,6 @@ class NotificationManager @Inject constructor(
                 .setShowWhen(true)
                 .setSmallIcon(R.drawable.ic_done_all_white_24dp)
                 .setStyle(style)
-                .setColor(colorProvider.getPriorityColor(maxPriority))
                 .setOnlyAlertOnce(false)
                 .setContentIntent(
                         PendingIntent.getActivity(
@@ -491,7 +485,6 @@ class NotificationManager @Inject constructor(
         val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_DEFAULT)
                 .setCategory(NotificationCompat.CATEGORY_REMINDER)
                 .setContentTitle(taskTitle)
-                .setColor(colorProvider.getPriorityColor(task.priority))
                 .setSmallIcon(R.drawable.ic_check_white_24dp)
                 .setWhen(`when`)
                 .setOnlyAlertOnce(false)
