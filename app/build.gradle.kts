@@ -214,6 +214,7 @@ dependencies {
     implementation(libs.androidx.room3)
     implementation(libs.androidx.sqlite)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.browser)
     implementation(libs.androidx.appfunctions)
     implementation(libs.markwon)
     implementation(libs.markwon.editor)
