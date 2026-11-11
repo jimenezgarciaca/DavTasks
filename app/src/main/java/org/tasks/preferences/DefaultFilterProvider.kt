@@ -107,8 +107,5 @@ class DefaultFilterProvider @Inject constructor(
 
     companion object {
         const val TYPE_CALDAV = FilterPreferenceCodec.TYPE_CALDAV
-
-        @Suppress("DEPRECATION")
-        @Deprecated("use TYPE_CALDAV")
     }
 }

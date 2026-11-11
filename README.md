@@ -22,7 +22,13 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
 - Las tareas escritas por DavTasks se identifican con `PRODID:+//IDN davtasks//android-<versión>//EN`. Se reconocen como cliente con sincronización de recordatorios tanto DavTasks como Tasks.org.
 
-- Se conservan las tablas de la base de datos de esas integraciones para no modificar el esquema.
+- Base de datos: esquema 98, el mismo que Tasks.org 15.14, sin migraciones anteriores (no hay instalaciones de DavTasks con esquemas previos). Las integraciones retiradas no tenían tablas propias; usaban las de CalDAV con otros tipos de cuenta, que ya no existen. Al importar una copia de Tasks.org, las cuentas de servicios no soportados (Tasks.org, EteSync, Microsoft To Do, Google Tasks) se importan como cuentas locales para conservar sus listas y tareas.
+
+- Sin analítica ni informes de errores: los fallos se registran en el log del dispositivo.
+
+- Sin el proveedor de contenido antiguo de Astrid. Se mantienen el proveedor de lectura para ToDo Agenda y la API de contenido documentada en `CONTENT_PROVIDER.md`, con la autoridad y los permisos de DavTasks.
+
+- Solo inglés y español (también en las librerías incluidas). La ayuda enlaza a este README y a los sitios de DAVx⁵, DecSync, EteSync y Tasker; la documentación de tasks.org ya no se enlaza.
 
 - Color dinámico (Material You) activado por defecto.
 

@@ -31,7 +31,6 @@ import org.tasks.compose.FilterSelectionActivity.Companion.launch
 import org.tasks.compose.FilterSelectionActivity.Companion.registerForListPickerResult
 import org.tasks.compose.settings.DefaultRemindersDialog
 import org.tasks.compose.settings.TaskDefaultsContent
-import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.Place
 import org.tasks.data.entity.TagData
 import org.tasks.extensions.Context.is24HourFormat
@@ -128,7 +127,6 @@ class TaskDefaults : Fragment() {
                         .newBasicRecurrenceDialog(
                             rrule = viewModel.settings.defaultRecurrence,
                             dueDate = 0,
-                            accountType = CaldavAccount.TYPE_LOCAL
                         )
                         .show(parentFragmentManager, FRAG_TAG_BASIC_RECURRENCE)
                 },

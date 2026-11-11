@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -57,7 +56,7 @@ import tasks.kmp.generated.resources.default_start_date
 import tasks.kmp.generated.resources.default_tags
 import tasks.kmp.generated.resources.due_date
 import tasks.kmp.generated.resources.due_time
-import tasks.kmp.generated.resources.google_tasks_add_to_top
+import tasks.kmp.generated.resources.new_tasks_on_top
 import tasks.kmp.generated.resources.location_update_interval_15_minutes
 import tasks.kmp.generated.resources.location_update_interval_1_hour
 import tasks.kmp.generated.resources.location_update_interval_2_hours
@@ -171,7 +170,7 @@ fun TaskDefaultsScreen(
 
         SettingsItemCard(modifier = Modifier.padding(horizontal = SettingsContentPadding)) {
             SwitchPreferenceRow(
-                title = stringResource(Res.string.google_tasks_add_to_top),
+                title = stringResource(Res.string.new_tasks_on_top),
                 icon = TasksIcons.VERTICAL_ALIGN_TOP,
                 checked = settings.addTasksToTop,
                 onCheckedChange = onAddToTop,

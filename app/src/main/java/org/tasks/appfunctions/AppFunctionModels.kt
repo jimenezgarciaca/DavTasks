@@ -451,7 +451,7 @@ data class AppAccount(
     val id: Long,
     /** What the account is called. */
     val name: String? = null,
-    /** Account type, for example "caldav", "tasks_org", "google_tasks", "microsoft" or "local". */
+    /** Account type: "caldav", "opentasks" or "local". */
     val type: String,
     /**
      * The last sync error, when there is one: "unauthorized", "payment_required",

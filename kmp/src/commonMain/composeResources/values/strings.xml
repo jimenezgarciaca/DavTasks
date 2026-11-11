@@ -405,7 +405,7 @@
     <string name="date_shortcut_tomorrow_afternoon">Tomorrow afternoon</string>
     <string name="date_shortcut_tomorrow_evening">Tomorrow evening</string>
     <string name="date_shortcut_tomorrow_night">Tomorrow night</string>
-    <string name="google_tasks_add_to_top">New tasks on top</string>
+    <string name="new_tasks_on_top">New tasks on top</string>
     <string name="default_tags">Default tags</string>
     <string name="EPr_default_importance_title">Default priority</string>
     <string name="default_start_date">Default start date</string>
