@@ -2,6 +2,7 @@ package org.tasks.compose.chips
 
 import org.tasks.themes.TasksIcons
 import org.tasks.compose.components.SymbolIcon
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -21,13 +22,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.tasks.compose.components.TasksIcon
 import org.tasks.filters.Filter
-import org.tasks.themes.contentColor
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun Chip(
@@ -58,7 +60,17 @@ fun Chip(
     enabled: Boolean = true,
     clear: (() -> Unit)? = null,
 ) {
-    val onColor = Color(contentColor(color.toArgb()))
+    // DavTasks: chip tonal y compacto. El color de la lista o etiqueta se usa en el borde,
+    // el fondo (muy atenuado) y el icono; el texto mantiene el contraste del tema.
+    val onColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val surface = MaterialTheme.colorScheme.surface
+    val hasContrast = remember(color, surface) {
+        val l1 = color.luminance()
+        val l2 = surface.luminance()
+        (max(l1, l2) + 0.05f) / (min(l1, l2) + 0.05f) >= 3f
+    }
+    val accent = if (hasContrast) color else MaterialTheme.colorScheme.outline
+    val iconColor = if (hasContrast) color else onColor
     CompositionLocalProvider(
         LocalMinimumInteractiveComponentSize provides Dp.Unspecified
     ) {
@@ -66,21 +78,22 @@ fun Chip(
             onClick = onClick,
             enabled = enabled,
             shape = MaterialTheme.shapes.small,
-            color = color,
-            modifier = Modifier.defaultMinSize(minHeight = 26.dp),
+            color = accent.copy(alpha = 0.14f),
+            border = BorderStroke(1.dp, accent.copy(alpha = 0.5f)),
+            modifier = Modifier.defaultMinSize(minHeight = 22.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
             ) {
                 icon?.let {
-                    TasksIcon(label = it, tint = onColor, size = 18.dp)
+                    TasksIcon(label = it, tint = iconColor, size = 14.dp)
                 }
                 text?.let {
                     Text(
                         text = it,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.labelMedium,
                         color = onColor,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -90,7 +103,7 @@ fun Chip(
                     SymbolIcon(
                         name = TasksIcons.CANCEL,
                         modifier = Modifier
-                            .size(16.dp)
+                            .size(18.dp)
                             .clickable { onClearClick() },
                         contentDescription = null,
                         tint = onColor,

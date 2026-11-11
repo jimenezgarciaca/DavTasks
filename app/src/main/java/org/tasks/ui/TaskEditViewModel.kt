@@ -204,6 +204,18 @@ class TaskEditViewModel @Inject constructor(
 
     val dueDate = MutableStateFlow(task.dueDate)
 
+    // DavTasks: la pantalla de edición pliega las subtareas si la tarea no tiene ninguna.
+    private val _hasSubtasks = MutableStateFlow(false)
+    val hasSubtasks: StateFlow<Boolean> = _hasSubtasks
+
+    init {
+        if (!task.isNew) {
+            viewModelScope.launch {
+                _hasSubtasks.value = taskDao.getChildren(task.id).isNotEmpty()
+            }
+        }
+    }
+
     fun setDueDate(value: Long) {
         val hadDueDate = dueDate.value > 0
         val hadDueTime = hasDueTime(dueDate.value)

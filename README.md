@@ -22,6 +22,16 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
 - Color dinámico (Material You) activado por defecto.
 
+- Interfaz ajustada a Material 3:
+
+  - Lista de tareas más compacta (encabezados de sección y separación entre filas menores), chips tonales pequeños y prioridad indicada también con "!", "!!" o "!!!" delante del título.
+
+  - Ajustes y opciones de la lista en el menú de la barra inferior.
+
+  - Edición con X para descartar y botón "Guardar"; sin separadores; prioridad con texto; los campos vacíos poco usados quedan bajo "Más opciones".
+
+  - Menú lateral con las listas de las cuentas antes que etiquetas y lugares, y degradado inferior bajo el botón de búsqueda.
+
 ## Compilación
 
 Cada push a `main` compila el APK en GitHub Actions (workflow "Compilar APK"). Si existen los secretos `DAVTASKS_KEYSTORE`, `DAVTASKS_KEYSTORE_PASSWORD`, `DAVTASKS_KEY_ALIAS` y `DAVTASKS_KEY_PASSWORD`, genera el release firmado; si no, el de depuración. El APK se descarga desde la pestaña Actions, en los artefactos de la ejecución.

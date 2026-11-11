@@ -1,7 +1,14 @@
 package org.tasks.compose.edit
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FilterChip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -30,6 +37,11 @@ import org.tasks.compose.TaskEditRow
 import org.tasks.data.entity.Task
 import org.tasks.kmp.org.tasks.themes.ColorProvider.priorityColor
 import org.tasks.themes.TasksTheme
+import tasks.kmp.generated.resources.Res
+import tasks.kmp.generated.resources.none
+import tasks.kmp.generated.resources.priority_high
+import tasks.kmp.generated.resources.priority_low
+import tasks.kmp.generated.resources.priority_medium
 
 @Composable
 fun PriorityRow(
@@ -63,30 +75,55 @@ fun Priority(
     }
 }
 
+/**
+ * DavTasks: la prioridad se elige con chips con texto (Ninguna, Baja, Media, Alta) y un
+ * punto de color, en lugar de cuatro círculos de color sin etiqueta.
+ */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PriorityLabeled(
     selected: Int,
     onClick: (Int) -> Unit = {},
 ) {
-    Row(
+    val isDark = isSystemInDarkTheme()
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
             .padding(
-                end = dimensionResource(id = R.dimen.keyline_first)
+                top = 12.dp,
+                bottom = 12.dp,
+                end = dimensionResource(id = R.dimen.keyline_first),
             ),
-        verticalAlignment = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(
-            text = stringResource(id = R.string.TEA_importance_label),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(end = 16.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Priority(selected = selected, onClick = onClick)
+        for (priority in Task.Priority.NONE downTo Task.Priority.HIGH) {
+            val color = Color(priorityColor(priority = priority, isDarkMode = isDark))
+            FilterChip(
+                selected = priority == selected,
+                onClick = { onClick(priority) },
+                label = { Text(text = priorityLabel(priority)) },
+                leadingIcon = {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .background(color = color, shape = CircleShape)
+                    )
+                },
+            )
+        }
     }
 }
+
+@Composable
+private fun priorityLabel(priority: Int): String = org.jetbrains.compose.resources.stringResource(
+    when (priority) {
+        Task.Priority.HIGH -> Res.string.priority_high
+        Task.Priority.MEDIUM -> Res.string.priority_medium
+        Task.Priority.LOW -> Res.string.priority_low
+        else -> Res.string.none
+    }
+)
 
 @Composable
 fun RowScope.PriorityButton(

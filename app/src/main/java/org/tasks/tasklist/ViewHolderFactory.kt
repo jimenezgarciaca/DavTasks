@@ -33,7 +33,7 @@ class ViewHolderFactory @Inject constructor(
     private val metrics: DisplayMetrics = context.resources.displayMetrics
     private val background: Int = ResourceResolver.getResourceId(context, androidx.appcompat.R.attr.selectableItemBackground)
     private val selectedColor: Int = ResourceResolver.getData(context, androidx.appcompat.R.attr.colorControlHighlight)
-    private val rowPaddingDp = preferences.getInt(R.string.p_rowPadding, 16)
+    private val rowPaddingDp = preferences.getInt(R.string.p_rowPadding, 10)
     private val rowPaddingPx: Int = AndroidUtilities.convertDpToPixels(metrics, rowPaddingDp)
     private val markdown =
         MarkdownProvider(context, preferences).markdown(R.string.p_linkify_task_list)

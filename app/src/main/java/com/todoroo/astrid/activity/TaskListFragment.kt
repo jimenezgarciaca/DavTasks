@@ -27,7 +27,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -722,19 +721,10 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
     private fun setupToolbarMenu() {
         val toolbar = binding.toolbar
         toolbar.setOnMenuItemClickListener(this)
-        toolbar.overflowIcon = getDrawable(requireContext(), R.drawable.ic_outline_settings_24px)
         val menu = toolbar.menu
         menu.clear()
+        // DavTasks: arriba solo queda la búsqueda (oculta hasta que se activa desde abajo).
         toolbar.inflateMenu(R.menu.menu_task_list_fragment_top)
-        when (filter) {
-            is CaldavFilter -> R.menu.menu_caldav_list_fragment
-            is CustomFilter -> R.menu.menu_custom_filter
-            is TagFilter -> R.menu.menu_tag_view_fragment
-            is PlaceFilter -> R.menu.menu_location_list_fragment
-            else -> null
-        }?.let {
-            toolbar.inflateMenu(it)
-        }
         search = binding.toolbar.menu.findItem(R.id.menu_search).apply {
             setOnActionExpandListener(this@TaskListFragment)
             isVisible = false
@@ -749,6 +739,16 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
             appBar.inflateMenu(R.menu.menu_location_actions)
         }
         appBar.inflateMenu(R.menu.menu_task_list_fragment_bottom)
+        when (filter) {
+            is CaldavFilter -> R.menu.menu_caldav_list_fragment
+            is CustomFilter -> R.menu.menu_custom_filter
+            is TagFilter -> R.menu.menu_tag_view_fragment
+            is PlaceFilter -> R.menu.menu_location_list_fragment
+            else -> null
+        }?.let {
+            appBar.inflateMenu(it)
+        }
+        appBar.inflateMenu(R.menu.menu_task_list_fragment_settings)
         val sortMenu = menu.findItem(R.id.menu_sort)
         if (!filter.supportsSorting()) {
             sortMenu.isEnabled = false

@@ -8,6 +8,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,10 +20,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -34,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
@@ -60,6 +65,8 @@ import org.tasks.compose.pickers.DueDatePickerSheet
 import org.tasks.compose.pickers.dueDateFromSelection
 import org.tasks.compose.pickers.dueDateToSelection
 import org.tasks.data.entity.Alarm
+import org.tasks.data.entity.Task
+import org.tasks.data.entity.TaskAttachment
 import org.tasks.data.entity.UserActivity
 import org.tasks.dialogs.Linkify
 import org.tasks.extensions.Context.findActivity
@@ -87,6 +94,8 @@ import org.tasks.utility.copyToClipboard
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.delete_task
 import tasks.kmp.generated.resources.menu_discard_changes
+import tasks.kmp.generated.resources.more_options
+import tasks.kmp.generated.resources.new_task
 import timber.log.Timber
 import java.util.Locale
 
@@ -164,18 +173,26 @@ fun TaskEditScreen(
                             )
                         }
                     } else {
-                        IconButton(
-                            onClick = { save() },
-                            modifier = Modifier.testTag(TestTags.SAVE_TASK),
-                        ) {
+                        // DavTasks: patrón de diálogo a pantalla completa de Material 3:
+                        // X para descartar y botón "Guardar" a la derecha.
+                        IconButton(onClick = { requestDiscard() }) {
                             SymbolIcon(
-                                name = TasksIcons.SAVE,
-                                contentDescription = stringResource(R.string.save)
+                                name = TasksIcons.CLEAR,
+                                contentDescription = org.jetbrains.compose.resources.stringResource(
+                                    Res.string.menu_discard_changes
+                                ),
                             )
                         }
                     }
                 },
-                title = {},
+                title = {
+                    if (viewState.isNew && !viewState.isReadOnly) {
+                        Text(
+                            text = org.jetbrains.compose.resources.stringResource(Res.string.new_task),
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    }
+                },
                 actions = {
                     if (viewState.isReadOnly) {
                         return@TopAppBar
@@ -190,15 +207,13 @@ fun TaskEditScreen(
                             )
                         }
                     }
-                    if (viewState.backButtonSavesTask) {
-                        IconButton(onClick = { requestDiscard() }) {
-                            SymbolIcon(
-                                name = TasksIcons.CLEAR,
-                                contentDescription = org.jetbrains.compose.resources.stringResource(
-                                    Res.string.menu_discard_changes
-                                ),
-                            )
-                        }
+                    FilledTonalButton(
+                        onClick = { save() },
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .testTag(TestTags.SAVE_TASK),
+                    ) {
+                        Text(text = stringResource(R.string.save))
                     }
                 },
             )
@@ -221,7 +236,24 @@ fun TaskEditScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             val scope = rememberCoroutineScope()
-            viewState.displayOrder.forEach { tag ->
+            val hasSubtasks by editViewModel.hasSubtasks.collectAsStateWithLifecycle()
+            var showAllFields by rememberSaveable { mutableStateOf(false) }
+            val withValue = remember(viewState, hasSubtasks) {
+                viewState.displayOrder
+                    .filter { fieldHasValue(it, viewState, hasSubtasks, preferences) }
+                    .toSet()
+            }
+            // Un campo que ha tenido valor no desaparece aunque se vacíe mientras se edita.
+            var revealed by remember { mutableStateOf(emptySet<Int>()) }
+            LaunchedEffect(withValue) { revealed = revealed + withValue }
+            val visibleFields = if (showAllFields || viewState.isReadOnly) {
+                viewState.displayOrder
+            } else {
+                viewState.displayOrder.filter {
+                    it in ALWAYS_VISIBLE_FIELDS || it in withValue || it in revealed
+                }
+            }
+            visibleFields.forEach { tag ->
                 when (tag) {
                     TAG_TITLE -> {
                         TitleRow(
@@ -331,7 +363,21 @@ fun TaskEditScreen(
                     SubtaskControlSet.TAG -> AndroidFragment<SubtaskControlSet>()
                     else -> throw IllegalArgumentException("Unknown row: $tag")
                 }
-                HorizontalDivider()
+            }
+            if (visibleFields.size < viewState.displayOrder.size) {
+                TextButton(
+                    onClick = { showAllFields = true },
+                    modifier = Modifier.padding(start = 8.dp, top = 4.dp, bottom = 8.dp),
+                ) {
+                    SymbolIcon(
+                        name = TasksIcons.EXPAND_MORE,
+                        contentDescription = null,
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = org.jetbrains.compose.resources.stringResource(Res.string.more_options),
+                    )
+                }
             }
             if (viewState.showComments) {
                 CommentsRow(
@@ -398,6 +444,43 @@ fun TaskEditScreen(
                 onDismiss = { showDeleteConfirmation = false },
             )
         }
+    }
+}
+
+/** Campos que se muestran siempre; el resto se pliega en "Más opciones" si está vacío. */
+private val ALWAYS_VISIBLE_FIELDS = setOf(
+    TAG_TITLE,
+    TAG_DUE_DATE,
+    TAG_LIST,
+    TAG_PRIORITY,
+    TAG_DESCRIPTION,
+    TagsControlSet.TAG,
+)
+
+private fun fieldHasValue(
+    tag: Int,
+    viewState: TaskEditViewState,
+    hasSubtasks: Boolean,
+    preferences: Preferences,
+): Boolean {
+    val task = viewState.task
+    return when (tag) {
+        StartDateControlSet.TAG ->
+            task.hideUntil > 0 ||
+                    (viewState.isNew && preferences.getIntegerFromString(
+                        R.string.p_default_hideUntil_key,
+                        Task.HIDE_UNTIL_NONE,
+                    ) != Task.HIDE_UNTIL_NONE)
+        RepeatControlSet.TAG -> !task.recurrence.isNullOrBlank()
+        ReminderControlSet.TAG -> viewState.alarms.isNotEmpty()
+        LocationControlSet.TAG -> viewState.location != null
+        FilesControlSet.TAG ->
+            viewState.attachments.isNotEmpty() || task.hasTransitory(TaskAttachment.KEY)
+        TimerControlSet.TAG ->
+            task.estimatedSeconds > 0 || task.elapsedSeconds > 0 || task.timerStart > 0
+        CalendarControlSet.TAG -> !task.calendarURI.isNullOrBlank() || viewState.calendar != null
+        SubtaskControlSet.TAG -> hasSubtasks || viewState.newSubtasks.isNotEmpty()
+        else -> false
     }
 }
 

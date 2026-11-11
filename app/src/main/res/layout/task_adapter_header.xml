@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- DavTasks: encabezado de sección compacto (antes 56 dp de alto). -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/header_row"
@@ -8,23 +9,28 @@
 
     <TextView
         android:id="@+id/header"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@id/chevron"
         android:gravity="start|center_vertical"
-        android:padding="@dimen/keyline_first"
-        android:textColor="?android:attr/textColorSecondary"
-        android:textSize="@dimen/sku_details_row_text_size"
-        app:fontFamily="sans-serif-medium" />
+        android:paddingStart="@dimen/keyline_first"
+        android:paddingEnd="@dimen/half_keyline_first"
+        android:paddingTop="@dimen/keyline_first"
+        android:paddingBottom="@dimen/quarter_keyline_first"
+        android:textColor="?android:attr/textColorSecondary" />
 
     <ImageView
         android:id="@+id/chevron"
         android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/keyline_first"
+        android:paddingStart="@dimen/keyline_first"
+        android:paddingEnd="@dimen/keyline_first"
+        android:paddingBottom="@dimen/quarter_keyline_first"
+        android:importantForAccessibility="no"
         android:src="@drawable/ic_keyboard_arrow_up_black_24dp"
         app:tint="?attr/colorOnSurfaceVariant" />
 

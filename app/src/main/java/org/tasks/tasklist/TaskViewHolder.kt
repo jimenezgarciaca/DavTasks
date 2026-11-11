@@ -2,6 +2,12 @@ package org.tasks.tasklist
 
 import android.app.Activity
 import android.graphics.Paint
+import android.graphics.Typeface
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +32,7 @@ import org.tasks.compose.StartDateChip
 import org.tasks.compose.chips.SubtaskChip
 import org.tasks.data.INDENT_STEP_DP
 import org.tasks.data.TaskContainer
+import org.tasks.data.entity.Task
 import org.tasks.data.hasNotes
 import org.tasks.data.isHidden
 import org.tasks.data.isOverdue
@@ -161,6 +168,7 @@ class TaskViewHolder internal constructor(
         }
         indent = task.indent
         markdown.setMarkdown(nameView, task.title)
+        addPriorityMarker()
         setupTitleAndCheckbox()
         setupDueDate(sortMode == SORT_DUE)
         setupChips(
@@ -202,6 +210,32 @@ class TaskViewHolder internal constructor(
                 setBottomPadding(rowPaddingPx, nameView)
             }
         }
+    }
+
+    /**
+     * DavTasks: la prioridad no se indica solo con el color de la casilla; se antepone
+     * "!", "!!" o "!!!" al título (baja, media, alta).
+     */
+    private fun addPriorityMarker() {
+        if (task.isCompleted) return
+        val priority = task.task.priority
+        val marker = when (priority) {
+            Task.Priority.HIGH -> "!!!"
+            Task.Priority.MEDIUM -> "!!"
+            Task.Priority.LOW -> "!"
+            else -> return
+        }
+        val title = nameView.text ?: return
+        val prefix = SpannableString("$marker ").apply {
+            setSpan(
+                ForegroundColorSpan(checkBoxProvider.priorityColor(priority)),
+                0,
+                marker.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+            )
+            setSpan(StyleSpan(Typeface.BOLD), 0, marker.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        nameView.text = SpannableStringBuilder(prefix).append(title)
     }
 
     private fun setupTitleAndCheckbox() {
@@ -387,8 +421,8 @@ class TaskViewHolder internal constructor(
         setTopPadding(rowPaddingPx, nameView, completeBox, dueDate)
         setBottomPadding(rowPaddingPx, completeBox, dueDate)
         nameView.textSize = fontSize.toFloat()
-        description.textSize = fontSize.toFloat()
         val fontSizeDetails = max(10, fontSize - 2)
+        description.textSize = fontSizeDetails.toFloat()
         dueDate.textSize = fontSizeDetails.toFloat()
         with(binding.root) {
             tag = this@TaskViewHolder

@@ -224,9 +224,10 @@ class FilterProvider(
             }
                     .asSequence()
                     .plus(addFilters(showCreate, showBuiltIn, forceExpand))
+                    // DavTasks: las listas de las cuentas van antes que etiquetas y lugares.
+                    .plus(caldavFilters(showCreateList, forceExpand, showSignIn))
                     .plus(addTags(showCreate, hideUnused, forceExpand))
                     .plus(addPlaces(showCreate, hideUnused, forceExpand))
-                    .plus(caldavFilters(showCreateList, forceExpand, showSignIn))
                     .toList()
                     .plusAllIf(TasksBuildConfig.DEBUG) { getDebugFilters() }
 

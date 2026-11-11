@@ -62,6 +62,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
@@ -220,6 +221,22 @@ fun TaskListDrawer(
                 }
             }
         }
+        // DavTasks: degradado inferior para que la lista no se vea bajo el botón de búsqueda
+        // ni bajo la barra de navegación del sistema.
+        val drawerBackground = MaterialTheme.colorScheme.surface
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(bottomGutter)
+                .background(
+                    Brush.verticalGradient(
+                        0f to drawerBackground.copy(alpha = 0f),
+                        0.3f to drawerBackground.copy(alpha = 0.94f),
+                        1f to drawerBackground,
+                    )
+                ),
+        )
         AnimatedVisibility(
             visible = expanded,
             enter = fadeIn(),

@@ -56,7 +56,7 @@ class TaskListPreferencesViewModel @Inject constructor(
 
     fun refreshState() {
         fontSize = preferences.getInt(R.string.p_fontSize, 16)
-        rowSpacing = preferences.getInt(R.string.p_rowPadding, 16)
+        rowSpacing = preferences.getInt(R.string.p_rowPadding, 10)
         showFullTitle = preferences.getBoolean(R.string.p_fullTaskTitle, false)
         showDescription = preferences.getBoolean(R.string.p_show_description, true)
         showFullDescription = preferences.getBoolean(R.string.p_show_full_description, false)
