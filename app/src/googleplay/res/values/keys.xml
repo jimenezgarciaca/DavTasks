@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <string name="market_url">market://details?id=org.tasks</string>
-  <string name="p_purchases">purchases_v3</string>
-  <string name="manage_subscription_url">https://play.google.com/store/account/subscriptions?sku=%s&amp;package=org.tasks</string>
-  <string name="support_email">play-support@tasks.org</string>
-</resources>

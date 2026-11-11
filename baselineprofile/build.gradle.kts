@@ -25,7 +25,6 @@ extensions.configure<TestExtension> {
     flavorDimensions += listOf("store")
     productFlavors {
         create("generic") { dimension = "store" }
-        create("googleplay") { dimension = "store" }
     }
 
     targetProjectPath = ":app"

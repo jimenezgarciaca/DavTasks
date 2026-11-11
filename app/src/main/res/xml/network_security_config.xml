@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  DavTasks admite servidores CalDAV con http:// en cualquier dirección.
+  Con http:// las credenciales viajan sin cifrar, salvo que el tráfico vaya
+  por un túnel cifrado (por ejemplo, Tailscale o WireGuard).
+-->
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <base-config
+        cleartextTrafficPermitted="true"
+        tools:ignore="InsecureBaseConfiguration">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

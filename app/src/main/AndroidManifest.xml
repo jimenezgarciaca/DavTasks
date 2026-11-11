@@ -161,6 +161,7 @@
   <application
     android:pageSizeCompat="enabled"
     android:allowBackup="true"
+    android:networkSecurityConfig="@xml/network_security_config"
     android:backupAgent="org.tasks.backup.TasksBackupAgent"
     android:backupInForeground="true"
     android:fullBackupOnly="false"

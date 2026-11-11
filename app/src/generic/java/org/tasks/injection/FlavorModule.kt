@@ -42,17 +42,17 @@ class FlavorModule {
 
     @Provides
     fun getPlatformConfiguration() = PlatformConfiguration(
-        supportsTasksOrg = true,
+        supportsTasksOrg = false,
         supportsCaldav = true,
-        supportsGoogleTasks = true,
-        supportsMicrosoft = true,
+        supportsGoogleTasks = false,
+        supportsMicrosoft = false,
         supportsOpenTasks = true,
-        supportsEteSync = true,
+        supportsEteSync = false,
         supportsBackupImport = true,
         supportsGeofences = true,
         supportsCalendarEvents = true,
         appStore = AppStore.FDROID,
-        billingProvider = org.tasks.billing.BillingProvider.STRIPE,
+        billingProvider = null,
         isAndroid = true,
         isLibre = true,
         supportsWidgets = true,

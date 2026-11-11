@@ -48,8 +48,9 @@ class Inventory @Inject constructor(
     val hasSubscription: Boolean
         get() = playPurchases.hasPro || entitled || entitlement.hasPro.value || hasTasksAccount
 
+    // DavTasks no muestra avisos de donación ni de suscripción.
     val begForMoney: Boolean
-        get() = if (IS_GENERIC) !hasSubscription else !hasPro
+        get() = false
 
     override fun purchasedThemes() = hasPro || playPurchases.purchasedThemes
 

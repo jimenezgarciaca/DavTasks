@@ -20,7 +20,6 @@ val version = java.util.Properties().apply {
 }
 val appVersionCode = version.getProperty("VERSION_CODE").toInt()
 val appVersionName: String = version.getProperty("VERSION_NAME")
-require(appVersionCode % 2 == 0) { "VERSION_CODE must be even, wear uses VERSION_CODE + 1" }
 gradle.beforeProject {
     extra["appVersionCode"] = appVersionCode
     extra["appVersionName"] = appVersionName
@@ -51,9 +50,5 @@ dependencyResolutionManagement {
 include("app")
 include("data")
 include(":kmp")
-include(":wear")
-include(":wear-datalayer")
 include(":cert4android")
-include(":composeApp")
-include(":googleplay")
 include(":baselineprofile")
