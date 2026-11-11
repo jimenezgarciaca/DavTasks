@@ -32,3 +32,14 @@ jobs:
           name: davtasks-debug-apk
           path: app/build/outputs/apk/**/*.apk
           if-no-files-found: error
+
+      - name: Pruebas de sincronización CalDAV
+        run: ./gradlew --stacktrace :kmp:jvmTest --tests 'org.tasks.caldav.*'
+
+      - name: Publicar informe de pruebas
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: informe-pruebas
+          path: kmp/build/reports/tests/
+          if-no-files-found: ignore
