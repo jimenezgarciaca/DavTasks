@@ -1,7 +1,6 @@
 package org.tasks.backup
 
 import androidx.documentfile.provider.DocumentFile
-import com.google.api.services.drive.model.File
 import org.tasks.time.DateTime
 import java.util.regex.Pattern
 
@@ -17,10 +16,6 @@ object BackupConstants {
 
     fun getTimestamp(file: java.io.File): Long {
         return getTimestampFromFilename(file.name) ?: file.lastModified()
-    }
-
-    fun getTimestamp(file: File): Long? {
-        return getTimestampFromFilename(file.name) ?: file.modifiedTime?.value
     }
 
     fun getTimestamp(file: DocumentFile): Long {

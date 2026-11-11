@@ -191,9 +191,6 @@ abstract class ApiEngineTestCase {
                 caldavDao = caldavDao,
                 taskDeleter = taskDeleter,
                 caldavClientProvider = mock(),
-                etebaseClientProvider = mock(),
-                microsoftClientProvider = mock(),
-                gtasksInvoker = { mock() },
             ),
             tagMetadataEditor = tagMetadataSync,
         )

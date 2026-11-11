@@ -7,7 +7,6 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.api.services.drive.DriveScopes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -19,8 +18,6 @@ import org.tasks.backup.BackupConstants
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.date.DateTimeUtils.newDateTime
-import org.tasks.googleapis.InvokerFactory
-import org.tasks.gtasks.GoogleAccountManager
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -29,11 +26,8 @@ import javax.inject.Inject
 class PreferencesViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: Preferences,
-    invokers: InvokerFactory,
-    private val googleAccountManager: GoogleAccountManager,
     private val caldavDao: CaldavDao,
 ) : ViewModel() {
-    private val driveInvoker = invokers.getDriveInvoker()
     val lastBackup = MutableLiveData<Long?>()
     val lastDriveBackup = MutableLiveData<Long?>()
     val lastAndroidBackup = MutableLiveData<Long>()
@@ -64,38 +58,15 @@ class PreferencesViewModel @Inject constructor(
             return backupDirStr.startsWith(Uri.fromFile(context.filesDir).toString())
         }
 
+    // DavTasks no incluye la copia de seguridad en Google Drive.
     val driveAccount: String?
-        get() {
-            val account = preferences.getStringValue(R.string.p_google_drive_backup_account)
-            val enabled = !account.isNullOrBlank()
-                    && preferences.getBoolean(R.string.p_google_drive_backup, false)
-                    && googleAccountManager.canAccessAccount(account)
-                    && !preferences.alreadyNotified(account, DriveScopes.DRIVE_FILE)
-            return if (enabled) account else null
-        }
+        get() = null
 
     suspend fun tasksAccount(): CaldavAccount? =
         caldavDao.getAccounts(CaldavAccount.TYPE_TASKS).firstOrNull()
 
-    fun updateDriveBackup() = viewModelScope.launch {
-        if (driveAccount.isNullOrBlank()) {
-            lastDriveBackup.value = -1L
-            return@launch
-        }
-        lastDriveBackup.value = preferences
-                .getStringValue(R.string.p_google_drive_backup_folder)
-                ?.takeIf { it.isNotBlank() }
-                ?.let {
-                    try {
-                        driveInvoker.getFilesByPrefix(it, "auto.", "user.")
-                                .firstOrNull()
-                                ?.let(BackupConstants::getTimestamp)
-                    } catch (e: Exception) {
-                        Timber.e(e)
-                        null
-                    }
-                }
-                ?: preferences.getLong(R.string.p_backups_drive_last, -1L)
+    fun updateDriveBackup() {
+        lastDriveBackup.value = -1L
     }
 
     fun updateLocalBackup() = viewModelScope.launch {

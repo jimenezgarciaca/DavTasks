@@ -12,19 +12,12 @@ import org.tasks.data.UUIDHelper
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavCalendar
-import org.tasks.etebase.EtebaseClientProvider
-import org.tasks.googleapis.GtasksInvoker
 import org.tasks.service.TaskDeleter
-import org.tasks.sync.microsoft.MicrosoftClientProvider
-import org.tasks.sync.microsoft.TaskLists
 
 class ApiListManager(
     private val caldavDao: CaldavDao,
     private val taskDeleter: TaskDeleter,
     private val caldavClientProvider: CaldavClientProvider,
-    private val etebaseClientProvider: EtebaseClientProvider,
-    private val microsoftClientProvider: MicrosoftClientProvider,
-    private val gtasksInvoker: suspend (CaldavAccount) -> GtasksInvoker,
 ) : ListManager {
     private val remoteCalls = Semaphore(1)
 
@@ -43,31 +36,7 @@ class ApiListManager(
                     color = color,
                     icon = icon,
                 )
-                account.isGoogleTasks -> {
-                    val list = gtasksInvoker(account).createGtaskList(title)
-                    CaldavCalendar(
-                        uuid = list.id,
-                        account = account.username,
-                        name = list.title,
-                        color = color,
-                        icon = icon,
-                    )
-                }
-                account.isMicrosoft -> {
-                    val list = microsoftClientProvider
-                        .getService(account)
-                        .createList(TaskLists.TaskList(displayName = title))
-                    CaldavCalendar(account = account.uuid, color = color, icon = icon)
-                        .apply { list.applyTo(this) }
-                }
-                account.isEtebaseAccount -> CaldavCalendar(
-                    uuid = UUIDHelper.newUUID(),
-                    account = account.uuid,
-                    url = etebaseClientProvider.forAccount(account).makeCollection(title, color),
-                    name = title,
-                    color = color,
-                    icon = icon,
-                )
+                account.isUnsupported() -> throw unsupported()
                 else -> CaldavCalendar(
                     uuid = UUIDHelper.newUUID(),
                     account = account.uuid,
@@ -96,21 +65,7 @@ class ApiListManager(
             remote("update") {
                 when {
                     account.isLocalList -> Unit
-                    account.isGoogleTasks ->
-                        if (renamed) {
-                            gtasksInvoker(account).renameGtaskList(calendar.uuid!!, title)
-                        }
-                    account.isMicrosoft ->
-                        if (renamed) {
-                            microsoftClientProvider
-                                .getService(account)
-                                .updateList(calendar.uuid!!, TaskLists.TaskList(displayName = title))
-                        }
-                    account.isEtebaseAccount ->
-                        if (renamed || recolored) {
-                            etebaseClientProvider.forAccount(account)
-                                .updateCollection(calendar, title, color)
-                        }
+                    account.isUnsupported() -> throw unsupported()
                     else ->
                         caldavClientProvider.forAccount(account, calendar.url!!)
                             .use { it.updateCollection(title, color, icon) }
@@ -126,11 +81,7 @@ class ApiListManager(
         remote("delete") {
             when {
                 account.isLocalList -> Unit
-                account.isGoogleTasks -> gtasksInvoker(account).deleteGtaskList(calendar.uuid!!)
-                account.isMicrosoft ->
-                    microsoftClientProvider.getService(account).deleteList(calendar.uuid!!)
-                account.isEtebaseAccount ->
-                    etebaseClientProvider.forAccount(account).deleteCollection(calendar)
+                account.isUnsupported() -> throw unsupported()
                 else ->
                     caldavClientProvider.forAccount(account, calendar.url!!).use { it.deleteCollection() }
             }
@@ -155,6 +106,12 @@ class ApiListManager(
     } catch (e: Exception) {
         throw IllegalStateException(e.message ?: "Failed to $operation list", e)
     }
+
+    // DavTasks no incluye la sincronización con Google Tasks, Microsoft To Do ni EteSync.
+    private fun CaldavAccount.isUnsupported() = isGoogleTasks || isMicrosoft || isEtebaseAccount
+
+    private fun unsupported() =
+        UnsupportedOperationException("Tipo de cuenta no soportado en DavTasks")
 
     companion object {
         private const val CALL_TIMEOUT_MS = 30_000L

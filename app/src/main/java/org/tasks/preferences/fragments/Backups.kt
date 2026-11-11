@@ -17,7 +17,6 @@ import org.tasks.R
 import org.tasks.compose.settings.BackupsScreen
 import org.tasks.dialogs.ExportTasksDialog
 import org.tasks.dialogs.ImportTasksDialog
-import org.tasks.drive.DriveLoginActivity
 import org.tasks.extensions.Context.openUri
 import org.tasks.extensions.Context.takePersistableUriPermission
 import org.tasks.extensions.Context.toast
@@ -60,16 +59,6 @@ class Backups : Fragment() {
                 }
             }
         }
-    }
-
-    private val driveLauncher = registerForActivityResult(StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            preferencesViewModel.updateDriveBackup()
-        } else {
-            result.data?.getStringExtra(DriveLoginActivity.EXTRA_ERROR)
-                ?.let { context?.toast(it) }
-        }
-        viewModel.refreshDriveState(preferencesViewModel)
     }
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
@@ -179,9 +168,6 @@ class Backups : Fragment() {
         }
     }
 
-    private fun requestGoogleDriveLogin() {
-        driveLauncher.launch(
-            Intent(context, DriveLoginActivity::class.java),
-        )
-    }
+    // DavTasks no incluye la copia de seguridad en Google Drive.
+    private fun requestGoogleDriveLogin() = Unit
 }

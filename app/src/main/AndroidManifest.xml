@@ -472,10 +472,6 @@
       android:theme="@style/Tasks"/>
 
     <activity
-      android:name=".etebase.EtebaseSignInActivity"
-      android:theme="@style/Tasks" />
-
-    <activity
       android:name=".caldav.CaldavCalendarSettingsActivity"
       android:theme="@style/Tasks"/>
 
@@ -490,16 +486,6 @@
     <activity
       android:name=".activities.PlaceSettingsActivity"
       android:theme="@style/Tasks" />
-
-    <activity android:name=".activities.GoogleTaskListSettingsActivity"/>
-
-    <activity
-      android:name="com.todoroo.astrid.gtasks.auth.GtasksLoginActivity"
-      android:theme="@style/TranslucentDialog"/>
-
-    <activity
-      android:name=".drive.DriveLoginActivity"
-      android:theme="@style/TranslucentDialog" />
 
     <activity
       android:name=".voice.VoiceCommandActivity"
@@ -670,10 +656,6 @@
     <activity android:name=".tags.TagPickerActivity" />
 
     <activity
-      android:name=".etebase.EtebaseCalendarSettingsActivity"
-      android:theme="@style/Tasks" />
-
-    <activity
       android:name=".preferences.MainPreferences"
       android:theme="@style/Tasks" />
 
@@ -690,8 +672,6 @@
         <category android:name="android.intent.category.NOTIFICATION_PREFERENCES" />
       </intent-filter>
     </activity>
-
-      <activity android:name="org.tasks.sync.microsoft.MicrosoftListSettingsActivity" />
 
       <activity
           android:name="org.tasks.dialogs.SortSettingsActivity"

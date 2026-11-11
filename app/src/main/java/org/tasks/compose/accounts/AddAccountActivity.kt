@@ -12,7 +12,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.todoroo.astrid.gtasks.auth.GtasksLoginActivity
+import org.tasks.auth.EXTRA_AUTH_ERROR
 import dagger.hilt.android.AndroidEntryPoint
 import org.tasks.R
 import org.tasks.analytics.Firebase
@@ -23,10 +23,8 @@ import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_FEATURE
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_NAME_YOUR_PRICE
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_SOURCE
 import org.tasks.caldav.CaldavSignInActivity
-import org.tasks.etebase.EtebaseSignInActivity
 import org.tasks.extensions.Context.openUri
 import org.tasks.preferences.TasksPreferences
-import org.tasks.sync.microsoft.MicrosoftSignInViewModel
 import org.tasks.themes.TasksSettingsTheme
 import org.tasks.themes.Theme
 import javax.inject.Inject
@@ -40,7 +38,6 @@ class AddAccountActivity : ComponentActivity() {
     @Inject lateinit var configuration: PlatformConfiguration
 
     private val viewModel: AddAccountViewModel by viewModels()
-    private val microsoftVM: MicrosoftSignInViewModel by viewModels()
 
     private var pendingPlatform: Platform? = null
 
@@ -68,7 +65,7 @@ class AddAccountActivity : ComponentActivity() {
     ) { result ->
         if (result.resultCode != Activity.RESULT_OK) {
             result.data
-                ?.getStringExtra(GtasksLoginActivity.EXTRA_ERROR)
+                ?.getStringExtra(EXTRA_AUTH_ERROR)
                 ?.let { /* ignore error, user can try again */ }
         }
     }
@@ -77,14 +74,8 @@ class AddAccountActivity : ComponentActivity() {
         when (platform) {
             Platform.TASKS_ORG ->
                 syncLauncher.launch(Intent(this, SignInActivity::class.java))
-            Platform.GOOGLE_TASKS ->
-                syncLauncher.launch(Intent(this, GtasksLoginActivity::class.java))
-            Platform.MICROSOFT ->
-                microsoftVM.signIn(this)
             Platform.CALDAV ->
                 syncLauncher.launch(Intent(this, CaldavSignInActivity::class.java))
-            Platform.ETEBASE ->
-                syncLauncher.launch(Intent(this, EtebaseSignInActivity::class.java))
             else -> throw IllegalArgumentException()
         }
     }

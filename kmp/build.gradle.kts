@@ -76,14 +76,12 @@ kotlin {
                 implementation(libs.dmfs.rfc5545.datetime)
                 implementation(libs.dmfs.recur)
                 implementation(libs.dmfs.jems)
-                api(libs.etebase.android)
             }
         }
         jvmMain {
             dependsOn(jvmCommonMain)
             dependencies {
                 implementation(libs.xpp3)
-                implementation(libs.etebase.jvm)
             }
         }
         commonTest.dependencies {
@@ -111,12 +109,10 @@ kotlin {
         }
         jvmCommonMain.dependencies {
             api(libs.ical4j)
-            api(libs.google.api.tasks)
             api(libs.okhttp)
             implementation(libs.ktor.client.okhttp)
             compileOnly(libs.slf4j.api)
             compileOnly(libs.xpp3)
-            compileOnly(libs.etebase.jvm)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

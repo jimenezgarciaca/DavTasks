@@ -45,7 +45,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.todoroo.astrid.adapter.SubheaderClickHandler
-import com.todoroo.astrid.gtasks.auth.GtasksLoginActivity
+import org.tasks.auth.EXTRA_AUTH_ERROR
 import com.todoroo.astrid.service.TaskCreator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -93,7 +93,6 @@ import org.tasks.data.entity.Task
 import org.tasks.data.listSettingsClass
 import org.tasks.data.newLocalAccount
 import org.tasks.dialogs.NewFilterDialog
-import org.tasks.etebase.EtebaseSignInActivity
 import org.tasks.extensions.Context.nightMode
 import org.tasks.extensions.Context.openUri
 import org.tasks.extensions.Context.toast
@@ -107,7 +106,6 @@ import org.tasks.preferences.DefaultFilterProvider
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.TasksPreferences
 import org.tasks.sync.SyncSource
-import org.tasks.sync.microsoft.MicrosoftSignInViewModel
 import org.tasks.themes.ColorProvider
 import org.tasks.themes.TasksTheme
 import org.tasks.themes.Theme
@@ -277,7 +275,6 @@ class MainActivity : AppCompatActivity() {
                             firebase.logEvent(R.string.event_screen_add_account)
                         }
                         val addAccountViewModel: AddAccountViewModel = hiltViewModel()
-                        val microsoftVM: MicrosoftSignInViewModel = hiltViewModel()
                         LaunchedEffect(Unit) {
                             addAccountViewModel.accountAdded.collect {
                                 navController.popBackStack()
@@ -287,7 +284,7 @@ class MainActivity : AppCompatActivity() {
                             rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                                 if (result.resultCode != RESULT_OK) {
                                     result.data
-                                        ?.getStringExtra(GtasksLoginActivity.EXTRA_ERROR)
+                                        ?.getStringExtra(EXTRA_AUTH_ERROR)
                                         ?.let { toast(it) }
                                 }
                             }
@@ -302,22 +299,9 @@ class MainActivity : AppCompatActivity() {
                                         Intent(this@MainActivity, SignInActivity::class.java)
                                     )
 
-                                Platform.GOOGLE_TASKS ->
-                                    syncLauncher.launch(
-                                        Intent(this@MainActivity, GtasksLoginActivity::class.java)
-                                    )
-
-                                Platform.MICROSOFT ->
-                                    microsoftVM.signIn(this@MainActivity)
-
                                 Platform.CALDAV ->
                                     syncLauncher.launch(
                                         Intent(this@MainActivity, CaldavSignInActivity::class.java)
-                                    )
-
-                                Platform.ETEBASE ->
-                                    syncLauncher.launch(
-                                        Intent(this@MainActivity, EtebaseSignInActivity::class.java)
                                     )
 
                                 else -> throw IllegalArgumentException()

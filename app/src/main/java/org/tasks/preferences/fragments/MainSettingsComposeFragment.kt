@@ -50,12 +50,9 @@ import org.tasks.preferences.MainSettingsViewModel
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.PreferencesViewModel
 import org.tasks.preferences.ProCardViewModel
-import org.tasks.preferences.fragments.GoogleTasksAccount.Companion.newGoogleTasksAccountPreference
 import org.tasks.preferences.fragments.CaldavAccountFragment.Companion.newCaldavAccountFragment
-import org.tasks.preferences.fragments.EtebaseAccountFragment.Companion.newEtebaseAccountFragment
 import org.tasks.preferences.fragments.LocalAccount.Companion.newLocalAccountPreference
 import org.tasks.preferences.fragments.OpenTaskAccountFragment.Companion.newOpenTaskAccountFragment
-import org.tasks.preferences.fragments.MicrosoftAccount.Companion.newMicrosoftAccountPreference
 import org.tasks.preferences.fragments.TasksAccount.Companion.newTasksAccountPreference
 import org.tasks.PlatformConfiguration
 import org.tasks.analytics.Firebase
@@ -234,18 +231,6 @@ class MainSettingsComposeFragment : Fragment() {
                     )
                 }
             }
-            account.isMicrosoft -> {
-                activity.startPreference(
-                    newMicrosoftAccountPreference(account),
-                    getString(R.string.microsoft)
-                )
-            }
-            account.isGoogleTasks -> {
-                activity.startPreference(
-                    newGoogleTasksAccountPreference(account),
-                    getString(R.string.gtasks_GPr_header)
-                )
-            }
             account.isLocalList -> {
                 activity.startPreference(
                     newLocalAccountPreference(account),
@@ -256,12 +241,6 @@ class MainSettingsComposeFragment : Fragment() {
                 activity.startPreference(
                     newCaldavAccountFragment(account),
                     getString(R.string.caldav)
-                )
-            }
-            account.isEtebaseAccount -> {
-                activity.startPreference(
-                    newEtebaseAccountFragment(account),
-                    getString(R.string.etesync)
                 )
             }
             account.isOpenTasks -> {

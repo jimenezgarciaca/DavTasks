@@ -62,38 +62,6 @@ class AccountLoadedTest {
     }
 
     @Test
-    fun `the etebase editor waits for the watch`() = runBlocking {
-        val viewModel = EtebaseAccountSettingsViewModel(
-            caldavDao = dao(),
-            clientProvider = mock(),
-            encryption = mock(),
-            taskDeleter = mock(),
-            reporting = mock(),
-        )
-        viewModel.setAccountId(ACCOUNT_ID)
-
-        assertFalse(viewModel.state.value.loaded)
-
-        rows.emit(null)
-        withTimeout(TIMEOUT) { viewModel.state.first { it.loaded } }
-
-        assertEquals(null, viewModel.state.value.account)
-    }
-
-    @Test
-    fun `the google tasks editor waits for the watch`() = runBlocking {
-        val viewModel = GoogleTasksAccountViewModel(caldavDao = dao(), taskDeleter = mock())
-        viewModel.setAccountId(ACCOUNT_ID)
-
-        assertFalse(viewModel.state.value.loaded)
-
-        rows.emit(account())
-        withTimeout(TIMEOUT) { viewModel.state.first { it.loaded } }
-
-        assertEquals("CalDAV", viewModel.state.value.account?.name)
-    }
-
-    @Test
     fun `the local list editor waits for the watch`() = runBlocking {
         val viewModel = LocalAccountViewModel(
             caldavDao = dao(),

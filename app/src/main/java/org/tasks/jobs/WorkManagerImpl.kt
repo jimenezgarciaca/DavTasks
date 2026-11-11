@@ -37,8 +37,6 @@ import org.tasks.data.entity.Task
 import org.tasks.date.DateTimeUtils.midnight
 import org.tasks.date.DateTimeUtils.newDateTime
 import org.tasks.feed.BlogFeedMode
-import org.tasks.jobs.DriveUploader.Companion.EXTRA_PURGE
-import org.tasks.jobs.DriveUploader.Companion.EXTRA_URI
 import org.tasks.jobs.MigrateLocalWork.Companion.EXTRA_ACCOUNT
 import org.tasks.jobs.MigrateLocalWork.Companion.EXTRA_LOCAL_ACCOUNT
 import org.tasks.sync.SyncSource
@@ -188,21 +186,8 @@ class WorkManagerImpl(
         }
     }
 
-    override fun scheduleDriveUpload(uri: Uri, purge: Boolean) {
-        if (!preferences.getBoolean(R.string.p_google_drive_backup, false)) {
-            return
-        }
-        val builder = OneTimeWorkRequest.Builder(DriveUploader::class.java)
-            .setInputData(
-                EXTRA_URI to uri.toString(),
-                EXTRA_PURGE to purge,
-            )
-            .setConstraints(networkConstraints)
-        if (purge) {
-            builder.setInitialDelay(Random().nextInt(3600).toLong(), TimeUnit.SECONDS)
-        }
-        enqueue(builder)
-    }
+    // DavTasks no incluye la copia de seguridad en Google Drive.
+    override fun scheduleDriveUpload(uri: Uri, purge: Boolean) = Unit
 
     override fun updatePurchases() =
         enqueueUnique(TAG_UPDATE_PURCHASES, UpdatePurchaseWork::class.java)

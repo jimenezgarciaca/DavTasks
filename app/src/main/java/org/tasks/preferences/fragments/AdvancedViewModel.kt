@@ -18,7 +18,6 @@ import org.tasks.caldav.VtodoCache
 import org.tasks.calendars.CalendarEventProvider
 import org.tasks.data.dao.TaskDao
 import org.tasks.data.db.Database
-import org.tasks.etebase.EtebaseLocalCache
 import org.tasks.files.FileHelper
 import org.tasks.filters.Filter
 import org.tasks.preferences.DefaultFilterProvider
@@ -170,7 +169,6 @@ class AdvancedViewModel @Inject constructor(
         viewModelScope.launch(NonCancellable) {
             context.deleteDatabase(database.name)
             vtodoCache.clear()
-            EtebaseLocalCache.clear(context.filesDir.absolutePath)
             kotlin.system.exitProcess(0)
         }
     }

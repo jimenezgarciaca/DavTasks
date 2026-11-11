@@ -39,8 +39,6 @@ import org.tasks.billing.PlayPurchases
 import org.tasks.billing.StoreSubscriptionProvider
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.CaldavClientProvider
-import org.tasks.etebase.EtebaseClientProvider
-import org.tasks.etebase.EtebaseSynchronizer
 import org.tasks.caldav.TasksBasicAuth
 import org.tasks.feed.BlogFeedChecker
 import org.tasks.http.HttpClientFactory
@@ -103,8 +101,6 @@ import org.tasks.compose.chips.ChipDataProvider
 import org.tasks.tasklist.HeaderFormatter
 import org.tasks.watch.WatchServiceLogic
 import com.todoroo.astrid.service.TaskCreator
-import org.tasks.sync.microsoft.MicrosoftClientProvider
-import org.tasks.sync.microsoft.MicrosoftSynchronizer
 import kotlinx.serialization.json.Json
 import java.util.Locale
 import java.util.concurrent.Executors
@@ -366,40 +362,6 @@ class ApplicationModule {
     )
 
     @Provides
-    fun providesEtebaseSynchronizer(
-        caldavDao: CaldavDao,
-        dirtyDao: DirtyDao,
-        refreshBroadcaster: RefreshBroadcaster,
-        taskDeleter: TaskDeleter,
-        clientProvider: EtebaseClientProvider,
-        iCal: org.tasks.caldav.iCalendar,
-        vtodoCache: VtodoCache,
-        reporting: Reporting,
-    ): EtebaseSynchronizer = EtebaseSynchronizer(
-        caldavDao = caldavDao,
-        dirtyDao = dirtyDao,
-        refreshBroadcaster = refreshBroadcaster,
-        taskDeleter = taskDeleter,
-        clientProvider = clientProvider,
-        iCal = iCal,
-        vtodoCache = vtodoCache,
-        reporting = reporting,
-    )
-
-    @Provides
-    fun providesEtebaseClientProvider(
-        @ApplicationContext context: Context,
-        encryption: KeyStoreEncryption,
-        caldavDao: CaldavDao,
-        httpClientFactory: HttpClientFactory,
-    ): EtebaseClientProvider = EtebaseClientProvider(
-        filesDir = context.filesDir.absolutePath,
-        encryption = encryption,
-        caldavDao = caldavDao,
-        httpClientFactory = httpClientFactory,
-    )
-
-    @Provides
     fun providesOpenTaskDao(
         @ApplicationContext context: Context,
         caldavDao: CaldavDao,
@@ -564,44 +526,6 @@ class ApplicationModule {
     )
 
     @Provides
-    fun providesMicrosoftClientProvider(
-        httpClientFactory: HttpClientFactory,
-    ): MicrosoftClientProvider = httpClientFactory
-
-    @Provides
-    fun providesMicrosoftSynchronizer(
-        caldavDao: CaldavDao,
-        taskDao: TaskDao,
-        dirtyDao: DirtyDao,
-        taskSaver: TaskSaver,
-        refreshBroadcaster: RefreshBroadcaster,
-        taskDeleter: TaskDeleter,
-        reporting: Reporting,
-        clientProvider: MicrosoftClientProvider,
-        tagDao: TagDao,
-        tagDataDao: TagDataDao,
-        appPreferences: AppPreferences,
-        vtodoCache: VtodoCache,
-        taskCreator: TaskCreator,
-        defaultFilterProvider: DefaultFilterProvider,
-    ): MicrosoftSynchronizer = MicrosoftSynchronizer(
-        caldavDao = caldavDao,
-        taskDao = taskDao,
-        dirtyDao = dirtyDao,
-        taskSaver = taskSaver,
-        refreshBroadcaster = refreshBroadcaster,
-        taskDeleter = taskDeleter,
-        reporting = reporting,
-        clientProvider = clientProvider,
-        tagDao = tagDao,
-        tagDataDao = tagDataDao,
-        appPreferences = appPreferences,
-        vtodoCache = vtodoCache,
-        createTask = { taskCreator.createWithValues("") },
-        setDefaultList = { defaultFilterProvider.defaultList = it },
-    )
-
-    @Provides
     fun providesICalendar(
         tagDataDao: TagDataDao,
         preferences: AppPreferences,
@@ -666,16 +590,10 @@ class ApplicationModule {
         caldavDao: CaldavDao,
         taskDeleter: TaskDeleter,
         caldavClientProvider: CaldavClientProvider,
-        etebaseClientProvider: EtebaseClientProvider,
-        microsoftClientProvider: MicrosoftClientProvider,
-        invokerFactory: org.tasks.googleapis.InvokerFactory,
     ) = org.tasks.api.ApiListManager(
         caldavDao = caldavDao,
         taskDeleter = taskDeleter,
         caldavClientProvider = caldavClientProvider,
-        etebaseClientProvider = etebaseClientProvider,
-        microsoftClientProvider = microsoftClientProvider,
-        gtasksInvoker = { invokerFactory.getGtasksInvoker(it.username!!) },
     )
 
     @Provides

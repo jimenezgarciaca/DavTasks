@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceFragmentCompat
-import com.todoroo.astrid.gtasks.auth.GtasksLoginActivity
+import org.tasks.auth.EXTRA_AUTH_ERROR
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.tasks.LocalBroadcastManager
@@ -57,7 +57,7 @@ class MainPreferences : BasePreferences() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             REQUEST_GOOGLE_TASKS -> if (resultCode != Activity.RESULT_OK) {
-                data?.getStringExtra(GtasksLoginActivity.EXTRA_ERROR)?.let { toast(it) }
+                data?.getStringExtra(EXTRA_AUTH_ERROR)?.let { toast(it) }
             }
             REQUEST_TASKS_ORG -> if (resultCode == Activity.RESULT_OK) {
                 lifecycleScope.launch {

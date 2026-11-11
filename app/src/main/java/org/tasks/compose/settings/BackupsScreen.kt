@@ -103,36 +103,7 @@ fun BackupsScreen(
             }
         }
 
-        // Google Drive backup section
-        SectionHeader(
-            R.string.google_drive_backup,
-            modifier = Modifier.padding(horizontal = SettingsContentPadding),
-        )
-        Column(
-            modifier = Modifier.padding(horizontal = SettingsContentPadding),
-            verticalArrangement = Arrangement.spacedBy(SettingsCardGap),
-        ) {
-            SettingsItemCard(position = CardPosition.First) {
-                val errorColor = colorResource(R.color.overdue)
-                SwitchPreferenceRow(
-                    title = stringResource(R.string.enabled),
-                    summary = lastDriveBackupSummary,
-                    checked = driveBackupEnabled,
-                    onCheckedChange = onDriveBackup,
-                    icon = if (showDriveBackupWarning)
-                        TasksIcons.ERROR_OUTLINE else null,
-                    iconTint = if (showDriveBackupWarning) errorColor else null,
-                )
-            }
-            SettingsItemCard(position = CardPosition.Last) {
-                PreferenceRow(
-                    title = stringResource(R.string.account),
-                    summary = driveAccountSummary,
-                    enabled = driveAccountEnabled,
-                    onClick = onDriveAccount,
-                )
-            }
-        }
+        // DavTasks: sin copia de seguridad en Google Drive.
 
         // Android Backup Service section
         SectionHeader(
