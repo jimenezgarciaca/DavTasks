@@ -96,7 +96,7 @@ data class TaskDefaultSettings(
     val addTasksToTop: Boolean = true,
     val defaultList: String? = null,
     val defaultTags: List<String> = emptyList(),
-    val defaultPriority: Int = Task.Priority.LOW,
+    val defaultPriority: Int = Task.Priority.NONE,
     val defaultHideUntil: Int = Task.HIDE_UNTIL_NONE,
     val defaultDueDate: Int = Task.URGENCY_NONE,
     val defaultCalendar: String? = null,

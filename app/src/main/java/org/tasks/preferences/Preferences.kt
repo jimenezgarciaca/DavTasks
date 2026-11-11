@@ -729,7 +729,7 @@ class Preferences @JvmOverloads constructor(
         set(value) { setBoolean(R.string.p_subtask_ascending, value) }
 
     override suspend fun defaultPriority(): Int =
-        getIntegerFromString(R.string.p_default_importance_key, Task.Priority.LOW)
+        getIntegerFromString(R.string.p_default_importance_key, Task.Priority.NONE)
 
     val themeBase: Int
         get() = getInt(R.string.p_theme, ThemeBase.DEFAULT_BASE_THEME)

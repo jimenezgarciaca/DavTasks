@@ -142,7 +142,8 @@ class TaskEditViewModel @Inject constructor(
     private val _originalState = MutableStateFlow(
         TaskEditViewState(
             task = task,
-            showBeastModeHint = !preferences.shownBeastModeHint,
+            // DavTasks: sin el aviso "¿Demasiada información?"; los campos vacíos ya se pliegan.
+            showBeastModeHint = false,
             showComments = preferences.getBoolean(R.string.p_show_task_edit_comments, false),
             showKeyboard = task.isNew && task.title.isNullOrBlank(),
             backButtonSavesTask = preferences.backButtonSavesTask(),

@@ -28,7 +28,9 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
   - Ajustes y opciones de la lista en el menú de la barra inferior.
 
-  - Edición con X para descartar y botón "Guardar"; sin separadores; prioridad con texto; los campos vacíos poco usados quedan bajo "Más opciones".
+  - Edición con X para descartar y botón "Guardar"; sin separadores; prioridad con chips Baja, Media y Alta (pulsar la marcada la quita); los campos vacíos poco usados quedan bajo "Más opciones"; sin el aviso "¿Demasiada información?".
+
+  - Prioridad por defecto de las tareas nuevas: ninguna (en instalaciones nuevas).
 
   - Menú lateral con las listas de las cuentas antes que etiquetas y lugares, y degradado inferior bajo el botón de búsqueda.
 

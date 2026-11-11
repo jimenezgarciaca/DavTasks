@@ -76,8 +76,9 @@ fun Priority(
 }
 
 /**
- * DavTasks: la prioridad se elige con chips con texto (Ninguna, Baja, Media, Alta) y un
- * punto de color, en lugar de cuatro círculos de color sin etiqueta.
+ * DavTasks: la prioridad se elige con chips con texto (Baja, Media, Alta) y un punto de
+ * color. Pulsar la prioridad marcada la quita (sin prioridad). Con tres chips caben en una
+ * línea aunque el tamaño de letra del sistema sea grande.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -97,11 +98,13 @@ fun PriorityLabeled(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        for (priority in Task.Priority.NONE downTo Task.Priority.HIGH) {
+        for (priority in Task.Priority.LOW downTo Task.Priority.HIGH) {
             val color = Color(priorityColor(priority = priority, isDarkMode = isDark))
             FilterChip(
                 selected = priority == selected,
-                onClick = { onClick(priority) },
+                onClick = {
+                    onClick(if (priority == selected) Task.Priority.NONE else priority)
+                },
                 label = { Text(text = priorityLabel(priority)) },
                 leadingIcon = {
                     Box(
