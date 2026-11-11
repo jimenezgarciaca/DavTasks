@@ -19,9 +19,6 @@ import org.tasks.PlatformConfiguration
 import org.tasks.auth.TasksServerEnvironment
 import org.tasks.billing.SubscriptionProvider
 import org.tasks.billing.formatCredit
-import org.tasks.billing.stripeTerms
-import org.tasks.caldav.TasksAccountDataRepository
-import org.tasks.caldav.TasksAccountResponse
 import org.tasks.compose.settings.AccountData
 import org.tasks.compose.settings.ProCardState
 import org.tasks.data.dao.CaldavDao
@@ -37,7 +34,6 @@ open class ProCardViewModel(
     private val caldavDao: CaldavDao,
     private val subscriptionProvider: SubscriptionProvider,
     private val tasksPreferences: TasksPreferences,
-    private val accountDataRepository: TasksAccountDataRepository,
     private val serverEnvironment: TasksServerEnvironment,
     private val platformConfiguration: PlatformConfiguration,
 ) : ViewModel() {
@@ -90,12 +86,6 @@ open class ProCardViewModel(
                 TasksServerEnvironment.ENV_DEV -> "Development"
                 else -> null
             }
-            accountDataRepository.getAccountResponse()
-                ?.toAccountData()
-                ?.let { _accountData.value = it }
-            accounts.filterNotNull().first { it.isNotEmpty() }
-                .firstOrNull { it.isTasksOrg }
-                ?.let { fetchAccountData(it) }
         }
         viewModelScope.launch {
             subscriptionProvider.checkTier()
@@ -126,17 +116,6 @@ open class ProCardViewModel(
                     _formattedPrice.value = null
                 }
             }
-        }
-    }
-
-    private suspend fun fetchAccountData(account: CaldavAccount) {
-        _isLoading.value = true
-        try {
-            _accountData.value = accountDataRepository.fetchAndCache(account)?.toAccountData()
-        } catch (e: Exception) {
-            Logger.e(e) { "Failed to fetch account data" }
-        } finally {
-            _isLoading.value = false
         }
     }
 
@@ -180,19 +159,6 @@ open class ProCardViewModel(
         }
     }
 
-    companion object {
-        private fun TasksAccountResponse.toAccountData() = AccountData(
-            createdAt = createdAt,
-            subscriptionFree = subscription?.free ?: true,
-            subscriptionProvider = subscription?.provider,
-            subscriptionExpiration = subscription?.expiration,
-            guest = guest,
-            hasSubscription = hasAnySubscription,
-            creditCents = creditCents,
-            creditCurrency = creditCurrency,
-            terms = stripeTerms(),
-        )
-    }
 }
 
 internal fun creditToShow(

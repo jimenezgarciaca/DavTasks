@@ -176,36 +176,6 @@
     android:hasFragileUserData="true"
     android:localeConfig="@xml/locales_config">
 
-    <activity
-      android:name="net.openid.appauth.RedirectUriReceiverActivity"
-      android:exported="true"
-      tools:node="replace">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="@string/google_oauth_scheme" />
-      </intent-filter>
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="org.tasks.github.a50fdbf3e289a7fb2fc6" />
-      </intent-filter>
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="org.tasks.apple" />
-      </intent-filter>
-    </activity>
-
-    <activity
-      android:name=".auth.SignInActivity"
-      android:theme="@style/TranslucentDialog"
-      android:windowSoftInputMode="stateHidden" >
-    </activity>
-
     <meta-data
       android:name="com.google.android.backup.api_key"
       android:value="@string/backup_api_key" />
@@ -328,10 +298,6 @@
 
     <activity
         android:name=".compose.accounts.AddAccountActivity"
-        android:theme="@style/Tasks" />
-
-    <activity
-        android:name=".billing.LinkDesktopActivity"
         android:theme="@style/Tasks" />
 
     <!-- ======================================================= Receivers = -->

@@ -38,7 +38,6 @@ import kotlinx.coroutines.withContext
 import org.tasks.analytics.Firebase
 import org.tasks.billing.Inventory
 import org.tasks.caldav.CaldavClient
-import org.tasks.fcm.PushTokenManager
 import org.tasks.jobs.WorkManager
 import org.tasks.location.LocationService
 import org.tasks.opentasks.OpenTaskContentObserver
@@ -72,7 +71,6 @@ class TasksApplication : Application(), Configuration.Provider {
     @Inject lateinit var syncAdapters: Lazy<SyncAdapters>
     @Inject lateinit var firebase: Firebase
     @Inject lateinit var pebbleService: PebbleService
-    @Inject lateinit var pushTokenManager: Lazy<PushTokenManager>
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -191,7 +189,6 @@ class TasksApplication : Application(), Configuration.Provider {
         OpenTaskContentObserver.registerObserver(context, contentObserver.get())
         locationService.get().registerAllGeofences()
         CaldavClient.registerFactories()
-        pushTokenManager.get().registerTokenForAllAccounts()
         pebbleService.register()
     }
 

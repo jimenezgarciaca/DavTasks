@@ -64,7 +64,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource as composeStringResource
 import org.tasks.R
 import org.tasks.activities.TagSettingsActivity
-import org.tasks.auth.SignInActivity
 import org.tasks.billing.PurchaseActivity
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_NAME_YOUR_PRICE
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_SHOW_MORE_OPTIONS
@@ -278,13 +277,9 @@ fun HomeScreen(
                             onErrorClick = {
                                 context.startActivity(Intent(context, MainPreferences::class.java))
                             },
+                            // DavTasks no incluye la cuenta de Tasks.org.
                             onSignIn = {
-                                scope.launch {
-                                    drawerState.close()
-                                    context.startActivity(
-                                        Intent(context, SignInActivity::class.java)
-                                    )
-                                }
+                                scope.launch { drawerState.close() }
                             },
                             searchButtonInset = searchButtonInset,
                         )

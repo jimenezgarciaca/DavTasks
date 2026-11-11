@@ -193,26 +193,8 @@ class WorkManagerImpl(
         enqueueUnique(TAG_UPDATE_PURCHASES, UpdatePurchaseWork::class.java)
 
     override suspend fun scheduleBlogFeedCheck() {
-        val mode = BlogFeedMode.fromValue(
-            tasksPreferences.get(TasksPreferences.blogFeedMode, BlogFeedMode.ANNOUNCEMENTS.value)
-        )
-        if (mode == BlogFeedMode.NONE) {
-            workManager.cancelUniqueWork(TAG_BLOG_FEED)
-            return
-        }
-        val lastChecked = tasksPreferences.get(TasksPreferences.blogLastChecked, 0L)
-            .takeIf { it > 0 }
-            ?: currentTimeMillis()
-            .also { tasksPreferences.set(TasksPreferences.blogLastChecked, it) }
-        val time = lastChecked + TimeUnit.HOURS.toMillis(WorkManager.BLOG_FEED_INTERVAL_HOURS)
-        val overdue = currentTimeMillis() - lastChecked > TimeUnit.DAYS.toMillis(7)
-        enqueueUnique(
-            TAG_BLOG_FEED,
-            BlogFeedWork::class.java,
-            time,
-            constraints = if (overdue) networkConstraints else blogFeedConstraints,
-            backoffPolicy = BackoffPolicy.EXPONENTIAL,
-        )
+        // DavTasks no consulta el blog de Tasks.org.
+        workManager.cancelUniqueWork(TAG_BLOG_FEED)
     }
 
     @SuppressLint("EnqueueWork")

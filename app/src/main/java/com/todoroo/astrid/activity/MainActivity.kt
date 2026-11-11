@@ -57,12 +57,10 @@ import org.tasks.TasksApplication.Companion.IS_GOOGLE_PLAY
 import org.tasks.analytics.Constants
 import org.tasks.analytics.Firebase
 import org.tasks.analytics.logCloudOnboarding
-import org.tasks.auth.SignInActivity
 import org.tasks.auth.TasksServerEnvironment
 import org.tasks.billing.Inventory
 import org.tasks.billing.PurchaseActivity
 import org.tasks.billing.PurchaseActivityViewModel
-import org.tasks.billing.maybeTriggerCloudOnboarding
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity
 import org.tasks.caldav.CaldavSignInActivity
 import org.tasks.compose.AddAccountDestination
@@ -294,11 +292,6 @@ class MainActivity : AppCompatActivity() {
                             .collectAsStateWithLifecycle()
                         fun doSignIn(platform: Platform) {
                             when (platform) {
-                                Platform.TASKS_ORG ->
-                                    syncLauncher.launch(
-                                        Intent(this@MainActivity, SignInActivity::class.java)
-                                    )
-
                                 Platform.CALDAV ->
                                     syncLauncher.launch(
                                         Intent(this@MainActivity, CaldavSignInActivity::class.java)
@@ -388,9 +381,6 @@ class MainActivity : AppCompatActivity() {
                         PurchaseScreen(
                             onBack = { navController.popBackStack() },
                             onPurchased = {
-                                lifecycleScope.launch {
-                                    maybeTriggerCloudOnboarding(inventory.hasTasksSubscription, caldavDao, tasksPreferences, firebase::logCloudOnboarding)
-                                }
                                 navController.previousBackStackEntry
                                     ?.savedStateHandle
                                     ?.set("purchased", true)
@@ -435,11 +425,8 @@ class MainActivity : AppCompatActivity() {
                             step = currentStep,
                             showConfetti = true,
                             onSignIn = {
-                                Timber.d("CloudOnboarding: launching SignInActivity")
-                                onboardingViewModel.onSignInClicked()
-                                startActivity(
-                                    Intent(this@MainActivity, SignInActivity::class.java)
-                                )
+                                // DavTasks no incluye la cuenta de Tasks.org.
+                                onboardingViewModel.dismiss()
                             },
                             onCreateList = {
                                 Timber.d("CloudOnboarding: onCreateList -> new Tasks.org list")

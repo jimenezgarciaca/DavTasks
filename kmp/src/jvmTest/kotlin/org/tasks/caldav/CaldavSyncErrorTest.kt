@@ -38,7 +38,6 @@ class CaldavSyncErrorTest : DatabaseTest() {
         iCal = mock(),
         principalDao = db.principalDao(),
         vtodoCache = mock(),
-        accountDataRepository = mock(),
         tagMetadataSync = mock { on { isPrimary(any()) } doReturn false },
     )
     private lateinit var account: CaldavAccount

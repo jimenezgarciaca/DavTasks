@@ -100,7 +100,6 @@ import org.tasks.billing.PurchaseActivity
 import org.tasks.billing.PurchaseActivityViewModel
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity
 import org.tasks.caldav.LocalListSettingsActivity
-import org.tasks.caldav.TasksAccountDataRepository
 import org.tasks.compose.AlarmsDisabledBanner
 import org.tasks.compose.AppUpdatedBanner
 import org.tasks.compose.BlogBanner
@@ -217,7 +216,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
     @Inject lateinit var database: Database
     @Inject lateinit var markdown: MarkdownProvider
     @Inject lateinit var theme: Theme
-    @Inject lateinit var tasksAccountDataRepository: TasksAccountDataRepository
 
     private val listViewModel: TaskListViewModel by viewModels()
     private val mainViewModel: MainActivityViewModel by activityViewModels()
@@ -906,7 +904,7 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
             firebase.addTask("fab")
         } else {
             Timber.e("createNewTask(): No writable list")
-            val account = caldavDao.getAccountForNewList(tasksAccountDataRepository)
+            val account = caldavDao.getAccountForNewList()
             if (account != null) {
                 listSettingsRequest.launch(
                     Intent(activity, account.listSettingsClass())

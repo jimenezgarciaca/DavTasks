@@ -30,7 +30,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.todoroo.astrid.activity.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.tasks.auth.SignInActivity
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity.Companion.EXTRA_CALDAV_ACCOUNT
 import org.tasks.compose.pickers.SearchableFilterPicker
 import org.tasks.data.dao.CaldavDao
@@ -127,11 +126,8 @@ class FilterSelectionActivity : AppCompatActivity() {
                                 )
                             }
                         },
-                        onSignIn = {
-                            signInLauncher.launch(
-                                Intent(this@FilterSelectionActivity, SignInActivity::class.java)
-                            )
-                        },
+                        // DavTasks no incluye la cuenta de Tasks.org.
+                        onSignIn = {},
                         onClick = { filter ->
                             when (filter) {
                                 is NavigationDrawerSubheader -> {

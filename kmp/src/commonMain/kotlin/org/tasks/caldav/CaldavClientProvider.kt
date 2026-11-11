@@ -4,104 +4,50 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import org.tasks.auth.TasksServerEnvironment
 import org.tasks.data.entity.CaldavAccount
-import org.tasks.fcm.FcmTokenProvider
 import org.tasks.http.KtorClientFactory
 import org.tasks.http.installBasicDigestAuth
 import org.tasks.preferences.TasksPreferences
 import org.tasks.security.Encryption
 
+/**
+ * Clientes CalDAV con autenticación Basic/Digest. DavTasks no incluye la cuenta de Tasks.org;
+ * [tasksPreferences] y [environment] se mantienen solo por compatibilidad de firma.
+ */
+@Suppress("unused")
 class CaldavClientProvider(
     private val encryption: Encryption,
     private val tasksPreferences: TasksPreferences,
     private val environment: TasksServerEnvironment,
     private val httpClientFactory: KtorClientFactory,
-    private val tokenProvider: FcmTokenProvider? = null,
-    private val subscriptionProvider: () -> TasksBasicAuth.SubscriptionInfo? = { null },
 ) : CaldavClientFactory {
 
-    private sealed interface CaldavAuth {
-        val user: String
-
-        class Tasks(val plugin: TasksBasicAuth) : CaldavAuth {
-            override val user get() = plugin.user
-        }
-
-        class BasicDigest(
-            override val user: String,
-            val password: String,
-            val url: String?,
-        ) : CaldavAuth
-    }
+    private class BasicDigest(
+        val user: String,
+        val password: String,
+        val url: String?,
+    )
 
     override suspend fun forUrl(
         url: String?,
         username: String?,
         password: String?,
-    ): CaldavClient = CaldavClient(credentialedClient(url, username, password), url?.toCaldavUrl())
-
-    override suspend fun forTasksCredentials(username: String, token: String): TasksClient {
-        val url = environment.caldavUrl
-        return TasksClient(credentialedClient(url, username, token), url.toCaldavUrl())
-    }
-
-    private suspend fun credentialedClient(
-        url: String?,
-        username: String?,
-        password: String?,
-    ): HttpClient {
-        val tosVersion = tasksPreferences.get(TasksPreferences.acceptedTosVersion, 0)
-        return createHttpClient(auth = getAuth(username, password, url, tosVersion), foreground = true)
-    }
-
-    override suspend fun forTasksAccount(account: CaldavAccount): TasksClient {
-        if (!account.isTasksOrg) {
-            throw IllegalArgumentException()
-        }
-        return forAccount(account) as TasksClient
-    }
+    ): CaldavClient = CaldavClient(
+        createHttpClient(auth = getAuth(username, password, url), foreground = true),
+        url?.toCaldavUrl(),
+    )
 
     override suspend fun forAccount(account: CaldavAccount, url: String?): CaldavClient {
-        val httpUrl = url?.toCaldavUrl()
-        val tosVersion = tasksPreferences.get(TasksPreferences.acceptedTosVersion, 0)
         val password = encryption.decrypt(account.password) ?: ""
-        val pushToken = if (account.isTasksOrg) tokenProvider?.getToken() else null
-        val auth = getAuth(
-            account.username,
-            password,
-            account.url,
-            tosVersion,
-            pushToken,
-        )
-        val client = createHttpClient(auth)
-        return if (account.isTasksOrg) {
-            TasksClient(client, httpUrl)
-        } else {
-            CaldavClient(client, httpUrl)
-        }
+        val auth = getAuth(account.username, password, account.url)
+        return CaldavClient(createHttpClient(auth), url?.toCaldavUrl())
     }
 
-    private fun getAuth(
-        username: String?,
-        password: String?,
-        url: String?,
-        tosVersion: Int,
-        pushToken: String? = null,
-    ): CaldavAuth? = when {
-        username.isNullOrBlank() || password.isNullOrBlank() -> null
-        url?.startsWith(environment.caldavUrl) == true -> CaldavAuth.Tasks(
-            TasksBasicAuth(
-                user = username,
-                token = password,
-                tosVersion = tosVersion,
-                pushToken = pushToken,
-                subscriptionInfo = subscriptionProvider(),
-            )
-        )
-        else -> CaldavAuth.BasicDigest(username, password, url)
-    }
+    private fun getAuth(username: String?, password: String?, url: String?): BasicDigest? =
+        if (username.isNullOrBlank() || password.isNullOrBlank()) null
+        else BasicDigest(username, password, url)
 
     private suspend fun createHttpClient(
-        auth: CaldavAuth?,
+        auth: BasicDigest?,
         foreground: Boolean = false,
     ): HttpClient = httpClientFactory.newClient(foreground = foreground, cookieKey = auth?.user) {
         followRedirects = false
@@ -109,10 +55,8 @@ class CaldavClientProvider(
             connectTimeoutMillis = 15_000
             socketTimeoutMillis = 120_000
         }
-        when (auth) {
-            is CaldavAuth.Tasks -> install(auth.plugin)
-            is CaldavAuth.BasicDigest -> installBasicDigestAuth(auth.user, auth.password, auth.url)
-            null -> {}
+        if (auth != null) {
+            installBasicDigestAuth(auth.user, auth.password, auth.url)
         }
     }
 }

@@ -17,7 +17,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import org.jetbrains.compose.resources.stringResource
 import org.tasks.R
-import org.tasks.auth.SignInActivity
 import org.tasks.billing.PurchaseActivity
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_NAME_YOUR_PRICE
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_SHOW_MORE_OPTIONS
@@ -100,9 +99,8 @@ class LocalAccount : Fragment() {
         )
     }
 
-    private fun startSignIn() {
-        startActivity(Intent(context, SignInActivity::class.java))
-    }
+    // DavTasks no incluye la cuenta de Tasks.org.
+    private fun startSignIn() = Unit
 
     override fun onResume() {
         super.onResume()

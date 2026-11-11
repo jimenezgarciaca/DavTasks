@@ -248,7 +248,6 @@ dependencies {
     implementation(libs.shortcut.badger)
     implementation(libs.androidx.work)
     implementation(libs.colorpicker)
-    implementation(libs.appauth)
     implementation(libs.osmdroid)
     implementation(libs.androidx.recyclerview)
 

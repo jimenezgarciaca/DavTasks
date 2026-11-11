@@ -102,28 +102,23 @@ class CaldavSynchronizer(
     private val iCal: iCalendar,
     private val principalDao: PrincipalDao,
     private val vtodoCache: VtodoCache,
-    private val accountDataRepository: TasksAccountDataRepository,
     private val tagMetadataSync: TagMetadataSync,
 ) {
     suspend fun sync(account: CaldavAccount, hasPro: Boolean) {
         Logger.d(TAG) { "Synchronizing $account" }
-        if (!hasPro && !account.isTasksOrg) {
+        if (!hasPro) {
             setError(account, getString(Res.string.subscription_required))
             return
         }
         if (account.password.isNullOrBlank()) {
-            setError(account, if (account.isTasksOrg) {
-                ERROR_UNAUTHORIZED
-            } else {
-                getString(Res.string.password_required)
-            })
+            setError(account, getString(Res.string.password_required))
             return
         }
         try {
             synchronize(account)
             if (account.lastSync == 0L) {
                 val taskCount = caldavDao.getTaskCountForAccount(account.uuid!!)
-                val syncType = if (account.isTasksOrg) Constants.SYNC_TYPE_TASKS_ORG else Constants.SYNC_TYPE_CALDAV
+                val syncType = Constants.SYNC_TYPE_CALDAV
                 reporting.logEvent(
                     INITIAL_SYNC_COMPLETE,
                     PARAM_TYPE to syncType,
@@ -132,8 +127,6 @@ class CaldavSynchronizer(
             }
             account.lastSync = currentTimeMillis()
             setError(account, "")
-        } catch (e: PurchaseTokenInUseException) {
-            setError(account, "${ERROR_PURCHASE_TOKEN_IN_USE}${e.existingAccount}")
         } catch (e: IOException) {
             setError(account, e)
         } catch (e: UnauthorizedException) {
@@ -168,15 +161,8 @@ class CaldavSynchronizer(
     private suspend fun synchronize(account: CaldavAccount) = provider.forAccount(account).use { caldavClient ->
         var serverType = account.serverType
 
-        // Check guest status for Tasks.org accounts
-        val isGuest = if (caldavClient is TasksClient) {
-            try {
-                accountDataRepository.fetchAndCache(caldavClient)?.guest ?: false
-            } catch (e: Exception) {
-                Logger.e(e) { "Failed to fetch account data" }
-                accountDataRepository.getAccountResponse()?.guest ?: false
-            }
-        } else false
+        // DavTasks no incluye cuentas de Tasks.org (ni cuentas invitadas).
+        val isGuest = false
 
         val resources = try {
             caldavClient.calendars { headers ->

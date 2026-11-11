@@ -58,7 +58,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
         iCal = iCal,
         principalDao = db.principalDao(),
         vtodoCache = mock(),
-        accountDataRepository = mock(),
         tagMetadataSync = mock { onBlocking { isPrimary(any()) } doReturn false },
     )
     private lateinit var account: CaldavAccount

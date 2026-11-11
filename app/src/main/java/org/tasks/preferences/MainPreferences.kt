@@ -16,12 +16,10 @@ import org.tasks.R
 import org.tasks.resources.getString
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.tasks_org
-import org.tasks.auth.SignInActivity
 import org.tasks.extensions.Context.toast
 import org.tasks.preferences.fragments.MainSettingsComposeFragment
 import org.tasks.preferences.fragments.MainSettingsComposeFragment.Companion.REQUEST_GOOGLE_TASKS
 import org.tasks.preferences.fragments.MainSettingsComposeFragment.Companion.REQUEST_TASKS_ORG
-import org.tasks.preferences.fragments.TasksAccount
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -59,19 +57,8 @@ class MainPreferences : BasePreferences() {
             REQUEST_GOOGLE_TASKS -> if (resultCode != Activity.RESULT_OK) {
                 data?.getStringExtra(EXTRA_AUTH_ERROR)?.let { toast(it) }
             }
-            REQUEST_TASKS_ORG -> if (resultCode == Activity.RESULT_OK) {
-                lifecycleScope.launch {
-                    val account = viewModel.tasksAccount() ?: return@launch
-                    val fragment = supportFragmentManager.findFragmentById(R.id.settings)
-                    if (fragment !is TasksAccount) {
-                        startPreference(
-                                TasksAccount.newTasksAccountPreference(account),
-                                getString(Res.string.tasks_org)
-                        )
-                    }
-                }
-            } else {
-                data?.getStringExtra(SignInActivity.EXTRA_ERROR)?.let { toast(it) }
+            REQUEST_TASKS_ORG -> if (resultCode != Activity.RESULT_OK) {
+                data?.getStringExtra(EXTRA_AUTH_ERROR)?.let { toast(it) }
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
         }

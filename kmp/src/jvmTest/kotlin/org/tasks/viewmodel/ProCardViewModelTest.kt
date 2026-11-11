@@ -23,7 +23,6 @@ import org.tasks.InMemoryDataStore
 import org.tasks.PlatformConfiguration
 import org.tasks.auth.TasksServerEnvironment
 import org.tasks.billing.SubscriptionProvider
-import org.tasks.caldav.TasksAccountDataRepository
 import org.tasks.compose.settings.ProCardState
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
@@ -94,7 +93,6 @@ class ProCardViewModelTest {
             onBlocking { getFormattedPrice(any()) } doReturn price
         },
         tasksPreferences = preferences,
-        accountDataRepository = mock<TasksAccountDataRepository>(),
         serverEnvironment = TasksServerEnvironment(preferences),
         platformConfiguration = PlatformConfiguration(),
     )

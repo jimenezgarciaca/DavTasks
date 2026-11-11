@@ -6,7 +6,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.R
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.TasksPreferences
-import org.tasks.viewmodel.TasksAccountViewModel.Companion.DEFAULT_TOS_VERSION
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -68,7 +67,7 @@ class Firebase @Inject constructor(
     private fun days(default: Long): Long =
         TimeUnit.DAYS.toMillis(default)
 
-    fun getTosVersion(): Int = DEFAULT_TOS_VERSION
+    fun getTosVersion(): Int = 1
 
     fun registerPrefChangeListener() {}
 

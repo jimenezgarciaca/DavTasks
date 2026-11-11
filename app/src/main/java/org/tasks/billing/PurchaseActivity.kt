@@ -14,7 +14,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.tasks.analytics.Firebase
 import org.tasks.analytics.logCloudOnboarding
-import org.tasks.auth.SignInActivity
 import org.tasks.compose.PurchaseScreen
 import org.tasks.data.dao.CaldavDao
 import org.tasks.preferences.TasksPreferences
@@ -60,17 +59,11 @@ class PurchaseActivity : AppCompatActivity() {
                 PurchaseScreen(
                     onBack = { finish() },
                     onPurchased = {
-                        lifecycleScope.launch {
-                            maybeTriggerCloudOnboarding(inventory.hasTasksSubscription, caldavDao, tasksPreferences, firebase::logCloudOnboarding)
-                            setResult(RESULT_OK)
-                            finish()
-                        }
+                        setResult(RESULT_OK)
+                        finish()
                     },
-                    onSignIn = {
-                        signInLauncher.launch(
-                            Intent(this@PurchaseActivity, SignInActivity::class.java)
-                        )
-                    },
+                    // DavTasks no incluye la cuenta de Tasks.org.
+                    onSignIn = { finish() },
                     existingSubscriber = inventory.hasPro && !inventory.hasTasksSubscription,
                     hasTasksAccount = inventory.hasTasksAccount,
                 )

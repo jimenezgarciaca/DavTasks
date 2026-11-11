@@ -16,7 +16,6 @@ import org.tasks.auth.EXTRA_AUTH_ERROR
 import dagger.hilt.android.AndroidEntryPoint
 import org.tasks.R
 import org.tasks.analytics.Firebase
-import org.tasks.auth.SignInActivity
 import org.tasks.billing.Inventory
 import org.tasks.billing.PurchaseActivity
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_FEATURE
@@ -72,8 +71,6 @@ class AddAccountActivity : ComponentActivity() {
 
     private fun doSignIn(platform: Platform) {
         when (platform) {
-            Platform.TASKS_ORG ->
-                syncLauncher.launch(Intent(this, SignInActivity::class.java))
             Platform.CALDAV ->
                 syncLauncher.launch(Intent(this, CaldavSignInActivity::class.java))
             else -> throw IllegalArgumentException()

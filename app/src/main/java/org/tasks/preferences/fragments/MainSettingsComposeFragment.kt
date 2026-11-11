@@ -28,7 +28,6 @@ import org.tasks.resources.getString
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.tasks_org
 import tasks.kmp.generated.resources.url_sponsor
-import org.tasks.auth.SignInActivity
 import org.tasks.billing.ModifySubscription
 import org.tasks.billing.PurchaseActivity
 import org.tasks.billing.PurchaseActivityViewModel.Companion.EXTRA_FEATURE
@@ -53,11 +52,9 @@ import org.tasks.preferences.ProCardViewModel
 import org.tasks.preferences.fragments.CaldavAccountFragment.Companion.newCaldavAccountFragment
 import org.tasks.preferences.fragments.LocalAccount.Companion.newLocalAccountPreference
 import org.tasks.preferences.fragments.OpenTaskAccountFragment.Companion.newOpenTaskAccountFragment
-import org.tasks.preferences.fragments.TasksAccount.Companion.newTasksAccountPreference
 import org.tasks.PlatformConfiguration
 import org.tasks.analytics.Firebase
 import org.tasks.billing.Inventory
-import org.tasks.billing.LinkDesktopActivity
 import org.tasks.themes.Theme
 import javax.inject.Inject
 
@@ -199,9 +196,8 @@ class MainSettingsComposeFragment : Fragment() {
     private fun handleProCardClick(state: ProCardState) {
         when (state) {
             is ProCardState.TasksOrgAccount -> handleAccountClick(state.account)
-            is ProCardState.SignIn -> {
-                startActivity(Intent(context, SignInActivity::class.java))
-            }
+            // DavTasks no incluye la cuenta de Tasks.org.
+            is ProCardState.SignIn -> Unit
             is ProCardState.Donate -> {
                 requireContext().openUri(R.string.url_donate)
             }
@@ -223,14 +219,6 @@ class MainSettingsComposeFragment : Fragment() {
     private fun handleAccountClick(account: CaldavAccount) {
         val activity = activity as? MainPreferences ?: return
         when {
-            account.isTasksOrg -> {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    activity.startPreference(
-                        newTasksAccountPreference(account),
-                        getString(Res.string.tasks_org)
-                    )
-                }
-            }
             account.isLocalList -> {
                 activity.startPreference(
                     newLocalAccountPreference(account),
@@ -260,18 +248,8 @@ class MainSettingsComposeFragment : Fragment() {
         )
     }
 
-    private fun linkDesktop() {
-        if (inventory.hasPro) {
-            startActivity(Intent(requireContext(), LinkDesktopActivity::class.java))
-        } else {
-            startActivity(
-                Intent(requireContext(), PurchaseActivity::class.java)
-                    .putExtra(EXTRA_NAME_YOUR_PRICE, true)
-                    .putExtra(EXTRA_SHOW_MORE_OPTIONS, true)
-                    .putExtra(EXTRA_SOURCE, "link_desktop")
-            )
-        }
-    }
+    // DavTasks no incluye la vinculación con la versión de escritorio.
+    private fun linkDesktop() = Unit
 
     private fun navigateToSettings(destination: SettingsDestination) {
         val activity = activity as? MainPreferences ?: return

@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.tasks.R
 import org.tasks.analytics.Firebase
-import org.tasks.caldav.TasksAccountDataRepository
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.Task
@@ -40,7 +39,6 @@ class MainActivityViewModel @Inject constructor(
     private val defaultFilterProvider: DefaultFilterProvider,
     @ApplicationContext private val applicationContext: Context,
     private val caldavDao: CaldavDao,
-    private val accountDataRepository: TasksAccountDataRepository,
     private val firebase: Firebase,
     private val tasksPreferences: TasksPreferences,
     val drawerViewModel: DrawerViewModel,
@@ -145,15 +143,8 @@ class MainActivityViewModel @Inject constructor(
 
     suspend fun getOrCreateLocalAccount(): CaldavAccount = caldavDao.getOrCreateLocalAccount()
 
-    suspend fun isTasksGuest(): Boolean =
-        try {
-            val response = accountDataRepository.getAccountResponse()
-                ?: accountDataRepository.fetchAndCache()
-            response?.guest ?: false
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to check guest status")
-            false
-        }
+    // DavTasks no incluye cuentas de Tasks.org.
+    suspend fun isTasksGuest(): Boolean = false
 
     fun openLastViewedFilter() = viewModelScope.launch {
         setFilter(defaultFilterProvider.getLastViewedFilter())

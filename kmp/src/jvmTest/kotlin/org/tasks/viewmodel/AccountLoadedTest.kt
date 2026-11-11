@@ -21,7 +21,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.tasks.InMemoryDataStore
 import org.tasks.billing.SubscriptionProvider
-import org.tasks.caldav.TasksAccountDataRepository
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.preferences.TasksPreferences
@@ -106,39 +105,6 @@ class AccountLoadedTest {
         withTimeout(TIMEOUT) { viewModel.loaded.first { it } }
 
         assertEquals("CalDAV", viewModel.displayName.value)
-    }
-
-    @Test
-    fun `the tasks org account screen waits for the watch`() = runBlocking {
-        val accounts = MutableSharedFlow<List<CaldavAccount>>(replay = 1)
-        val viewModel = TasksAccountViewModel(
-            provider = mock(),
-            reporting = mock(),
-            accountDataRepository = mock<TasksAccountDataRepository> {
-                on { accountResponseFlow } doReturn flowOf(null)
-            },
-            caldavDao = mock<CaldavDao> {
-                on { watchAccounts() } doReturn accounts
-                on { subscribeToCalendars() } doReturn flowOf(emptyList())
-            },
-            principalDao = mock(),
-            backgroundWork = mock(),
-            pushTokenManager = mock(),
-            taskDeleter = mock(),
-            tasksPreferences = TasksPreferences(InMemoryDataStore()),
-            subscriptionProvider = mock<SubscriptionProvider> {
-                on { subscription } doReturn flowOf(null)
-            },
-            caldavUrl = "https://caldav.tasks.org",
-        )
-        viewModel.setAccountUuid(UUID)
-
-        assertFalse(viewModel.state.value.loaded)
-
-        accounts.emit(listOf(account(uuid = UUID)))
-        withTimeout(TIMEOUT) { viewModel.state.first { it.loaded } }
-
-        assertTrue(viewModel.state.value.account != null)
     }
 
     private fun caldavViewModel() = CaldavAccountSettingsViewModel(

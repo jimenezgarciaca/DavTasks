@@ -30,7 +30,6 @@ import org.tasks.viewmodel.DrawerViewModel
 import org.tasks.broadcast.ComposeRefreshBroadcaster
 import org.tasks.analytics.Reporting
 import org.tasks.fcm.FcmTokenProvider
-import org.tasks.fcm.PushTokenManager
 import org.tasks.auth.TasksServerEnvironment
 import org.tasks.billing.Inventory
 import org.tasks.billing.PlayPurchaseStore
@@ -39,7 +38,6 @@ import org.tasks.billing.PlayPurchases
 import org.tasks.billing.StoreSubscriptionProvider
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.CaldavClientProvider
-import org.tasks.caldav.TasksBasicAuth
 import org.tasks.feed.BlogFeedChecker
 import org.tasks.http.HttpClientFactory
 import org.tasks.http.KtorClientFactory
@@ -47,7 +45,6 @@ import org.tasks.http.OkHttpKtorClientFactory
 import org.tasks.caldav.FileStorage
 import org.tasks.analytics.Analytics
 import org.tasks.analytics.CrashReporting
-import org.tasks.caldav.TasksAccountDataRepository
 import org.tasks.caldav.VtodoCache
 import org.tasks.caldav.metadata.TagMetadataSync
 import org.tasks.compose.drawer.DrawerConfiguration
@@ -416,19 +413,11 @@ class ApplicationModule {
         tasksPreferences: TasksPreferences,
         environment: TasksServerEnvironment,
         httpClientFactory: KtorClientFactory,
-        tokenProvider: FcmTokenProvider,
-        storeSubscriptionProvider: StoreSubscriptionProvider?,
     ): CaldavClientProvider = CaldavClientProvider(
         encryption = encryption,
         tasksPreferences = tasksPreferences,
         environment = environment,
         httpClientFactory = httpClientFactory,
-        tokenProvider = tokenProvider,
-        subscriptionProvider = {
-            storeSubscriptionProvider?.current?.let { info ->
-                info.purchaseToken?.let { TasksBasicAuth.SubscriptionInfo(info.sku, it) }
-            }
-        },
     )
 
     @Provides
@@ -518,11 +507,10 @@ class ApplicationModule {
         iCal: org.tasks.caldav.iCalendar,
         principalDao: org.tasks.data.dao.PrincipalDao,
         vtodoCache: VtodoCache,
-        accountDataRepository: org.tasks.caldav.TasksAccountDataRepository,
         tagMetadataSync: TagMetadataSync,
     ) = org.tasks.caldav.CaldavSynchronizer(
         caldavDao, dirtyDao, refreshBroadcaster, taskDeleter, reporting,
-        provider, iCal, principalDao, vtodoCache, accountDataRepository, tagMetadataSync,
+        provider, iCal, principalDao, vtodoCache, tagMetadataSync,
     )
 
     @Provides
@@ -567,15 +555,6 @@ class ApplicationModule {
 
     @Provides
     fun providesFcmTokenProvider(firebase: Firebase): FcmTokenProvider = firebase
-
-    @Provides
-    @Singleton
-    fun providesPushTokenManager(
-        tokenProvider: FcmTokenProvider,
-        caldavDao: CaldavDao,
-        caldavClientProvider: CaldavClientProvider,
-        @ApplicationScope scope: CoroutineScope,
-    ) = PushTokenManager(tokenProvider, caldavDao, caldavClientProvider, scope)
 
     @Provides
     fun providesApiTaskFactory(impl: org.tasks.api.AppApiTaskFactory): org.tasks.api.ApiTaskFactory = impl
@@ -663,14 +642,6 @@ class ApplicationModule {
     ) = TasksServerEnvironment(
         tasksPreferences = tasksPreferences,
     )
-
-    @Provides
-    @Singleton
-    fun providesTasksAccountDataRepository(
-        provider: CaldavClientProvider,
-        caldavDao: CaldavDao,
-        tasksPreferences: TasksPreferences,
-    ) = TasksAccountDataRepository(provider, caldavDao, tasksPreferences)
 
     @Provides
     fun providesPebbleRefresher(
