@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.tasks.analytics.AnalyticsEvents
-import org.tasks.analytics.Reporting
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.metadata.TagMetadataEditor
 import org.tasks.compose.settings.PickerColor
@@ -29,7 +27,6 @@ import tasks.kmp.generated.resources.tag_already_exists
 open class TagSettingsViewModel(
     private val tagDataDao: TagDataDao,
     private val refreshBroadcaster: RefreshBroadcaster,
-    private val reporting: Reporting,
     private val tagMetadataSync: TagMetadataEditor,
     private val syncAdapters: SyncAdapters,
     isDark: Boolean,
@@ -151,7 +148,6 @@ open class TagSettingsViewModel(
             return@withContext null
         }
         _viewState.update { it.copy(tag = created) }
-        reporting.logEvent(AnalyticsEvents.CREATE_TAG)
         refreshBroadcaster.broadcastRefresh()
         syncAdapters.sync(SyncSource.METADATA_CHANGE)
         created
@@ -189,10 +185,6 @@ open class TagSettingsViewModel(
 
     fun delete(onComplete: (String?) -> Unit) = withLoading {
         withContext(NonCancellable) {
-            reporting.logEvent(
-                AnalyticsEvents.SETTINGS_CLICK,
-                AnalyticsEvents.PARAM_TYPE to AnalyticsEvents.SettingsClick.DELETE_TAG,
-            )
             val tag = _viewState.value.tag
             val uuid = tag.remoteId
             tagMetadataSync.deleteTag(tag)

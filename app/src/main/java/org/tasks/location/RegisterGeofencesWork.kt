@@ -9,7 +9,6 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import org.tasks.analytics.Firebase
 import org.tasks.injection.BaseWorker
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -18,9 +17,8 @@ import java.util.concurrent.TimeUnit
 class RegisterGeofencesWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val locationService: LocationService,
-) : BaseWorker(context, workerParams, firebase) {
+) : BaseWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         return try {

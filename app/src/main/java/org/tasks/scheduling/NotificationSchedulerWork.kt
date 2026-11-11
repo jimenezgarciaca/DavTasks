@@ -11,7 +11,6 @@ import com.todoroo.andlib.utility.AndroidUtilities.preS
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.injection.BaseWorker
 import org.tasks.jobs.WorkManager
 import org.tasks.notifications.NotificationManager
@@ -20,10 +19,9 @@ import org.tasks.notifications.NotificationManager
 class NotificationSchedulerWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val notificationManager: NotificationManager,
     private val workManager: WorkManager,
-) : BaseWorker(context, workerParams, firebase) {
+) : BaseWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         createNotificationChannels()

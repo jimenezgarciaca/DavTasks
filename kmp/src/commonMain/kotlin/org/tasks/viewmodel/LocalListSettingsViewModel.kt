@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.tasks.analytics.AnalyticsEvents
-import org.tasks.analytics.Reporting
 import org.tasks.data.UUIDHelper
 import org.tasks.data.dao.CaldavDao
 import org.tasks.data.entity.CaldavAccount
@@ -23,7 +21,6 @@ import tasks.kmp.generated.resources.name_cannot_be_empty
 open class LocalListSettingsViewModel(
     private val caldavDao: CaldavDao,
     private val taskDeleter: TaskDeleter,
-    private val reporting: Reporting,
     private val tasksPreferences: TasksPreferences,
     isDark: Boolean,
     account: CaldavAccount,
@@ -89,7 +86,6 @@ open class LocalListSettingsViewModel(
                     icon = s.icon,
                 )
                 caldavDao.insert(calendar)
-                reporting.logEvent(AnalyticsEvents.CREATE_LIST)
                 stateManager.update { it.copy(calendar = calendar) }
                 calendar
             }
@@ -127,10 +123,6 @@ open class LocalListSettingsViewModel(
             stateManager.update { it.copy(isLoading = true) }
             try {
                 withContext(NonCancellable) {
-                    reporting.logEvent(
-                        AnalyticsEvents.SETTINGS_CLICK,
-                        AnalyticsEvents.PARAM_TYPE to AnalyticsEvents.SettingsClick.DELETE_LIST,
-                    )
                     taskDeleter.delete(calendar)
                 }
                 onComplete()

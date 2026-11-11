@@ -78,7 +78,6 @@ class CaldavAccountSettingsViewModelTest : DatabaseTest() {
         caldavClientProvider = mock(),
         encryption = mock(),
         taskDeleter = mock(),
-        reporting = mock(),
         tagMetadataSync = mock(),
         tagMetadataActivation = mock(),
     )

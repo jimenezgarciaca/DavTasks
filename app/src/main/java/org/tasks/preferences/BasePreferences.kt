@@ -12,17 +12,14 @@ import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.databinding.ActivityPreferencesBinding
 import org.tasks.injection.ThemedInjectingAppCompatActivity
-import javax.inject.Inject
 
 private const val EXTRA_TITLE = "extra_title"
 
 abstract class BasePreferences : ThemedInjectingAppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
-    @Inject lateinit var firebase: Firebase
 
     lateinit var toolbar: Toolbar
 
@@ -98,10 +95,6 @@ abstract class BasePreferences : ThemedInjectingAppCompatActivity(),
             fragment: Fragment,
             title: CharSequence
     ): Boolean {
-        firebase.logEvent(
-            R.string.event_settings_navigation,
-            R.string.param_screen to title.toString()
-        )
         @Suppress("DEPRECATION")
         fragment.setTargetFragment(caller, 0)
         supportFragmentManager.beginTransaction()
@@ -116,10 +109,6 @@ abstract class BasePreferences : ThemedInjectingAppCompatActivity(),
             fragment: Fragment,
             title: CharSequence
     ): Boolean {
-        firebase.logEvent(
-            R.string.event_settings_navigation,
-            R.string.param_screen to title.toString()
-        )
         supportFragmentManager.beginTransaction()
                 .replace(R.id.settings, fragment)
                 .addToBackStack(null)

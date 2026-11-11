@@ -1,5 +1,6 @@
 package org.tasks.compose.settings
 
+import timber.log.Timber
 import android.app.Activity
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -15,7 +16,6 @@ import com.todoroo.astrid.activity.MainActivity
 import com.todoroo.astrid.activity.TaskListFragment
 import org.tasks.R
 import org.tasks.activities.BaseListSettingsActivity.Companion.createShortcutIcon
-import org.tasks.analytics.Firebase
 import org.tasks.data.UUIDHelper
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavCalendar
@@ -68,7 +68,6 @@ fun AppCompatActivity.addShortcutCallback(
     stateProvider: () -> ListSettingsState,
     primaryColor: Color,
     defaultFilterProvider: DefaultFilterProvider,
-    firebase: Firebase,
     save: (onSaved: (CaldavCalendar) -> Unit) -> Unit,
 ): (() -> Unit)? {
     if (!canPinShortcut()) return null
@@ -80,7 +79,6 @@ fun AppCompatActivity.addShortcutCallback(
             icon = s.icon,
             color = if (s.color != 0) Color(s.color) else primaryColor,
             defaultFilterProvider = defaultFilterProvider,
-            firebase = firebase,
         )
     }
 }
@@ -88,7 +86,6 @@ fun AppCompatActivity.addShortcutCallback(
 fun AppCompatActivity.addWidgetCallback(
     stateProvider: () -> ListSettingsState,
     defaultFilterProvider: DefaultFilterProvider,
-    firebase: Firebase,
     save: (onSaved: (CaldavCalendar) -> Unit) -> Unit,
 ): (() -> Unit)? {
     if (!canPinWidget()) return null
@@ -98,7 +95,6 @@ fun AppCompatActivity.addWidgetCallback(
             filter = filter,
             color = s.color,
             defaultFilterProvider = defaultFilterProvider,
-            firebase = firebase,
         )
     }
 }
@@ -109,7 +105,6 @@ fun AppCompatActivity.createShortcut(
     icon: String?,
     color: Color,
     defaultFilterProvider: DefaultFilterProvider,
-    firebase: Firebase,
 ) {
     val filterId = defaultFilterProvider.getFilterPreferenceValue(filter)
     val shortcutInfo = ShortcutInfoCompat.Builder(this, UUIDHelper.newUUID())
@@ -124,7 +119,7 @@ fun AppCompatActivity.createShortcut(
                         iconColor = contentColorFor(color.toArgb()),
                     )
                 } catch (e: Exception) {
-                    firebase.reportException(e)
+                    Timber.e(e)
                     null
                 }
             } ?: createShortcutIcon(this, backgroundColor = color)
@@ -147,14 +142,12 @@ fun AppCompatActivity.createShortcut(
         successCallback.intentSender
     )
 
-    firebase.logEvent(R.string.event_create_shortcut, R.string.param_type to "settings_activity")
 }
 
 fun AppCompatActivity.createWidget(
     filter: Filter,
     color: Int,
     defaultFilterProvider: DefaultFilterProvider,
-    firebase: Firebase,
 ) {
     val appWidgetManager = getSystemService(AppWidgetManager::class.java)
     if (appWidgetManager.isRequestPinAppWidgetSupported) {
@@ -171,6 +164,5 @@ fun AppCompatActivity.createWidget(
             if (atLeastS()) PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         )
         appWidgetManager.requestPinAppWidget(provider, null, successCallback)
-        firebase.logEvent(R.string.event_create_widget, R.string.param_type to "settings_activity")
     }
 }

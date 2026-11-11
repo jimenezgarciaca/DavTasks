@@ -1,5 +1,6 @@
 package org.tasks.repeats
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.runBlocking
 import org.tasks.repeats.Frequency.DAILY
 import org.tasks.repeats.Frequency.HOURLY
@@ -9,7 +10,6 @@ import org.tasks.repeats.Frequency.WEEKLY
 import org.tasks.repeats.Frequency.YEARLY
 import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
-import org.tasks.analytics.CrashReporting
 import org.tasks.kmp.formatNumber
 import org.tasks.kmp.org.tasks.time.TextStyle
 import org.tasks.kmp.org.tasks.time.DateFormatter
@@ -54,7 +54,6 @@ import tasks.kmp.generated.resources.repeats_weekly
 import tasks.kmp.generated.resources.repeats_yearly
 
 class RepeatRuleToString(
-    private val crashReporting: CrashReporting,
     private val languageTag: String? = null,
 ) {
     private val Recur.hasDayString: Boolean
@@ -154,7 +153,7 @@ class RepeatRuleToString(
             }
         }
     } catch (e: Exception) {
-        crashReporting.reportException(IllegalStateException("$rrule caused $e"))
+        Logger.e(e) { "$rrule caused $e" }
         rrule.toString()
     }
 

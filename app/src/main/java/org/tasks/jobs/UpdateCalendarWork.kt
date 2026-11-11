@@ -6,7 +6,6 @@ import androidx.work.WorkerParameters
 import com.todoroo.astrid.gcal.GCalHelper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import org.tasks.analytics.Firebase
 import org.tasks.calendars.CalendarEventProvider
 import org.tasks.data.dao.TaskDao
 import org.tasks.injection.BaseWorker
@@ -16,12 +15,11 @@ import org.tasks.preferences.PermissionChecker
 class UpdateCalendarWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val taskDao: TaskDao,
     private val gCalHelper: GCalHelper,
     private val calendarEventProvider: CalendarEventProvider,
     private val permissionChecker: PermissionChecker
-) : BaseWorker(context, workerParams, firebase) {
+) : BaseWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         if (!permissionChecker.canAccessCalendars()) {

@@ -8,29 +8,20 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyBlocking
 import org.tasks.DatabaseTest
-import org.tasks.analytics.AnalyticsEvents.SYNC_NOT_FOUND
-import org.tasks.analytics.Reporting
 import org.tasks.data.entity.CaldavAccount
 
 class CaldavSyncErrorTest : DatabaseTest() {
     private val server = failFastServer()
     private val caldavDao = db.caldavDao()
     private val encryption = testEncryption()
-    private val reporting = mock<Reporting>()
     private val synchronizer = CaldavSynchronizer(
         caldavDao = caldavDao,
         dirtyDao = db.dirtyDao(),
         refreshBroadcaster = mock(),
         taskDeleter = mock(),
-        reporting = reporting,
         provider = testClientProvider(encryption),
         iCal = mock(),
         principalDao = db.principalDao(),
@@ -54,34 +45,30 @@ class CaldavSyncErrorTest : DatabaseTest() {
     fun tearDown() = server.shutdown()
 
     @Test
-    fun `a propfind the server refuses is shown but not reported`() = runBlocking {
+    fun `a propfind the server refuses is shown`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(405))
 
         synchronizer.sync(account)
 
         assertEquals("HTTP 405 - Method Not Allowed", caldavDao.getAccountByUuid("account")!!.error)
-        verify(reporting, never()).reportException(any(), any())
     }
 
     @Test
-    fun `a request the server rejects as malformed is reported`() = runBlocking {
+    fun `a request the server rejects as malformed is shown`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(400))
 
         synchronizer.sync(account)
 
         assertEquals("HTTP 400 - Bad Request", caldavDao.getAccountByUuid("account")!!.error)
-        verify(reporting).reportException(any(), any())
     }
 
     @Test
-    fun `a home set the server no longer has is logged but not reported`() = runBlocking {
+    fun `a home set the server no longer has is shown`() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(404))
 
         synchronizer.sync(account)
 
         assertEquals("HTTP 404 - Not Found", caldavDao.getAccountByUuid("account")!!.error)
-        verify(reporting, never()).reportException(any(), any())
-        verifyBlocking(reporting) { logEventOncePerDay(eq(SYNC_NOT_FOUND), eq("account"), anyVararg()) }
     }
 
     @Test

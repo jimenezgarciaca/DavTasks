@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.tasks.R
-import org.tasks.analytics.Reporting
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity.Companion.EXTRA_CALDAV_ACCOUNT
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity.Companion.EXTRA_CALDAV_CALENDAR
 import org.tasks.data.dao.CaldavDao
@@ -26,13 +25,11 @@ class LocalListSettingsHiltViewModel @Inject constructor(
     private val preferences: Preferences,
     caldavDao: CaldavDao,
     taskDeleter: TaskDeleter,
-    reporting: Reporting,
     tasksPreferences: TasksPreferences,
     @ApplicationContext context: Context,
 ) : LocalListSettingsViewModel(
     caldavDao = caldavDao,
     taskDeleter = taskDeleter,
-    reporting = reporting,
     tasksPreferences = tasksPreferences,
     isDark = context.resources.getBoolean(R.bool.is_dark),
     account = savedStateHandle.get<CaldavAccount>(EXTRA_CALDAV_ACCOUNT)!!,

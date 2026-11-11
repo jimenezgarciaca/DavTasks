@@ -19,22 +19,18 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import org.tasks.LocalBroadcastManager
 import com.todoroo.astrid.gcal.GCalHelper
 import com.todoroo.astrid.repeats.RepeatTaskHelper
-import org.tasks.analytics.Firebase
 import org.tasks.audio.SoundPlayer
 import org.tasks.calendars.CalendarHelper
 import org.tasks.filters.CaldavListCache
 import org.tasks.service.TaskCompleter
 import org.tasks.viewmodel.DrawerViewModel
 import org.tasks.broadcast.ComposeRefreshBroadcaster
-import org.tasks.analytics.Reporting
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.CaldavClientProvider
 import org.tasks.http.HttpClientFactory
 import org.tasks.http.KtorClientFactory
 import org.tasks.http.OkHttpKtorClientFactory
 import org.tasks.caldav.FileStorage
-import org.tasks.analytics.Analytics
-import org.tasks.analytics.CrashReporting
 import org.tasks.caldav.VtodoCache
 import org.tasks.caldav.metadata.TagMetadataSync
 import org.tasks.compose.drawer.DrawerConfiguration
@@ -102,21 +98,8 @@ class ApplicationModule {
     }
 
     @Provides
-    @Singleton
-    fun getReporting(firebase: Firebase): Reporting = firebase
-
-    @Provides
-    @Singleton
-    fun getAnalytics(reporting: Reporting): Analytics = reporting
-
-    @Provides
-    @Singleton
-    fun getCrashReporting(reporting: Reporting): CrashReporting = reporting
-
-    @Provides
-    fun getRepeatRuleToString(locale: Locale, crashReporting: CrashReporting) =
+    fun getRepeatRuleToString(locale: Locale) =
         RepeatRuleToString(
-            crashReporting = crashReporting,
             languageTag = locale.toLanguageTag(),
         )
 
@@ -332,7 +315,6 @@ class ApplicationModule {
         taskDeleter: TaskDeleter,
         refreshBroadcaster: RefreshBroadcaster,
         dirtyDao: DirtyDao,
-        reporting: Reporting,
         iCal: org.tasks.caldav.iCalendar,
         openTaskDao: OpenTaskDao,
     ): OpenTasksSynchronizer = OpenTasksSynchronizer(
@@ -340,7 +322,6 @@ class ApplicationModule {
         taskDeleter = taskDeleter,
         refreshBroadcaster = refreshBroadcaster,
         dirtyDao = dirtyDao,
-        reporting = reporting,
         iCalendar = iCal,
         openTaskDao = openTaskDao,
     )
@@ -448,14 +429,13 @@ class ApplicationModule {
         dirtyDao: DirtyDao,
         refreshBroadcaster: RefreshBroadcaster,
         taskDeleter: org.tasks.service.TaskDeleter,
-        reporting: org.tasks.analytics.Reporting,
         provider: org.tasks.caldav.CaldavClientProvider,
         iCal: org.tasks.caldav.iCalendar,
         principalDao: org.tasks.data.dao.PrincipalDao,
         vtodoCache: VtodoCache,
         tagMetadataSync: TagMetadataSync,
     ) = org.tasks.caldav.CaldavSynchronizer(
-        caldavDao, dirtyDao, refreshBroadcaster, taskDeleter, reporting,
+        caldavDao, dirtyDao, refreshBroadcaster, taskDeleter,
         provider, iCal, principalDao, vtodoCache, tagMetadataSync,
     )
 

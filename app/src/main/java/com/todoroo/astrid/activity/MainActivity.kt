@@ -50,7 +50,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.tasks.BuildConfig
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.compose.AddAccountDestination
 import org.tasks.compose.HomeDestination
 import org.tasks.compose.ImportTasksViewModel
@@ -86,7 +85,6 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var defaultFilterProvider: DefaultFilterProvider
     @Inject lateinit var theme: Theme
     @Inject lateinit var taskCreator: TaskCreator
-    @Inject lateinit var firebase: Firebase
     @Inject lateinit var caldavDao: CaldavDao
 
     private val viewModel: MainActivityViewModel by viewModels()
@@ -264,7 +262,6 @@ class MainActivity : AppCompatActivity() {
         intent.isFromHistory -> null
         intent.hasExtra(CREATE_TASK) -> {
             val source = intent.getStringExtra(CREATE_SOURCE)
-            firebase.addTask(source ?: "unknown")
             intent.removeExtra(CREATE_TASK)
             intent.removeExtra(CREATE_SOURCE)
             taskCreator.createWithValues(filter ?: defaultFilterProvider.getDefaultList(), "")

@@ -36,7 +36,6 @@ class ConditionalWriteTest : DatabaseTest() {
         dirtyDao = dirtyDao,
         refreshBroadcaster = mock(),
         taskDeleter = mock(),
-        reporting = mock(),
         provider = testClientProvider(encryption),
         iCal = iCal,
         principalDao = db.principalDao(),

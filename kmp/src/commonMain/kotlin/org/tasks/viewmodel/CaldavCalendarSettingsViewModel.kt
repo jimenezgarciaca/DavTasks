@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.tasks.analytics.AnalyticsEvents
-import org.tasks.analytics.Reporting
 import org.tasks.caldav.CaldavClientFactory
 import org.tasks.data.PrincipalWithAccess
 import org.tasks.data.UUIDHelper
@@ -48,7 +46,6 @@ open class CaldavCalendarSettingsViewModel(
     private val principalDao: PrincipalDao,
     private val taskDeleter: TaskDeleter,
     private val syncAdapters: SyncAdapters,
-    private val reporting: Reporting,
     isDark: Boolean,
     account: CaldavAccount,
     calendar: CaldavCalendar,
@@ -184,7 +181,6 @@ open class CaldavCalendarSettingsViewModel(
                     icon = s.icon,
                 )
                 caldavDao.insert(calendar)
-                reporting.logEvent(AnalyticsEvents.CREATE_LIST)
                 val inserted = caldavDao.getCalendarByUuid(calendar.uuid!!)
                 stateManager.update { it.copy(calendar = inserted) }
                 calendarId.value = inserted?.id
@@ -240,7 +236,6 @@ open class CaldavCalendarSettingsViewModel(
                         caldavClientProvider.forAccount(account, calendar.url!!)
                             .use { it.deleteCollection() }
                     }
-                    reporting.logEvent(AnalyticsEvents.SETTINGS_CLICK, AnalyticsEvents.PARAM_TYPE to AnalyticsEvents.SettingsClick.DELETE_LIST)
                     taskDeleter.delete(calendar)
                 }
                 onComplete()

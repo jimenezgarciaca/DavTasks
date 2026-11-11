@@ -42,21 +42,6 @@ class TasksPreferences(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun setLongIf(
-        key: Preferences.Key<Long>,
-        value: Long,
-        shouldSet: (stored: Long?) -> Boolean,
-    ): Boolean {
-        var applied = false
-        dataStore.edit {
-            applied = shouldSet(it[key])
-            if (applied) {
-                it[key] = value
-            }
-        }
-        return applied
-    }
-
     suspend fun getOrCreate(key: Preferences.Key<String>, value: String): String {
         var current: String? = null
         dataStore.edit { prefs ->

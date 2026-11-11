@@ -15,9 +15,7 @@ import com.todoroo.astrid.alarms.AlarmService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
-import org.tasks.R
 import org.tasks.activities.DateAndTimePickerActivity
-import org.tasks.analytics.Firebase
 import org.tasks.compose.pickers.SnoozeDialog
 import org.tasks.extensions.Context.is24HourFormat
 import org.tasks.preferences.Preferences
@@ -29,7 +27,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SnoozeActivity : AppCompatActivity() {
     @Inject lateinit var alarmService: AlarmService
-    @Inject lateinit var firebase: Firebase
     @Inject lateinit var preferences: Preferences
     @Inject lateinit var theme: Theme
 
@@ -76,7 +73,6 @@ class SnoozeActivity : AppCompatActivity() {
     }
 
     private fun snoozeForTime(time: Long) {
-        firebase.logEvent(R.string.event_notification, R.string.param_type to "snooze_time")
         lifecycleScope.launch(NonCancellable) {
             alarmService.snooze(time, taskIds)
         }

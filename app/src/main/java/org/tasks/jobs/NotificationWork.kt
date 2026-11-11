@@ -10,7 +10,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.tasks.Notifier
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.date.DateTimeUtils.toDateTime
 import org.tasks.notifications.NotificationManager
 import timber.log.Timber
@@ -19,11 +18,10 @@ import timber.log.Timber
 class NotificationWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val workManager: WorkManager,
     private val alarmService: AlarmService,
     private val notifier: Notifier,
-) : RepeatingWorker(context, workerParams, firebase) {
+) : RepeatingWorker(context, workerParams) {
     private var nextAlarm: Long = 0
 
     override suspend fun run(): Result {

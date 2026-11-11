@@ -34,7 +34,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.tasks.analytics.Firebase
 import org.tasks.caldav.CaldavClient
 import org.tasks.jobs.WorkManager
 import org.tasks.location.LocationService
@@ -65,7 +64,6 @@ class TasksApplication : Application(), Configuration.Provider {
     @Inject lateinit var locationService: Lazy<LocationService>
     @Inject lateinit var contentObserver: Lazy<OpenTaskContentObserver>
     @Inject lateinit var syncAdapters: Lazy<SyncAdapters>
-    @Inject lateinit var firebase: Firebase
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 

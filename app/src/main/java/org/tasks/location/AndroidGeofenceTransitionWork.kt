@@ -5,7 +5,6 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import org.tasks.analytics.Firebase
 import org.tasks.data.dao.LocationDao
 import org.tasks.Notifier
 import org.tasks.injection.BaseWorker
@@ -16,10 +15,9 @@ import timber.log.Timber
 class AndroidGeofenceTransitionWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val locationDao: LocationDao,
     private val notifier: Notifier,
-) : BaseWorker(context, workerParams, firebase) {
+) : BaseWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         val arrival = inputData.getBoolean(EXTRA_ARRIVAL, false)
@@ -37,7 +35,6 @@ class AndroidGeofenceTransitionWork @AssistedInject constructor(
             }
             notifier.triggerNotifications(place.id, geofences, arrival)
         } catch (e: Exception) {
-            firebase.reportException(e)
             Timber.e(e, "Error triggering geofence for place %d: %s", placeId, e.message)
         }
         return Result.success()

@@ -5,13 +5,11 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.todoroo.andlib.utility.AndroidUtilities.atLeastAndroid16
 import kotlinx.coroutines.runBlocking
-import org.tasks.analytics.Firebase
 import timber.log.Timber
 
 abstract class BaseWorker(
         internal val context: Context,
         workerParams: WorkerParameters,
-        internal val firebase: Firebase
 ) : Worker(context, workerParams) {
 
     override fun doWork(): Result {
@@ -25,7 +23,7 @@ abstract class BaseWorker(
                 run()
             }
         } catch (e: Exception) {
-            firebase.reportException(e)
+            Timber.e(e)
             Result.failure()
         }
     }

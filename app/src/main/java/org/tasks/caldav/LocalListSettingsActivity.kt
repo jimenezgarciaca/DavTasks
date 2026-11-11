@@ -18,7 +18,6 @@ import com.todoroo.astrid.activity.MainActivity
 import com.todoroo.astrid.activity.TaskListFragment
 import dagger.hilt.android.AndroidEntryPoint
 import org.jetbrains.compose.resources.stringResource
-import org.tasks.analytics.Firebase
 import org.tasks.compose.ColorWheelDialog
 import org.tasks.compose.components.AnimatedBanner
 import org.tasks.compose.settings.ListSettingsScreen
@@ -38,7 +37,6 @@ import javax.inject.Inject
 class LocalListSettingsActivity : AppCompatActivity() {
 
     @Inject lateinit var defaultFilterProvider: DefaultFilterProvider
-    @Inject lateinit var firebase: Firebase
 
     private val viewModel: LocalListSettingsHiltViewModel by viewModels()
 
@@ -81,8 +79,8 @@ class LocalListSettingsActivity : AppCompatActivity() {
                         viewModel.closeColorPicker()
                         showColorWheel = true
                     },
-                    onAddShortcut = remember { addShortcutCallback(viewModel.state::value, primaryColor, defaultFilterProvider, firebase) { onSaved -> viewModel.save(onDismiss = { viewModel.state.value.calendar?.let(onSaved) }, onComplete = { _, calendar -> onSaved(calendar) }) } },
-                    onAddWidget = remember { addWidgetCallback(viewModel.state::value, defaultFilterProvider, firebase) { onSaved -> viewModel.save(onDismiss = { viewModel.state.value.calendar?.let(onSaved) }, onComplete = { _, calendar -> onSaved(calendar) }) } },
+                    onAddShortcut = remember { addShortcutCallback(viewModel.state::value, primaryColor, defaultFilterProvider) { onSaved -> viewModel.save(onDismiss = { viewModel.state.value.calendar?.let(onSaved) }, onComplete = { _, calendar -> onSaved(calendar) }) } },
+                    onAddWidget = remember { addWidgetCallback(viewModel.state::value, defaultFilterProvider) { onSaved -> viewModel.save(onDismiss = { viewModel.state.value.calendar?.let(onSaved) }, onComplete = { _, calendar -> onSaved(calendar) }) } },
                     headerContent = {
                         AnimatedBanner(
                             visible = bannerVisible,

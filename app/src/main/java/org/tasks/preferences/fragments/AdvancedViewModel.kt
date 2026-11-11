@@ -12,7 +12,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.VtodoCache
 import org.tasks.calendars.CalendarEventProvider
@@ -33,7 +32,6 @@ class AdvancedViewModel @Inject constructor(
     private val taskDao: TaskDao,
     private val calendarEventProvider: CalendarEventProvider,
     private val vtodoCache: VtodoCache,
-    private val firebase: Firebase,
     private val defaultFilterProvider: DefaultFilterProvider,
     private val refreshBroadcaster: RefreshBroadcaster,
 ) : ViewModel() {
@@ -126,10 +124,6 @@ class AdvancedViewModel @Inject constructor(
     }
 
     fun deleteCompletedEvents(onComplete: (Int) -> Unit) {
-        firebase.logEvent(
-            R.string.event_settings_click,
-            R.string.param_type to "delete_completed_calendar_events",
-        )
         viewModelScope.launch {
             val events = taskDao.getCompletedCalendarEvents()
             calendarEventProvider.deleteEvents(events)
@@ -139,10 +133,6 @@ class AdvancedViewModel @Inject constructor(
     }
 
     fun deleteAllCalendarEvents(onComplete: (Int) -> Unit) {
-        firebase.logEvent(
-            R.string.event_settings_click,
-            R.string.param_type to "delete_all_calendar_events",
-        )
         viewModelScope.launch {
             val events = taskDao.getAllCalendarEvents()
             calendarEventProvider.deleteEvents(events)
@@ -152,19 +142,11 @@ class AdvancedViewModel @Inject constructor(
     }
 
     fun resetPreferences() {
-        firebase.logEvent(
-            R.string.event_settings_click,
-            R.string.param_type to "reset_preferences",
-        )
         preferences.reset()
         kotlin.system.exitProcess(0)
     }
 
     fun deleteTaskData() {
-        firebase.logEvent(
-            R.string.event_settings_click,
-            R.string.param_type to "delete_task_data",
-        )
         viewModelScope.launch(NonCancellable) {
             context.deleteDatabase(database.name)
             vtodoCache.clear()

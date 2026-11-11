@@ -2,7 +2,6 @@ package org.tasks.locale.receiver
 
 import com.todoroo.astrid.service.TaskCreator
 import org.tasks.Strings.isNullOrEmpty
-import org.tasks.analytics.Firebase
 import org.tasks.data.TaskSaver
 import org.tasks.data.createDueDate
 import org.tasks.data.dao.AlarmDao
@@ -24,7 +23,6 @@ import kotlin.math.min
 class TaskerTaskCreator @Inject internal constructor(
     private val taskCreator: TaskCreator,
     private val taskSaver: TaskSaver,
-    private val firebase: Firebase,
     private val alarmDao: AlarmDao,
     private val preferences: Preferences,
     private val tagDao: TagDao,
@@ -68,7 +66,6 @@ class TaskerTaskCreator @Inject internal constructor(
         taskSaver.save(task, null)
         alarmDao.insert(task.getDefaultAlarms(preferences.isDefaultDueTimeEnabled()))
         tagDao.insert(task, task.tags)
-        firebase.addTask("tasker")
     }
 
     companion object {

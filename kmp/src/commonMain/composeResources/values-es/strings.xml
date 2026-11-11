@@ -24,7 +24,6 @@
     <string name="yesterday_lowercase">ayer</string>
     <string name="today">Hoy</string>
     <string name="today_lowercase">hoy</string>
-    <string name="add_task">Añadir tarea</string>
     <string name="show_unstarted">Mostrar sin comenzar</string>
     <string name="show_completed">Mostrar completadas</string>
     <string name="new_task">Nueva tarea</string>
@@ -115,16 +114,11 @@
     <string name="url_invalid_scheme">Debe comenzar por http(s)://</string>
     <string name="url_required">Se requiere un URL</string>
     <string name="username_required">Nombre de usuario requerido</string>
-    <string name="whats_new">Qué hay de nuevo</string>
     <string name="version_string">Versión %1$s</string>
-    <string name="rate_tasks">Valorar Tasks</string>
     <string name="documentation">Documentación</string>
     <string name="issue_tracker">Seguimiento de problemas</string>
-    <string name="contact_developer">Contactar con el desarrollador</string>
     <string name="send_application_logs">Enviar registros de aplicaciones</string>
     <string name="source_code">Código fuente</string>
-    <string name="third_party_licenses">Licencias de terceros</string>
-    <string name="privacy_policy">Política de privacidad</string>
     <string name="support">Asistencia</string>
     <string name="open_source">Código abierto</string>
     <string name="group_mode">Grupo</string>
@@ -162,8 +156,6 @@
     <string name="priority_low">Baja</string>
     <string name="metadata_move">Mover</string>
     <string name="done">Hecho</string>
-    <string name="annual">Anual</string>
-    <string name="monthly">Mensual</string>
     <string name="send">Enviar</string>
     <string name="date_picker_multiple">Múltiples</string>
     <string name="due_date">Fecha límite</string>

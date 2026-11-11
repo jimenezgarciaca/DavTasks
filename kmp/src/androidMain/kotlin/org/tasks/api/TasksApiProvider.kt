@@ -21,8 +21,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.tasks.analytics.Analytics
-import org.tasks.analytics.AnalyticsEvents
 import org.tasks.api.TasksContract.Reminders
 import org.tasks.api.TasksContract.Lists
 import org.tasks.api.TasksContract.Places
@@ -40,7 +38,6 @@ abstract class TasksApiProvider : ContentProvider() {
         val database: Database
         val queryEngine: ApiQueryEngine
         val writer: ApiWriter
-        val analytics: Analytics
     }
 
     protected abstract val dependencies: Dependencies
@@ -286,14 +283,6 @@ abstract class TasksApiProvider : ContentProvider() {
     private fun onFirstUse() {
         checkPermissionOwnership()
         val dependencies = dependencies
-        val caller = runCatching { callingPackage }.getOrNull() ?: UNKNOWN_CALLER
-        scope.launch {
-            dependencies.analytics.logEventOncePerDay(
-                event = AnalyticsEvents.CONTENT_PROVIDER_API,
-                dedupeBy = caller,
-                AnalyticsEvents.PARAM_PACKAGE to caller,
-            )
-        }
         startWatching(dependencies.database)
     }
 
@@ -377,7 +366,6 @@ abstract class TasksApiProvider : ContentProvider() {
         get() = this in ITEM_MATCHES
 
     companion object {
-        internal const val UNKNOWN_CALLER = "unknown"
 
         private const val TASKS = 1
         private const val TASK = 2

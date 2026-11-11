@@ -92,7 +92,6 @@ import org.tasks.ShortcutManager
 import org.tasks.activities.FilterSettingsActivity
 import org.tasks.activities.PlaceSettingsActivity
 import org.tasks.activities.TagSettingsActivity
-import org.tasks.analytics.Firebase
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity
 import org.tasks.caldav.LocalListSettingsActivity
 import org.tasks.compose.AlarmsDisabledBanner
@@ -198,7 +197,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
     @Inject lateinit var colorProvider: ColorProvider
     @Inject lateinit var shortcutManager: ShortcutManager
     @Inject lateinit var taskCompleter: TaskCompleter
-    @Inject lateinit var firebase: Firebase
     @Inject lateinit var repeatTaskHelper: RepeatTaskHelper
     @Inject lateinit var taskListEventBus: TaskListEventBus
     @Inject lateinit var database: Database
@@ -803,7 +801,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
         if (hasWritableList) {
             shortcutManager.reportShortcutUsed(ShortcutManager.SHORTCUT_NEW_TASK)
             onTaskListItemClicked(addTask(""))
-            firebase.addTask("fab")
         } else {
             Timber.e("createNewTask(): No writable list")
             val account = caldavDao.getAccountForNewList()
@@ -900,7 +897,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                             .uppercase(Locale.getDefault())
                                 + recognizedSpeech.substring(1).lowercase(Locale.getDefault()))
                         onTaskListItemClicked(addTask(recognizedSpeech))
-                        firebase.addTask("voice")
                     }
                 }
             }
@@ -926,7 +922,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
     }
 
     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-        firebase.logEvent(R.string.event_search)
         search.setOnQueryTextListener(this)
         listViewModel.setSearchQuery("")
         return true
@@ -969,7 +964,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
         val selected = taskAdapter.getSelected()
         return when (item.itemId) {
             R.id.edit_tags -> {
-                logMultiSelect("edit_tags", selected.size)
                 lifecycleScope.launch {
                     val tags = tagDataDao.getTagSelections(selected)
                     val intent = Intent(context, TagPickerActivity::class.java)
@@ -984,7 +978,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                 true
             }
             R.id.edit_priority -> {
-                logMultiSelect("edit_priority", selected.size)
                 lifecycleScope.launch {
                     taskDao
                         .fetch(selected)
@@ -998,7 +991,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                 true
             }
             R.id.move_tasks -> {
-                logMultiSelect("move", selected.size)
                 lifecycleScope.launch {
                     val singleFilter = taskMover.getSingleFilter(selected)
                     listPickerLauncher.launch(
@@ -1010,7 +1002,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                 true
             }
             R.id.reschedule -> {
-                logMultiSelect("reschedule", selected.size)
                 lifecycleScope.launch {
                     taskDao
                             .fetch(selected)
@@ -1027,7 +1018,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                 true
             }
             R.id.menu_select_all -> {
-                logMultiSelect("select_all", selected.size)
                 lifecycleScope.launch {
                     val ids = withContext(Dispatchers.Default) {
                         taskDao.fetchTasks(listViewModel.queryPreferences(filter), filter)
@@ -1038,7 +1028,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                 true
             }
             R.id.menu_share -> {
-                logMultiSelect("share", selected.size)
                 lifecycleScope.launch {
                     val tasks = withContext(Dispatchers.Default) {
                         val queryPreferences = listViewModel.queryPreferences(filter)
@@ -1059,7 +1048,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                 true
             }
             R.id.delete -> {
-                logMultiSelect("delete", selected.size)
                 dialogBuilder
                         .newDialog(R.string.delete_selected_tasks)
                         .setPositiveButton(
@@ -1069,7 +1057,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                 true
             }
             R.id.copy_tasks -> {
-                logMultiSelect("copy", selected.size)
                 dialogBuilder
                         .newDialog(R.string.copy_selected_tasks)
                         .setPositiveButton(
@@ -1082,13 +1069,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
         }
     }
 
-    private fun logMultiSelect(type: String, count: Int) {
-        firebase.logEvent(
-            R.string.event_multi_select,
-            R.string.param_type to type,
-            R.string.param_count to count,
-        )
-    }
 
     private fun send(tasks: List<TaskContainer>) {
         val output = tasks.joinToString("\n") { t -> Task
@@ -1182,7 +1162,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
         }
         lifecycleScope.launch {
             taskCompleter.setComplete(task.task, newState)
-            firebase.completeTask("task_list")
             taskAdapter.onCompletedTask(task.uuid, newState)
             loadTaskListContent()
         }

@@ -7,7 +7,6 @@ import org.tasks.service.TaskCompleter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.tasks.analytics.Firebase
 import org.tasks.data.dao.NotificationDao
 import org.tasks.injection.ApplicationScope
 import timber.log.Timber
@@ -18,7 +17,6 @@ class CompleteTaskReceiver : BroadcastReceiver() {
     @Inject lateinit var notificationDao: NotificationDao
     @Inject lateinit var taskCompleter: TaskCompleter
     @Inject @ApplicationScope lateinit var scope: CoroutineScope
-    @Inject lateinit var firebase: Firebase
 
     override fun onReceive(context: Context, intent: Intent) {
         val taskId = intent.getLongExtra(TASK_ID, 0)
@@ -29,7 +27,6 @@ class CompleteTaskReceiver : BroadcastReceiver() {
                 return@launch
             }
             taskCompleter.setComplete(taskId)
-            firebase.completeTask("notification")
         }
     }
 

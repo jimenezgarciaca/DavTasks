@@ -8,7 +8,6 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.backup.BackupConstants
 import org.tasks.backup.BackupConstants.BACKUP_CLEANUP_MATCHER
 import org.tasks.backup.TasksJsonExporter
@@ -22,10 +21,9 @@ import java.io.FileFilter
 class BackupWork @AssistedInject constructor(
         @Assisted context: Context,
         @Assisted workerParams: WorkerParameters,
-        firebase: Firebase,
         private val tasksJsonExporter: TasksJsonExporter,
         private val preferences: Preferences,
-        private val workManager: WorkManager) : RepeatingWorker(context, workerParams, firebase) {
+        private val workManager: WorkManager) : RepeatingWorker(context, workerParams) {
     
     override suspend fun run(): Result {
         preferences.setLong(R.string.p_last_backup, currentTimeMillis())

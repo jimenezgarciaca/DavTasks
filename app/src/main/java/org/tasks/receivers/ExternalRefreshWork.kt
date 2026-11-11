@@ -9,7 +9,6 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.data.count
 import org.tasks.data.dao.TaskDao
 import org.tasks.injection.BaseWorker
@@ -22,11 +21,10 @@ import timber.log.Timber
 class ExternalRefreshWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val defaultFilterProvider: DefaultFilterProvider,
     private val taskDao: TaskDao,
     private val preferences: Preferences,
-) : BaseWorker(context, workerParams, firebase) {
+) : BaseWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         if (preferences.getBoolean(R.string.p_badges_enabled, true)) {

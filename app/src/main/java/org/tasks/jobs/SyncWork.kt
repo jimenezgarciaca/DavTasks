@@ -18,7 +18,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.tasks.broadcast.RefreshBroadcaster
-import org.tasks.analytics.Firebase
 import org.tasks.caldav.CaldavSynchronizer
 import org.tasks.data.OpenTaskDao
 import org.tasks.data.dao.CaldavDao
@@ -36,7 +35,6 @@ import timber.log.Timber
 class SyncWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val refreshBroadcaster: RefreshBroadcaster,
     private val preferences: Preferences,
     private val caldavDao: CaldavDao,
@@ -44,7 +42,7 @@ class SyncWork @AssistedInject constructor(
     private val openTasksSynchronizer: Lazy<OpenTasksSynchronizer>,
     private val openTaskDao: OpenTaskDao,
     private val tasksPreferences: TasksPreferences,
-) : BaseWorker(context, workerParams, firebase) {
+) : BaseWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         Timber.d("Starting...")
@@ -72,7 +70,7 @@ class SyncWork @AssistedInject constructor(
             doSync()
             preferences.lastSync = currentTimeMillis()
         } catch (e: Exception) {
-            firebase.reportException(e)
+            Timber.e(e)
         } finally {
             tasksPreferences.set(TasksPreferences.syncOngoing, false)
             setSyncSource(SyncSource.NONE)

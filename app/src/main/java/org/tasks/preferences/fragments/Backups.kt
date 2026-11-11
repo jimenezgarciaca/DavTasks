@@ -103,12 +103,10 @@ class Backups : Fragment() {
                     )
                 },
                 onBackupNow = {
-                    viewModel.logEvent("backup_now")
                     ExportTasksDialog.newExportTasksDialog()
                         .show(parentFragmentManager, FRAG_TAG_EXPORT_TASKS)
                 },
                 onImportBackup = {
-                    viewModel.logEvent("import_backup")
                     importPickerLauncher.launch(
                         FileHelper.newFilePickerIntent(activity, viewModel.backupDirectory),
                     )

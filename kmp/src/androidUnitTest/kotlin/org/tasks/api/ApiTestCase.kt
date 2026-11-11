@@ -27,7 +27,6 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
-import org.tasks.analytics.Analytics
 import org.tasks.caldav.metadata.TagMetadataSync
 import org.tasks.data.MergedGeofence
 import org.tasks.data.TaskMover
@@ -202,7 +201,6 @@ abstract class ApiTestCase {
             override val database = db
             override val queryEngine = engine
             override val writer = this@ApiTestCase.writer
-            override val analytics: Analytics = mock()
         }
     }
 

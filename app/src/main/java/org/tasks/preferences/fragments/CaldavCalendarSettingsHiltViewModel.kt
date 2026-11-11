@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.R
-import org.tasks.analytics.Reporting
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity
 import org.tasks.caldav.CaldavClientProvider
 import org.tasks.data.dao.CaldavDao
@@ -25,7 +24,6 @@ class CaldavCalendarSettingsHiltViewModel @Inject constructor(
     principalDao: PrincipalDao,
     taskDeleter: TaskDeleter,
     syncAdapters: SyncAdapters,
-    reporting: Reporting,
     @ApplicationContext context: Context,
 ) : CaldavCalendarSettingsViewModel(
     caldavDao = caldavDao,
@@ -33,7 +31,6 @@ class CaldavCalendarSettingsHiltViewModel @Inject constructor(
     principalDao = principalDao,
     taskDeleter = taskDeleter,
     syncAdapters = syncAdapters,
-    reporting = reporting,
     isDark = context.resources.getBoolean(R.bool.is_dark),
     account = savedStateHandle.get<CaldavAccount>(BaseCaldavCalendarSettingsActivity.EXTRA_CALDAV_ACCOUNT)!!,
     calendar = savedStateHandle[BaseCaldavCalendarSettingsActivity.EXTRA_CALDAV_CALENDAR]

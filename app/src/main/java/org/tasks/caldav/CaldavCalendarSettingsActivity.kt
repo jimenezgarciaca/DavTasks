@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.todoroo.astrid.activity.TaskListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import org.tasks.analytics.Firebase
 import org.tasks.compose.ColorWheelDialog
 import org.tasks.compose.settings.ListSettingsScreen
 import org.tasks.compose.settings.addShortcutCallback
@@ -31,7 +30,6 @@ import javax.inject.Inject
 class CaldavCalendarSettingsActivity : AppCompatActivity() {
 
     @Inject lateinit var defaultFilterProvider: DefaultFilterProvider
-    @Inject lateinit var firebase: Firebase
 
     private val viewModel: CaldavCalendarSettingsHiltViewModel by viewModels()
 
@@ -70,8 +68,8 @@ class CaldavCalendarSettingsActivity : AppCompatActivity() {
                         viewModel.closeColorPicker()
                         showColorWheel = true
                     },
-                    onAddShortcut = remember { addShortcutCallback(viewModel.state::value, primaryColor, defaultFilterProvider, firebase) { onSaved -> viewModel.save(onComplete = onSaved) } },
-                    onAddWidget = remember { addWidgetCallback(viewModel.state::value, defaultFilterProvider, firebase) { onSaved -> viewModel.save(onComplete = onSaved) } },
+                    onAddShortcut = remember { addShortcutCallback(viewModel.state::value, primaryColor, defaultFilterProvider) { onSaved -> viewModel.save(onComplete = onSaved) } },
+                    onAddWidget = remember { addWidgetCallback(viewModel.state::value, defaultFilterProvider) { onSaved -> viewModel.save(onComplete = onSaved) } },
                 )
 
                 if (showColorWheel) {

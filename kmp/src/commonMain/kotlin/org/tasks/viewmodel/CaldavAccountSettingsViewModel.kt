@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.tasks.analytics.Constants
-import org.tasks.analytics.Reporting
 import org.tasks.auth.serverUrlError
 import org.tasks.caldav.CaldavClientFactory
 import org.tasks.caldav.metadata.TagMetadataActivation
@@ -49,7 +47,6 @@ open class CaldavAccountSettingsViewModel(
     private val caldavClientProvider: CaldavClientFactory,
     private val encryption: Encryption,
     private val taskDeleter: TaskDeleter,
-    private val reporting: Reporting,
     private val tagMetadataSync: TagMetadataEditor,
     private val tagMetadataActivation: TagMetadataActivation,
 ) : ViewModel() {
@@ -392,10 +389,6 @@ open class CaldavAccountSettingsViewModel(
                         .use { it.homeSet() }
                 }
                 val account = addAccount(principal, effectiveName, usernameValue, passwordValue, s.serverType)
-                reporting.logEvent(
-                    "sync_add_account",
-                    "type" to Constants.SYNC_TYPE_CALDAV,
-                )
                 if (s.metadataChecked) {
                     val enabled = withContext(NonCancellable) {
                         tagMetadataActivation.enablePrimary(account, skipProbe = true)

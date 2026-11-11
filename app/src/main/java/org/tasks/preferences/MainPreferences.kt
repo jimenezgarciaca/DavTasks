@@ -20,7 +20,6 @@ class MainPreferences : BasePreferences() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        firebase.logEvent(R.string.event_screen_settings)
     }
 
     override fun getRootTitle() = R.string.TLA_menu_settings

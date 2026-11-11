@@ -4,7 +4,6 @@ import at.bitfire.ical4android.BatchOperation
 import co.touchlab.kermit.Logger
 import org.dmfs.tasks.contract.TaskContract
 import org.dmfs.tasks.contract.TaskContract.Tasks
-import org.tasks.analytics.Reporting
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.iCalendar
 import org.tasks.caldav.toIcal4android
@@ -31,7 +30,6 @@ class OpenTasksSynchronizer(
     private val taskDeleter: TaskDeleter,
     private val refreshBroadcaster: RefreshBroadcaster,
     private val dirtyDao: DirtyDao,
-    private val reporting: Reporting,
     private val iCalendar: iCalendar,
     private val openTaskDao: OpenTaskDao,
 ) : OpenTasksSyncer {
@@ -48,14 +46,7 @@ class OpenTasksSynchronizer(
                     accountType = CaldavAccount.TYPE_OPENTASKS,
                 )
             }
-            .onEach { caldavDao.insert(it) }
-            .forEach {
-                reporting.logEvent(
-                    "sync_add_account",
-                    "type" to (it.uuid.openTaskProvider()?.syncType
-                        ?: throw IllegalArgumentException())
-                )
-            }
+            .forEach { caldavDao.insert(it) }
         caldavDao.getAccounts(CaldavAccount.TYPE_OPENTASKS).forEach { account ->
             val entries = lists[account.uuid!!]
             if (entries == null) {
@@ -64,20 +55,10 @@ class OpenTasksSynchronizer(
             } else {
                 try {
                     sync(account, entries)
-                    if (account.lastSync == 0L) {
-                        val taskCount = caldavDao.getTaskCountForAccount(account.uuid!!)
-                        val syncType =
-                            account.uuid.openTaskProvider()?.syncType ?: "opentasks"
-                        reporting.logEvent(
-                            "sync_initial_sync_complete",
-                            "type" to syncType,
-                            "task_count" to taskCount
-                        )
-                    }
                     account.lastSync = currentTimeMillis()
                     setError(account, null)
                 } catch (e: Exception) {
-                    reporting.reportException(e)
+                    Logger.e(e) { "$account: ${e.message}" }
                     setError(account, e.message)
                 }
             }

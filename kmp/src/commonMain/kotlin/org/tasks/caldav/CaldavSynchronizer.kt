@@ -6,7 +6,6 @@ import at.bitfire.dav4jvm.ktor.DavCalendar
 import at.bitfire.dav4jvm.ktor.DavCalendar.Companion.MIME_ICALENDAR
 import at.bitfire.dav4jvm.ktor.DavResource
 import at.bitfire.dav4jvm.ktor.Response
-import at.bitfire.dav4jvm.ktor.exception.DavException
 import at.bitfire.dav4jvm.ktor.exception.HttpException
 import at.bitfire.dav4jvm.ktor.exception.PreconditionFailedException
 import at.bitfire.dav4jvm.ktor.exception.ServiceUnavailableException
@@ -34,13 +33,6 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.content.ByteArrayContent
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.password_required
-import org.tasks.analytics.AnalyticsEvents.INITIAL_SYNC_COMPLETE
-import org.tasks.analytics.AnalyticsEvents.PARAM_TASK_COUNT
-import org.tasks.analytics.AnalyticsEvents.PARAM_TYPE
-import org.tasks.analytics.AnalyticsEvents.SYNC_NOT_FOUND
-import org.tasks.analytics.AnalyticsEvents.SYNC_UNKNOWN_ACCESS
-import org.tasks.analytics.Constants
-import org.tasks.analytics.Reporting
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.iCalendar.Companion.fromVtodo
@@ -94,7 +86,6 @@ class CaldavSynchronizer(
     private val dirtyDao: DirtyDao,
     private val refreshBroadcaster: RefreshBroadcaster,
     private val taskDeleter: TaskDeleter,
-    private val reporting: Reporting,
     private val provider: CaldavClientProvider,
     private val iCal: iCalendar,
     private val principalDao: PrincipalDao,
@@ -109,15 +100,6 @@ class CaldavSynchronizer(
         }
         try {
             synchronize(account)
-            if (account.lastSync == 0L) {
-                val taskCount = caldavDao.getTaskCountForAccount(account.uuid!!)
-                val syncType = Constants.SYNC_TYPE_CALDAV
-                reporting.logEvent(
-                    INITIAL_SYNC_COMPLETE,
-                    PARAM_TYPE to syncType,
-                    PARAM_TASK_COUNT to taskCount
-                )
-            }
             account.lastSync = currentTimeMillis()
             setError(account, "")
         } catch (e: IOException) {
@@ -129,24 +111,15 @@ class CaldavSynchronizer(
         } catch (e: NetworkException) {
             setError(account, e)
         } catch (e: HomeSetNotFound) {
-            reporting.logEventOncePerDay(
-                event = SYNC_NOT_FOUND,
-                dedupeBy = account.uuid!!,
-                PARAM_TYPE to account.serverType,
-            )
             Logger.e(e.notFound) { "$account: ${e.notFound.message}" }
             setError(account, e.notFound.displayMessage)
         } catch (e: HttpException) {
-            when(e.statusCode) {
-                402, 405, 451, in 500..599 -> {}
-                else -> { reporting.reportException(e) }
-            }
             Logger.e(e) { "$account: ${e.message}" }
             setError(account, e.displayMessage)
         } catch (e: Exception) {
             setError(account, e)
             if (!e.isTlsSetupFailure()) {
-                reporting.reportException(e)
+                Logger.e(e) { "$account: ${e.message}" }
             }
         }
     }
@@ -191,13 +164,6 @@ class CaldavSynchronizer(
             val access = if (guestOwned) ACCESS_READ_ONLY else rawAccess
             val icon = resource[CalendarIcon::class]?.icon?.takeIf { it.isNotBlank() }
 
-            if (rawAccess == ACCESS_UNKNOWN) {
-                reporting.logEvent(
-                    SYNC_UNKNOWN_ACCESS,
-                    PARAM_TYPE to
-                            (resource[ShareAccess::class]?.access?.toString() ?: "???")
-                )
-            }
             if (calendar == null) {
                 calendar = CaldavCalendar(
                     name = remoteName,
@@ -373,9 +339,9 @@ class CaldavSynchronizer(
             }
         }
         if (unusable.isNotEmpty()) {
-            reporting.reportException(
-                DavException("Unusable multiget responses for ${unusable.size} resources: ${unusable.joinToString(limit = 10)}")
-            )
+            Logger.e(TAG) {
+                "Unusable multiget responses for ${unusable.size} resources: ${unusable.joinToString(limit = 10)}"
+            }
         }
         caldavDao
                 .getRemoteObjects(caldavCalendar.uuid!!)

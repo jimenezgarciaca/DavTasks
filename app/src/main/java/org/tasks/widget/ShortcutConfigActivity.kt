@@ -18,7 +18,6 @@ import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import org.tasks.R
 import org.tasks.Strings.isNullOrEmpty
-import org.tasks.analytics.Firebase
 import org.tasks.compose.FilterSelectionActivity.Companion.launch
 import org.tasks.compose.FilterSelectionActivity.Companion.registerForFilterPickerResult
 import org.tasks.data.UUIDHelper
@@ -37,7 +36,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ShortcutConfigActivity : ThemedInjectingAppCompatActivity(), ColorPalettePicker.ColorPickedCallback {
     @Inject lateinit var defaultFilterProvider: DefaultFilterProvider
-    @Inject lateinit var firebase: Firebase
 
     private lateinit var toolbar: Toolbar
     private lateinit var shortcutList: TextInputEditText
@@ -153,7 +151,6 @@ class ShortcutConfigActivity : ThemedInjectingAppCompatActivity(), ColorPaletteP
                 .build(),
             null,
         )
-        firebase.logEvent(R.string.event_create_shortcut, R.string.param_type to "shortcut_config")
         finish()
     }
 

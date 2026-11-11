@@ -189,7 +189,6 @@ class PlaceSettingsActivity : BaseListSettingsActivity(),
         get() = place.address ?: place.displayName
 
     override suspend fun delete() {
-        firebase.logEvent(R.string.event_settings_click, R.string.param_type to "delete_place")
         locationDao.deleteGeofencesByPlace(place.uid!!)
         locationDao.delete(place)
         tasksPreferences.delete(filter.key())

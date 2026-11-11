@@ -6,7 +6,6 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.tasks.broadcast.RefreshBroadcaster
-import org.tasks.analytics.Firebase
 import org.tasks.data.dao.TaskDao
 import org.tasks.date.DateTimeUtils
 import kotlin.math.min
@@ -15,11 +14,10 @@ import kotlin.math.min
 class RefreshWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val refreshBroadcaster: RefreshBroadcaster,
     private val workManager: WorkManager,
     private val taskDao: TaskDao,
-) : RepeatingWorker(context, workerParams, firebase) {
+) : RepeatingWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         refreshBroadcaster.broadcastRefresh()

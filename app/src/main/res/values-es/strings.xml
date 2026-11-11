@@ -198,7 +198,6 @@
     <string name="subtasks">Subtareas</string>
     <string name="display_name">Mostrar el nombre</string>
     <string name="help_and_feedback">Ayuda y retroalimentación</string>
-    <string name="documentation">Documentación</string>
     <string name="preferences_advanced">Avanzado</string>
     <string name="theme_system_default">Valor predeterminado del sistema</string>
     <string name="color_wheel">Rueda de colores</string>
@@ -250,7 +249,6 @@
     <string name="filter_any_due_date">Cualquier fecha límite</string>
     <string name="filter_today_only">Hoy sólo</string>
     <string name="filter_overdue">Atrasada</string>
-    <string name="whats_new">Qué hay de nuevo</string>
     <string name="action_new_task">Nueva tarea</string>
     <string name="sort_modified_group">Modificado %s</string>
     <string name="sort_created_group">Creado %s</string>

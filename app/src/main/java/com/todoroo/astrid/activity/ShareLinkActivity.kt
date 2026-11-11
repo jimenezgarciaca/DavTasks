@@ -10,7 +10,6 @@ import com.todoroo.astrid.service.TaskCreator
 import com.todoroo.astrid.utility.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.tasks.analytics.Firebase
 import org.tasks.data.entity.Task
 import org.tasks.data.entity.TaskAttachment
 import org.tasks.files.FileHelper
@@ -28,7 +27,6 @@ import javax.inject.Inject
 class ShareLinkActivity : AppCompatActivity() {
     @Inject lateinit var taskCreator: TaskCreator
     @Inject lateinit var preferences: Preferences
-    @Inject lateinit var firebase: Firebase
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +37,6 @@ class ShareLinkActivity : AppCompatActivity() {
                 if (text != null) {
                     val task = taskCreator.createWithValues(text.toString())
                     editTask(task)
-                    firebase.addTask("clipboard")
                 }
                 finish()
             }
@@ -48,9 +45,6 @@ class ShareLinkActivity : AppCompatActivity() {
                 val task = taskCreator.create(intent)
                 if (hasAttachments(intent)) {
                     task.putTransitory(TaskAttachment.KEY, copyAttachment(intent))
-                    firebase.addTask("share_attachment")
-                } else {
-                    firebase.addTask("share_text")
                 }
                 editTask(task)
                 finish()
@@ -60,9 +54,6 @@ class ShareLinkActivity : AppCompatActivity() {
                 val task = taskCreator.create(intent)
                 if (hasAttachments(intent)) {
                     task.putTransitory(TaskAttachment.KEY, copyMultipleAttachments(intent))
-                    firebase.addTask("share_multiple_attachments")
-                } else {
-                    firebase.addTask("share_multiple_text")
                 }
                 editTask(task)
                 finish()
@@ -70,7 +61,6 @@ class ShareLinkActivity : AppCompatActivity() {
 
             Intent.ACTION_VIEW -> lifecycleScope.launch {
                 editTask(taskCreator.createWithValues(""))
-                firebase.addTask("action_view")
                 finish()
             }
 

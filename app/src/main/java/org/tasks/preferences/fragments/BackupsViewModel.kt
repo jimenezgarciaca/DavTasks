@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.files.FileHelper
 import org.tasks.extensions.Context.is24HourFormat
 import org.tasks.kmp.org.tasks.time.DateFormatter
@@ -23,7 +22,6 @@ import javax.inject.Inject
 class BackupsViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val preferences: Preferences,
-    private val firebase: Firebase,
 ) : ViewModel() {
 
     var backupDirSummary by mutableStateOf("")
@@ -85,12 +83,6 @@ class BackupsViewModel @Inject constructor(
         preferencesViewModel.updateLocalBackup()
     }
 
-    fun logEvent(type: String) {
-        firebase.logEvent(
-            R.string.event_settings_click,
-            R.string.param_type to type,
-        )
-    }
 
     fun refreshWarnings(preferencesViewModel: PreferencesViewModel) {
         refreshBackupDirectory(preferencesViewModel)

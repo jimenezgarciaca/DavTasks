@@ -10,7 +10,6 @@ import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.tasks.Notifier
-import org.tasks.analytics.Firebase
 import org.tasks.injection.BaseWorker
 import org.tasks.locale.bundle.ListNotificationBundle
 import org.tasks.locale.bundle.TaskCreationBundle
@@ -21,11 +20,10 @@ import timber.log.Timber
 class TaskerWork @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    firebase: Firebase,
     private val notifier: Notifier,
     private val defaultFilterProvider: DefaultFilterProvider,
     private val taskerTaskCreator: TaskerTaskCreator,
-) : BaseWorker(context, workerParams, firebase) {
+) : BaseWorker(context, workerParams) {
 
     override suspend fun run(): Result {
         val bundle = inputData.toBundle()

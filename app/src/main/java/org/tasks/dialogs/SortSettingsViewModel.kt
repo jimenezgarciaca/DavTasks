@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.todoroo.astrid.core.SortHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.tasks.analytics.Firebase
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.dialogs.SortSettingsActivity.Companion.EXTRA_FILTER_KEY
 import org.tasks.dialogs.SortSettingsActivity.Companion.WIDGET_NONE
@@ -22,7 +21,6 @@ class SortSettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     appPreferences: Preferences,
     tasksPreferences: TasksPreferences,
-    firebase: Firebase,
     refreshBroadcaster: RefreshBroadcaster,
 ) : org.tasks.viewmodel.SortSettingsViewModel(
     preferences = savedStateHandle
@@ -33,7 +31,6 @@ class SortSettingsViewModel @Inject constructor(
             ?.takeIf { appPreferences.isPerListSortEnabled }
             ?.let { FilterPreferences(appPreferences, tasksPreferences, it) }
         ?: appPreferences,
-    reporting = firebase,
     refreshBroadcaster = refreshBroadcaster,
 ) {
     private val widgetPreferences = savedStateHandle

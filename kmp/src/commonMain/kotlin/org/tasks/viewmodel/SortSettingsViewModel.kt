@@ -5,14 +5,11 @@ import com.todoroo.astrid.core.SortHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import org.tasks.analytics.AnalyticsEvents
-import org.tasks.analytics.Reporting
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.preferences.QueryPreferences
 
 open class SortSettingsViewModel(
     private val preferences: QueryPreferences,
-    private val reporting: Reporting,
     private val refreshBroadcaster: RefreshBroadcaster,
 ) : ViewModel() {
     data class ViewState(
@@ -102,7 +99,6 @@ open class SortSettingsViewModel(
         if (preferences.groupMode == groupMode) {
             return
         }
-        trackSortChange("group", groupMode.toSortName())
         if (groupMode != SortHelper.GROUP_NONE) {
             preferences.isManualSort = false
             preferences.isAstridSort = false
@@ -142,7 +138,6 @@ open class SortSettingsViewModel(
     }
 
     fun setSortMode(sortMode: Int) {
-        trackSortChange("sort", sortMode.toSortName())
         preferences.isManualSort = false
         preferences.isAstridSort = false
         preferences.sortMode = sortMode
@@ -163,7 +158,6 @@ open class SortSettingsViewModel(
     }
 
     fun setSubtaskMode(subtaskMode: Int) {
-        trackSortChange("subtask", subtaskMode.toSortName())
         preferences.subtaskMode = subtaskMode
         val ascending = when (subtaskMode) {
             SortHelper.SORT_MODIFIED,
@@ -180,7 +174,6 @@ open class SortSettingsViewModel(
     }
 
     fun setManual(value: Boolean) {
-        trackSortChange("sort", "manual")
         preferences.isManualSort = value
         if (value) {
             preferences.groupMode = SortHelper.GROUP_NONE
@@ -194,7 +187,6 @@ open class SortSettingsViewModel(
     }
 
     fun setAstrid(value: Boolean) {
-        trackSortChange("sort", "astrid")
         preferences.isAstridSort = value
         if (value) {
             preferences.groupMode = SortHelper.GROUP_NONE
@@ -210,32 +202,5 @@ open class SortSettingsViewModel(
     private fun updateAndRefresh(transform: (ViewState) -> ViewState) {
         _viewState.update(transform)
         refreshBroadcaster.broadcastRefresh()
-    }
-
-    private fun trackSortChange(setting: String, value: Any) {
-        reporting.logEvent(
-            AnalyticsEvents.SORT_CHANGE,
-            AnalyticsEvents.PARAM_TYPE to setting,
-            PARAM_VALUE to value.toString(),
-        )
-    }
-
-    companion object {
-        private const val PARAM_VALUE = "value"
-
-        fun Int.toSortName(): String = when (this) {
-            SortHelper.GROUP_NONE -> "none"
-            SortHelper.SORT_ALPHA -> "alpha"
-            SortHelper.SORT_DUE -> "due"
-            SortHelper.SORT_IMPORTANCE -> "importance"
-            SortHelper.SORT_MODIFIED -> "modified"
-            SortHelper.SORT_CREATED -> "created"
-            SortHelper.SORT_START -> "start"
-            SortHelper.SORT_LIST -> "list"
-            SortHelper.SORT_COMPLETED -> "completed"
-            SortHelper.SORT_MANUAL -> "manual"
-            SortHelper.SORT_AUTO -> "auto"
-            else -> "unknown"
-        }
     }
 }

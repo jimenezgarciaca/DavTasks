@@ -38,7 +38,6 @@ import org.tasks.Strings.isNullOrEmpty
 import com.todoroo.astrid.activity.MainActivity
 import com.todoroo.astrid.activity.TaskListFragment
 import org.tasks.activities.PlaceSettingsActivity
-import org.tasks.analytics.Firebase
 import org.tasks.caldav.toLikeString
 import org.tasks.data.PlaceUsage
 import org.tasks.data.dao.LocationDao
@@ -84,7 +83,6 @@ class LocationPickerActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListe
     @Inject lateinit var geocoder: Geocoder
     @Inject lateinit var colorProvider: ColorProvider
     @Inject lateinit var locationService: LocationService
-    @Inject lateinit var firebase: Firebase
     @Inject lateinit var preferences: Preferences
 
     private var mapPosition: MapPosition? = null
@@ -256,7 +254,7 @@ class LocationPickerActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListe
                 )
             } catch (e: Exception) {
                 loadingIndicator.visibility = View.GONE
-                firebase.reportException(e)
+                Timber.e(e)
                 toast(e.message)
             }
         }
@@ -295,9 +293,7 @@ class LocationPickerActivity : AppCompatActivity(), Toolbar.OnMenuItemClickListe
                         place.latitude.toLikeString(),
                         place.longitude.toLikeString()
                     )
-                    ?: place.copy(id = locationDao.insert(place)).also {
-                        firebase.logEvent(R.string.event_create_place)
-                    }
+                    ?: place.copy(id = locationDao.insert(place))
             }
             setResult(
                 Activity.RESULT_OK,

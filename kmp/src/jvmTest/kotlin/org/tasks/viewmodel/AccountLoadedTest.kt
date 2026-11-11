@@ -102,7 +102,6 @@ class AccountLoadedTest {
         caldavClientProvider = mock(),
         encryption = mock(),
         taskDeleter = mock(),
-        reporting = mock(),
         tagMetadataSync = mock(),
         tagMetadataActivation = mock(),
     )

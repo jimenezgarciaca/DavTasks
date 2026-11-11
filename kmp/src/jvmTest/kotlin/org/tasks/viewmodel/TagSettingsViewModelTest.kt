@@ -13,7 +13,6 @@ import org.mockito.kotlin.mock
 import org.tasks.DatabaseTest
 import org.tasks.InMemoryDataStore
 import org.tasks.MainDispatcherRule
-import org.tasks.analytics.Reporting
 import org.tasks.broadcast.RefreshBroadcaster
 import org.tasks.caldav.metadata.TagMetadataSync
 import org.tasks.data.entity.CaldavAccount
@@ -35,7 +34,6 @@ class TagSettingsViewModelTest : DatabaseTest() {
     private fun viewModel(tagData: TagData) = TagSettingsViewModel(
         tagDataDao = tagDataDao,
         refreshBroadcaster = mock<RefreshBroadcaster>(),
-        reporting = mock<Reporting>(),
         tagMetadataSync = tagMetadataSync,
         syncAdapters = mock<SyncAdapters>(),
         isDark = false,

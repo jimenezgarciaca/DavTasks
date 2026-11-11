@@ -12,7 +12,6 @@ class HelpAndFeedback : BasePreferences() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             val source = intent.getStringExtra(EXTRA_SOURCE) ?: "unknown"
-            firebase.logEvent(R.string.event_help_and_feedback, R.string.param_source to source)
         }
     }
 

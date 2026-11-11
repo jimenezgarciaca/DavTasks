@@ -43,7 +43,6 @@ import org.tasks.R
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.no_title
 import org.tasks.Strings
-import org.tasks.analytics.Firebase
 import org.tasks.calendars.CalendarEventProvider
 import org.tasks.data.Location
 import org.tasks.data.createDueDate
@@ -110,7 +109,6 @@ class TaskEditViewModel @Inject constructor(
     private val taskCompleter: TaskCompleter,
     private val alarmService: AlarmService,
     private val taskListEvents: TaskListEventBus,
-    private val firebase: Firebase? = null,
     private val userActivityDao: UserActivityDao,
     private val alarmDao: AlarmDao,
     private val taskAttachmentDao: TaskAttachmentDao,
@@ -396,7 +394,6 @@ class TaskEditViewModel @Inject constructor(
             }
             taskDao.createNew(subtask)
             alarmDao.insert(subtask.getDefaultAlarms(preferences.isDefaultDueTimeEnabled()))
-            firebase?.addTask("subtasks")
             when {
                 selectedList.isGoogleTasks -> {
                     val googleTask = CaldavTask(
@@ -450,9 +447,6 @@ class TaskEditViewModel @Inject constructor(
 
         if (task.isCompleted != _viewState.value.isCompleted) {
             taskCompleter.setComplete(task, _viewState.value.isCompleted)
-            if (_viewState.value.isCompleted) {
-                firebase?.completeTask("edit_screen_v2")
-            }
         }
 
         if (isNew) {

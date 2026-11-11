@@ -8,8 +8,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.data.dao.TaskDao
 import org.tasks.intents.TaskIntents
 import org.tasks.receivers.CompleteTaskReceiver
@@ -23,7 +21,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class NotificationActivity : AppCompatActivity(), NotificationDialog.NotificationHandler {
     @Inject lateinit var taskDao: TaskDao
-    @Inject lateinit var firebase: Firebase
 
     private var taskId: Long = 0
 
@@ -55,12 +52,10 @@ class NotificationActivity : AppCompatActivity(), NotificationDialog.Notificatio
     }
 
     override fun dismiss() {
-        firebase.logEvent(R.string.event_notification, R.string.param_type to "dismiss")
         finish()
     }
 
     override fun edit() {
-        firebase.logEvent(R.string.event_notification, R.string.param_type to "edit")
         lifecycleScope.launch {
             taskDao.fetch(taskId)
                     ?.let {
@@ -73,13 +68,11 @@ class NotificationActivity : AppCompatActivity(), NotificationDialog.Notificatio
     }
 
     override fun snooze() {
-        firebase.logEvent(R.string.event_notification, R.string.param_type to "snooze")
         finish()
         startActivity(SnoozeActivity.newIntent(this, taskId))
     }
 
     override fun complete() {
-        firebase.logEvent(R.string.event_notification, R.string.param_type to "complete")
         val intent = Intent(this, CompleteTaskReceiver::class.java)
         intent.putExtra(CompleteTaskReceiver.TASK_ID, taskId)
         sendBroadcast(intent)

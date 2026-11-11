@@ -15,12 +15,10 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.eq
-import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.tasks.DatabaseTest
 import org.tasks.InMemoryDataStore
-import org.tasks.analytics.Reporting
 import org.tasks.data.entity.CaldavAccount
 import org.tasks.data.entity.CaldavAccount.Companion.SERVER_SABREDAV
 import org.tasks.data.entity.CaldavCalendar
@@ -38,7 +36,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
     private val preferences = TasksPreferences(InMemoryDataStore())
     private val encryption = testEncryption()
     private val provider = testClientProvider(encryption)
-    private val reporting = mock<Reporting>()
     private val iCal = mock<iCalendar>()
     private val synchronizer = CaldavSynchronizer(
         caldavDao = caldavDao,
@@ -53,7 +50,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
             tasksPreferences = preferences,
             taskCleanup = object : TaskCleanup {},
         ),
-        reporting = reporting,
         provider = provider,
         iCal = iCal,
         principalDao = db.principalDao(),
@@ -239,7 +235,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
             eq("b.ics"),
             eq("etag-b.ics"),
         )
-        verify(reporting, never()).reportException(any(), any())
         assertEquals(CTAG, caldavDao.getCalendarByUuid("calendar")!!.ctag)
     }
 
@@ -267,7 +262,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
             eq("a.ics"),
             eq("etag-a.ics"),
         )
-        verify(reporting, never()).reportException(any(), any())
         assertEquals(CTAG, caldavDao.getCalendarByUuid("calendar")!!.ctag)
     }
 
@@ -303,7 +297,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
                 eq("b.ics"),
                 eq("etag-b.ics"),
             )
-            verify(reporting).reportException(any(), any())
             assertEquals(CTAG, caldavDao.getCalendarByUuid("calendar")!!.ctag)
         }
 
@@ -332,7 +325,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
                 eq("b.ics"),
                 eq("etag-b.ics"),
             )
-            verify(reporting).reportException(any(), any())
             assertEquals(CTAG, caldavDao.getCalendarByUuid("calendar")!!.ctag)
         }
 
@@ -450,7 +442,6 @@ class CalendarUrlSyncTest : DatabaseTest() {
         synchronizer.sync(account)
 
         assertEquals("Invalid URL: https://example.com:port/", caldavDao.getAccountByUuid(account.uuid!!)!!.error)
-        verify(reporting, never()).reportException(any(), any())
     }
 
     @Test

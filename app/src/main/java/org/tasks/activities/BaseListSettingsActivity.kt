@@ -19,7 +19,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import org.tasks.R
-import org.tasks.analytics.Firebase
 import org.tasks.caldav.BaseCaldavCalendarSettingsActivity
 import org.tasks.compose.DeleteButton
 import org.tasks.compose.IconPickerActivity.Companion.launchIconPicker
@@ -40,7 +39,6 @@ import javax.inject.Inject
 abstract class BaseListSettingsActivity : AppCompatActivity() {
     @Inject lateinit var tasksTheme: Theme
     @Inject lateinit var defaultFilterProvider: DefaultFilterProvider
-    @Inject lateinit var firebase: Firebase
     @Inject lateinit var colorProvider: ColorProvider
 
     protected val baseViewModel: BaseListSettingsViewModel by viewModels()
@@ -78,11 +76,6 @@ abstract class BaseListSettingsActivity : AppCompatActivity() {
     }
 
     fun showIconPicker() {
-        firebase.logEvent(
-            R.string.event_settings_click,
-            R.string.param_type to "icon_picker",
-            R.string.param_source to settingsSource,
-        )
         launcher.launchIconPicker(this, baseViewModel.icon)
     }
 
@@ -135,11 +128,6 @@ abstract class BaseListSettingsActivity : AppCompatActivity() {
                 },
                 setColor = {
                     baseViewModel.setColor(it)
-                    firebase.logEvent(
-                        R.string.event_settings_click,
-                        R.string.param_type to "color_picker",
-                        R.string.param_source to settingsSource,
-                    )
                 },
                 pickIcon = { showIconPicker() },
                 addShortcutToHome = { createShortcut(color) },
@@ -158,7 +146,6 @@ abstract class BaseListSettingsActivity : AppCompatActivity() {
                 icon = baseViewModel.icon,
                 color = color,
                 defaultFilterProvider = defaultFilterProvider,
-                firebase = firebase,
             )
         }
     }
@@ -169,7 +156,6 @@ abstract class BaseListSettingsActivity : AppCompatActivity() {
                 filter = f,
                 color = baseViewModel.color,
                 defaultFilterProvider = defaultFilterProvider,
-                firebase = firebase,
             )
         }
     }

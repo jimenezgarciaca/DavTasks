@@ -5,17 +5,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.tasks.Freeze
 import org.tasks.TestUtilities.withTZ
-import org.tasks.analytics.Firebase
 import org.tasks.injection.InjectingTestCase
 import org.tasks.time.DateTime
 import java.text.ParseException
 import java.util.Locale
 import java.util.TimeZone
-import javax.inject.Inject
 
 @HiltAndroidTest
 class RepeatRuleToStringTest : InjectingTestCase() {
-    @Inject lateinit var firebase: Firebase
 
     @Test
     fun daily() {
@@ -146,7 +143,7 @@ class RepeatRuleToStringTest : InjectingTestCase() {
         val locale = language?.let { Locale.forLanguageTag(it) } ?: default
         return try {
             Locale.setDefault(locale)
-            RepeatRuleToString(firebase, locale.toLanguageTag()).toStringBlocking(rrule)
+            RepeatRuleToString(locale.toLanguageTag()).toStringBlocking(rrule)
         } catch (e: ParseException) {
             throw RuntimeException(e)
         } finally {

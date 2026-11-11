@@ -22,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.todoroo.astrid.activity.TaskListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import org.tasks.analytics.Firebase
 import org.tasks.compose.ColorWheelDialog
 import org.tasks.compose.settings.TagSettingsScreen
 import org.tasks.compose.settings.canPinShortcut
@@ -39,7 +38,6 @@ import javax.inject.Inject
 class TagSettingsActivity : AppCompatActivity() {
 
     @Inject lateinit var defaultFilterProvider: DefaultFilterProvider
-    @Inject lateinit var firebase: Firebase
 
     private val viewModel: TagSettingsHiltViewModel by viewModels()
 
@@ -86,7 +84,6 @@ class TagSettingsActivity : AppCompatActivity() {
                                     icon = tag.icon,
                                     color = (tag.color ?: 0).takeIf { it != 0 }?.let { Color(it) } ?: primaryColor,
                                     defaultFilterProvider = defaultFilterProvider,
-                                    firebase = firebase,
                                 )
                                 setReloadResult(TagFilter(tag))
                                 finish()
@@ -100,7 +97,6 @@ class TagSettingsActivity : AppCompatActivity() {
                                     filter = TagFilter(tag),
                                     color = tag.color ?: 0,
                                     defaultFilterProvider = defaultFilterProvider,
-                                    firebase = firebase,
                                 )
                                 setReloadResult(TagFilter(tag))
                                 finish()
