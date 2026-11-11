@@ -26,6 +26,14 @@ jobs:
       - name: Compilar APK de depuración
         run: ./gradlew --stacktrace :app:assembleGenericDebug
 
+      - name: Verificar APK
+        run: |
+          apk=$(find app/build/outputs/apk -name '*.apk' | head -1)
+          aapt2="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt2"
+          "$aapt2" dump badging "$apk" | grep -E "^package:|^application-label:"
+          "$aapt2" dump xmltree --file AndroidManifest.xml "$apk" | grep -E "networkSecurityConfig" || true
+          "$aapt2" dump badging "$apk" | grep -q "name='io.github.jimenezgarciaca.davtasks'"
+
       - name: Publicar APK
         uses: actions/upload-artifact@v7
         with:
