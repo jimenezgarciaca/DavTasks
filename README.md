@@ -16,7 +16,7 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
 - Sin Google Tasks, Microsoft To Do, EteSync ni cuenta de Tasks.org: se han eliminado su código y sus librerías (etebase, google-api-services-tasks/drive, google-auth-library, AppAuth). En el alta de cuentas quedan CalDAV y DAVx⁵.
 
-- Sin servicios de Tasks.org: ni copia de seguridad en Google Drive, ni pagos (Stripe, patrocinio de GitHub), ni vinculación con escritorio, ni notificaciones push, ni consulta del blog. La geocodificación inversa usa nominatim.openstreetmap.org y la búsqueda de lugares, Mapbox (requiere clave propia).
+- Sin servicios de Tasks.org: ni copia de seguridad en Google Drive, ni pagos (Stripe, patrocinio de GitHub), ni vinculación con escritorio, ni notificaciones push, ni consulta del blog. La geocodificación inversa usa nominatim.openstreetmap.org y la búsqueda de lugares, Mapbox.
 
 - Se conservan las tablas de la base de datos de esas integraciones para no modificar el esquema.
 
@@ -24,7 +24,9 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
 ## Compilación
 
-Cada push a `main` compila el APK de depuración en GitHub Actions (workflow "Compilar APK"). El APK se descarga desde la pestaña Actions, en los artefactos de la ejecución.
+Cada push a `main` compila el APK en GitHub Actions (workflow "Compilar APK"). Si existen los secretos `DAVTASKS_KEYSTORE`, `DAVTASKS_KEYSTORE_PASSWORD`, `DAVTASKS_KEY_ALIAS` y `DAVTASKS_KEY_PASSWORD`, genera el release firmado; si no, el de depuración. El APK se descarga desde la pestaña Actions, en los artefactos de la ejecución.
+
+La búsqueda de lugares (Mapbox) solo funciona si se define la propiedad Gradle `tasks_mapbox_key`.
 
 En local: `./gradlew :app:assembleGenericDebug` (requiere JDK 25 y Android SDK).
 
