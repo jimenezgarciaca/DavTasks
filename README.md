@@ -12,7 +12,13 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
 - Escritura condicional en CalDAV: PUT y DELETE con `If-Match` (o `If-None-Match: *` para objetos nuevos). Ante un 412 no se sobrescribe el cambio de otro cliente: se descarga de nuevo el calendario, se fusionan los cambios y se vuelve a subir.
 
-- Sin Wear OS, Pebble, versión de escritorio ni iOS. En el alta de cuentas solo aparecen CalDAV y DAVx⁵; las cuentas de Tasks.org, Google Tasks, Microsoft y EteSync están ocultas (su código sigue presente).
+- Sin Wear OS, Pebble (módulo), versión de escritorio ni iOS.
+
+- Sin Google Tasks, Microsoft To Do, EteSync ni cuenta de Tasks.org: se han eliminado su código y sus librerías (etebase, google-api-services-tasks/drive, google-auth-library, AppAuth). En el alta de cuentas quedan CalDAV y DAVx⁵.
+
+- Sin servicios de Tasks.org: ni copia de seguridad en Google Drive, ni pagos (Stripe, patrocinio de GitHub), ni vinculación con escritorio, ni notificaciones push, ni consulta del blog. La geocodificación inversa usa nominatim.openstreetmap.org y la búsqueda de lugares, Mapbox (requiere clave propia).
+
+- Se conservan las tablas de la base de datos de esas integraciones para no modificar el esquema.
 
 - Color dinámico (Material You) activado por defecto.
 

@@ -2,7 +2,6 @@ package org.tasks
 
 import android.content.Context
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import org.tasks.caldav.applyRemote
 import org.tasks.caldav.iCalendar.Companion.reminders
 import org.tasks.data.entity.Alarm
@@ -12,8 +11,6 @@ import org.tasks.extensions.Context.is24HourOverride
 import org.tasks.icalendar.VTodo
 import org.tasks.icalendar.parseVTodos
 import org.tasks.preferences.Preferences
-import org.tasks.sync.microsoft.MicrosoftConverter.applyRemote
-import org.tasks.sync.microsoft.Tasks
 import org.tasks.time.DateTime
 import java.io.StringReader
 import java.nio.file.Files
@@ -27,8 +24,6 @@ import java.util.Locale
 import java.util.TimeZone
 
 object TestUtilities {
-    private val json = Json { ignoreUnknownKeys = true }
-
     fun withTZ(id: String, runnable: suspend () -> Unit) =
         withTZ(TimeZone.getTimeZone(id), runnable)
 
@@ -88,19 +83,6 @@ object TestUtilities {
     }
 
     fun icalendarFromFile(path: String): VTodo = parseVTodos(readFile(path)).single()
-
-    fun mstodo(
-        path: String,
-        task: Task = Task(),
-        defaultPriority: Int = Task.Priority.NONE,
-    ): Pair<Task, Tasks.Task> {
-        val remote = mstodoFromFile(path)
-        task.applyRemote(remote, defaultPriority)
-        return Pair(task, remote)
-    }
-
-    private fun mstodoFromFile(path: String): Tasks.Task =
-        json.decodeFromString<Tasks>(readFile(path)).value.first()
 
     fun readFile(path: String): String {
         val uri = javaClass.classLoader?.getResource(path)?.toURI()

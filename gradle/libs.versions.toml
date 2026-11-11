@@ -58,7 +58,6 @@ play-services-code-scanner = "16.1.0"
 play-services-maps = "20.1.0"
 play-services-location = "21.4.0"
 play-services-oss-licenses = "17.3.0"
-qrose = "1.3.1"
 preference = "1.2.1"
 protobuf = "4.33.2"
 recyclerview = "1.4.0"
@@ -237,7 +236,6 @@ play-services-code-scanner = { module = "com.google.android.gms:play-services-co
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "play-services-maps" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "play-services-oss-licenses" }
-qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 java-keyring = { module = "com.github.javakeyring:java-keyring", version = "1.0.4" }
 posthog = { module = "com.posthog:posthog", version = "6.47.2" }
 posthog-android = { module = "com.posthog:posthog-android", version = "3.72.3" }
