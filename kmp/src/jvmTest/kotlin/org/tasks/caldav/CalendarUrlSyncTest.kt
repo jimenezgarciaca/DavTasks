@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.eq
@@ -221,7 +222,7 @@ class CalendarUrlSyncTest : DatabaseTest() {
         ).also { caldavDao.insert(it) }
         enqueueCalendars("$HOME_SET$LIST/")
         server.enqueue(multiStatus(etags("a.ics", "b.ics")))
-        server.enqueue(multiStatus(calendarData("a.ics" to TWO_VTODOS, "b.ics" to ONE_VTODO)))
+        server.enqueue(multiStatus(calendarData("a.ics" to TWO_UNRELATED_VTODOS, "b.ics" to ONE_VTODO)))
 
         synchronizer.sync(account)
 
@@ -236,6 +237,32 @@ class CalendarUrlSyncTest : DatabaseTest() {
             eq("etag-b.ics"),
         )
         assertEquals(CTAG, caldavDao.getCalendarByUuid("calendar")!!.ctag)
+    }
+
+    @Test
+    fun `a recurring task with modified occurrences is imported from its series`() = runBlocking {
+        CaldavCalendar(
+            account = account.uuid,
+            uuid = "calendar",
+            url = "${account.url}$LIST/".canonicalUrl(),
+            ctag = "stale",
+        ).also { caldavDao.insert(it) }
+        enqueueCalendars("$HOME_SET$LIST/")
+        server.enqueue(multiStatus(etags("a.ics")))
+        server.enqueue(multiStatus(calendarData("a.ics" to SERIES_WITH_OVERRIDE)))
+
+        synchronizer.sync(account)
+
+        assertFalse(caldavDao.getAccountByUuid(account.uuid!!)!!.hasError)
+        verify(iCal, times(1)).fromVtodo(
+            any<CaldavAccount>(),
+            any<CaldavCalendar>(),
+            anyOrNull<CaldavTask>(),
+            argThat<VTodo> { summary == "A" && rRule != null },
+            anyOrNull<String>(),
+            eq("a.ics"),
+            eq("etag-a.ics"),
+        )
     }
 
     @Test
@@ -510,8 +537,12 @@ class CalendarUrlSyncTest : DatabaseTest() {
         private const val ONE_VTODO =
             "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//E//EN\nBEGIN:VTODO\nUID:b\nSUMMARY:B\nEND:VTODO\nEND:VCALENDAR"
 
-        private const val TWO_VTODOS =
+        private const val TWO_UNRELATED_VTODOS =
             "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//E//EN\nBEGIN:VTODO\nUID:a\nSUMMARY:A\nEND:VTODO\n" +
+                    "BEGIN:VTODO\nUID:c\nSUMMARY:C\nEND:VTODO\nEND:VCALENDAR"
+
+        private const val SERIES_WITH_OVERRIDE =
+            "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//E//EN\nBEGIN:VTODO\nUID:a\nSUMMARY:A\nRRULE:FREQ=WEEKLY\nEND:VTODO\n" +
                     "BEGIN:VTODO\nUID:a\nRECURRENCE-ID:20260308T090000Z\nSUMMARY:A2\nEND:VTODO\nEND:VCALENDAR"
 
         private fun etags(vararg names: String) = """
