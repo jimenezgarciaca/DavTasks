@@ -139,10 +139,12 @@ class iCalendar(
         task: org.tasks.data.entity.Task
     ): ByteArray {
         var remoteModel: VTodo? = null
+        var original: String? = null
         try {
             val vtodo = vtodoCache.getVtodo(calendar, caldavTask)
             if (vtodo?.isNotBlank() == true) {
                 remoteModel = fromVtodo(vtodo)
+                original = vtodo.takeIf { remoteModel != null }
             }
         } catch (e: Exception) {
             Logger.e(e) { e.message.orEmpty() }
@@ -151,7 +153,13 @@ class iCalendar(
             remoteModel = VTodo()
         }
 
-        return toVtodo(account, caldavTask, task, remoteModel)
+        val data = toVtodo(account, caldavTask, task, remoteModel)
+        // Las ocurrencias modificadas (VTODO con RECURRENCE-ID) del recurso se conservan.
+        return if (original != null) {
+            preserveRecurrenceOverrides(data.decodeToString(), original).encodeToByteArray()
+        } else {
+            data
+        }
     }
 
     suspend fun applyLocalTo(
@@ -384,10 +392,7 @@ class iCalendar(
 
         fun fromVtodo(vtodo: String): VTodo? {
             try {
-                val tasks = parseVTodos(vtodo)
-                if (tasks.size == 1) {
-                    return tasks[0]
-                }
+                return parseVTodos(vtodo).seriesMaster()
             } catch (e: Exception) {
                 Logger.e(e) { e.message.orEmpty() }
             }
