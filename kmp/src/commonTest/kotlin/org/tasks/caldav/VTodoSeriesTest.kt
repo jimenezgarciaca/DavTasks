@@ -87,8 +87,8 @@ class VTodoSeriesTest {
         val master = parseVTodos(
             weekly(
                 "20261007",
-                due = "20261009",
                 override("20261007", TodoStatus.COMPLETED),
+                due = "20261009",
             )
         ).seriesMaster()!!
 
