@@ -399,7 +399,7 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
             recyclerView = bodyStandard.recyclerView
             fab.setOnClickListener { createNewTask() }
             fab.isVisible = filter.isWritable
-            quickAdd.isVisible = filter.isWritable
+            quickAddContainer.isVisible = filter.isWritable
             quickAdd.setOnClickListener {
                 if (parentFragmentManager.findFragmentByTag(QuickAddSheet.TAG) == null) {
                     QuickAddSheet().show(parentFragmentManager, QuickAddSheet.TAG)
@@ -490,11 +490,13 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
             imageTintList = ColorStateList.valueOf(themeColor.colorOnPrimary)
         }
         with (binding.bottomAppBar) {
-            // La caja de alta rápida va en una fila propia sobre la barra y se oculta con ella.
+            // La caja de alta rápida va en una fila propia sobre la barra, con su mismo fondo,
+            // y se oculta con ella.
+            backgroundTint?.defaultColor?.let { binding.quickAddContainer.setBackgroundColor(it) }
             behavior.addOnScrollStateChangedListener { bar, state ->
                 val hidden = state == HideBottomViewOnScrollBehavior.STATE_SCROLLED_DOWN
-                binding.quickAdd.animate()
-                    .translationY(if (hidden) (bar.height + binding.quickAdd.height * 2).toFloat() else 0f)
+                binding.quickAddContainer.animate()
+                    .translationY(if (hidden) (bar.height + binding.quickAddContainer.height).toFloat() else 0f)
                     .setDuration(if (hidden) 175 else 225)
                     .start()
             }
