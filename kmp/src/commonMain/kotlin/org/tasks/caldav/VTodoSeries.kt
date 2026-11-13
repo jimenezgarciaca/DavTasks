@@ -19,7 +19,10 @@ import org.tasks.time.DateTime
  * - Al leer, la tarea es el VTODO sin RECURRENCE-ID. Si las primeras ocurrencias de la serie están
  *   completadas o canceladas en ocurrencias modificadas (o excluidas con EXDATE), la tarea se muestra
  *   en la primera ocurrencia pendiente. Si no queda ninguna, la tarea se muestra completada.
- * - Al escribir, las ocurrencias modificadas se conservan tal cual, con sus VTIMEZONE.
+ * - Al escribir, las ocurrencias modificadas se conservan tal cual, con sus VTIMEZONE, también las
+ *   de fechas anteriores al inicio de la serie, que otros clientes usan como historial.
+ * - Las ocurrencias modificadas pendientes (por ejemplo, con otro título) no cambian la tarea: la app
+ *   muestra los datos de la serie.
  */
 
 private const val RECURRENCE_ID = "RECURRENCE-ID"
@@ -47,7 +50,11 @@ internal val VTodo.isRecurrenceOverride: Boolean
 internal fun List<VTodo>.seriesMaster(): VTodo? {
     val master = filterNot { it.isRecurrenceOverride }.singleOrNull() ?: return null
     val overrides = filter { it.isRecurrenceOverride && (it.uid == null || it.uid == master.uid) }
-    return if (overrides.isEmpty()) master else master.skipFinishedOccurrences(overrides)
+    return if (overrides.isEmpty() && master.exDates.isEmpty()) {
+        master
+    } else {
+        master.skipFinishedOccurrences(overrides)
+    }
 }
 
 /**
@@ -62,8 +69,8 @@ internal fun VTodo.skipFinishedOccurrences(overrides: List<VTodo>): VTodo {
     val finished = overrides
         .filter { override -> override.status?.uppercase() in FINISHED }
         .mapNotNull { override -> override.recurrenceId?.let(::occurrenceIds)?.firstOrNull() }
-    if (finished.isEmpty()) return this
     val skipped = finished + exDates.flatMap(::occurrenceIds)
+    if (skipped.isEmpty()) return this
 
     val hasTime = anchor is ICalDate.DateTime
     val start = anchor.toDateTime()
@@ -83,9 +90,12 @@ internal fun VTodo.skipFinishedOccurrences(overrides: List<VTodo>): VTodo {
         millis = current.millis - start.millis,
         subDaily = recur.frequency in SUB_DAILY,
     )
+    // COUNT incluye la ocurrencia inicial: al empezar en una posterior quedan menos repeticiones.
+    val count = recur.count
     return copy(
         dtStart = dtStart?.let(shift::apply),
         due = due?.let(shift::apply),
+        rRule = if (count != null) recur.copy(count = count - steps) else recur,
     )
 }
 

@@ -128,6 +128,69 @@ class VTodoSeriesTest {
     }
 
     @Test
+    fun excludedFirstOccurrenceIsSkippedWithoutOverrides() {
+        val master = parseVTodos(
+            weekly("20261007", extra = listOf("EXDATE;VALUE=DATE:20261007"))
+        ).seriesMaster()!!
+
+        assertEquals(ICalDate.Date(2026, 10, 14), master.dtStart)
+        assertEquals(TodoStatus.NEEDS_ACTION, master.status)
+    }
+
+    @Test
+    fun laterExclusionDoesNotMoveTheSeries() {
+        val master = parseVTodos(
+            weekly("20261007", extra = listOf("EXDATE;VALUE=DATE:20261014"))
+        ).seriesMaster()!!
+
+        assertEquals(ICalDate.Date(2026, 10, 7), master.dtStart)
+    }
+
+    @Test
+    fun countShrinksByTheSkippedOccurrences() {
+        val master = parseVTodos(
+            weekly(
+                "20261007",
+                override("20261007", TodoStatus.COMPLETED),
+                override("20261014", TodoStatus.COMPLETED),
+                rrule = "RRULE:FREQ=WEEKLY;COUNT=4",
+            )
+        ).seriesMaster()!!
+
+        assertEquals(ICalDate.Date(2026, 10, 21), master.dtStart)
+        assertEquals(2, master.rRule?.count)
+    }
+
+    @Test
+    fun seriesEndIsKeptWhenWrittenBack() {
+        val original = weekly(
+            "20261007",
+            override("20261007", TodoStatus.COMPLETED),
+            rrule = "RRULE:FREQ=WEEKLY;COUNT=3",
+        )
+        val master = parseVTodos(original).seriesMaster()!!
+
+        val reread = parseVTodos(preserveRecurrenceOverrides(master.serialize(), original)).seriesMaster()!!
+
+        // 7, 14 y 21 de octubre: tras completar el 7 quedan el 14 y el 21.
+        assertEquals(ICalDate.Date(2026, 10, 14), reread.dtStart)
+        assertEquals(2, reread.rRule?.count)
+    }
+
+    @Test
+    fun seriesWithEveryOccurrenceExcludedIsCompleted() {
+        val master = parseVTodos(
+            weekly(
+                "20261007",
+                rrule = "RRULE:FREQ=WEEKLY;COUNT=2",
+                extra = listOf("EXDATE;VALUE=DATE:20261007,20261014"),
+            )
+        ).seriesMaster()!!
+
+        assertEquals(TodoStatus.COMPLETED, master.status)
+    }
+
+    @Test
     fun seriesWithEveryOccurrenceFinishedIsCompleted() {
         val master = parseVTodos(
             weekly(

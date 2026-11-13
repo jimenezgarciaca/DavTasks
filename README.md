@@ -10,6 +10,8 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
 - Se admiten servidores con `http://` en cualquier dirección. Con `http://` las credenciales viajan sin cifrar salvo que el tráfico vaya por un túnel cifrado (Tailscale, WireGuard).
 
+- Tareas repetitivas con ocurrencias modificadas por otros clientes (VTODO con `RECURRENCE-ID`, como las que genera Thunderbird al completar una ocurrencia): la tarea es la serie y se muestra en la primera ocurrencia pendiente, saltando las completadas, canceladas o excluidas con `EXDATE`; si la regla tiene `COUNT`, se descuentan las ocurrencias saltadas. Al escribir se conservan las ocurrencias modificadas y sus zonas horarias. Las ocurrencias pendientes modificadas (otro título o fecha en una sola ocurrencia) no se reflejan: se muestran los datos de la serie.
+
 - Escritura condicional en CalDAV: PUT y DELETE con `If-Match` (o `If-None-Match: *` para objetos nuevos). Ante un 412 no se sobrescribe el cambio de otro cliente: se descarga de nuevo el calendario, se fusionan los cambios y se vuelve a subir.
 
 - Sin Wear OS, Pebble (módulo), versión de escritorio ni iOS.
