@@ -275,7 +275,10 @@ internal fun parseRecurrence(value: String): Recur? {
             byDay = listOf(Weekday.MO, Weekday.TU, Weekday.WE, Weekday.TH, Weekday.FR).map { ByDay(it) },
         )
     }
-    WEEKDAYS[v]?.let { return Recur(Frequency.WEEKLY, byDay = listOf(ByDay(it.toWeekday()))) }
+    v.split(',').takeIf { it.size > 1 || WEEKDAYS.containsKey(v) }?.let { names ->
+        val days = names.map { WEEKDAYS[it] ?: return null }.distinct().sorted()
+        return Recur(Frequency.WEEKLY, byDay = days.map { ByDay(it.toWeekday()) })
+    }
     REPEAT_INTERVAL.find(v)?.let { m ->
         val n = m.groupValues[1].toInt().takeIf { it > 0 } ?: return null
         val frequency = when (m.groupValues[2].first()) {
@@ -295,13 +298,13 @@ fun QuickAddSyntax.helpLines(spanish: Boolean): List<String> = if (spanish) list
     "${date}hoy  ${date}mañana  ${date}pasado  ${date}lunes  ${date}finde  ${date}3d  ${date}2s  ${date}15/12  ${date}17:30",
     "${list}Lista  ·  ${list}(Lista con espacios)",
     "${priority}  ${priority}${priority}  ${priority}${priority}${priority}  (baja, media, alta)  ·  ${priority}alta",
-    "${repeat}diaria  ${repeat}semanal  ${repeat}mensual  ${repeat}anual  ${repeat}laborables  ${repeat}lunes  ${repeat}2s",
+    "${repeat}diaria  ${repeat}semanal  ${repeat}mensual  ${repeat}anual  ${repeat}laborables  ${repeat}lunes,jueves  ${repeat}2s",
     "\\${tag}texto deja el símbolo en el título",
 ) else listOf(
     "${tag}tag  ·  ${tag}(two words)",
     "${date}today  ${date}tomorrow  ${date}monday  ${date}weekend  ${date}3d  ${date}2w  ${date}15/12  ${date}17:30",
     "${list}List  ·  ${list}(List with spaces)",
     "${priority}  ${priority}${priority}  ${priority}${priority}${priority}  (low, medium, high)  ·  ${priority}high",
-    "${repeat}daily  ${repeat}weekly  ${repeat}monthly  ${repeat}yearly  ${repeat}weekdays  ${repeat}monday  ${repeat}2w",
+    "${repeat}daily  ${repeat}weekly  ${repeat}monthly  ${repeat}yearly  ${repeat}weekdays  ${repeat}mon,thu  ${repeat}2w",
     "\\${tag}text keeps the symbol in the title",
 )

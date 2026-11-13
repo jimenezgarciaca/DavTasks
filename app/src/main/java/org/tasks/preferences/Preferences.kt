@@ -25,6 +25,7 @@ import org.tasks.data.entity.Task
 import org.tasks.data.entity.TaskAttachment
 import org.tasks.extensions.Context.getResourceUri
 import org.tasks.kmp.org.tasks.themes.ColorProvider.BLUE_500
+import org.tasks.quickadd.MistralQuickAdd
 import org.tasks.quickadd.QuickAddSyntax
 import org.tasks.themes.ThemeBase
 import org.tasks.time.DateTime
@@ -767,6 +768,15 @@ class Preferences @JvmOverloads constructor(
             ?.takeIf { it.isValid }
             ?: QuickAddSyntax()
         set(value) = setString(R.string.p_quick_add_syntax, value.symbols.joinToString(""))
+
+    /** Clave de API de Mistral cifrada con KeyStoreEncryption; null si no está configurada. */
+    var mistralApiKeyEncrypted: String?
+        get() = getStringValue(R.string.p_mistral_api_key)?.takeIf { it.isNotBlank() }
+        set(value) = setString(R.string.p_mistral_api_key, value)
+
+    var mistralModel: String
+        get() = getStringValue(R.string.p_mistral_model)?.takeIf { it.isNotBlank() } ?: MistralQuickAdd.DEFAULT_MODEL
+        set(value) = setString(R.string.p_mistral_model, value.trim())
 
     val multilineTitle: Boolean
         get() = getBoolean(R.string.p_multiline_title, false)

@@ -62,11 +62,23 @@ La barra inferior de la lista abre un cuadro para crear tareas en una línea. Lo
 
 - `!`, `!!`, `!!!` o `!baja`, `!media`, `!alta`: prioridad.
 
-- `*diaria`, `*semanal`, `*mensual`, `*anual`, `*laborables`, `*lunes`, `*2s`, `*cada-3d`: repetición. Sin fecha, empieza hoy.
+- `*diaria`, `*semanal`, `*mensual`, `*anual`, `*laborables`, `*lunes`, `*lunes,jueves`, `*2s`, `*cada-3d`: repetición. Sin fecha, empieza hoy.
 
 - `\#12`: la barra invertida mantiene el símbolo como texto.
 
 Los marcadores solo cuentan al inicio de una palabra (`ana@correo.es` no se toca) y un valor no reconocido se queda en el título. Los símbolos se cambian en Ajustes > Valores predets. de tareas > Alta rápida. "Añadir" crea la tarea; "Más detalles" abre el formulario con los datos ya rellenos.
+
+### Interpretación con Mistral AI (opcional)
+
+Con una clave de API de Mistral configurada en Ajustes > Valores predets. de tareas > Interpretación con Mistral AI, la caja de alta rápida muestra un botón para interpretar texto libre ("llamar a Ana el jueves a las 5 de la tarde, urgente") y lo dictado se interpreta automáticamente.
+
+- La IA no crea la tarea: devuelve los campos y la app los escribe en la caja como marcadores, para revisarlos antes de guardar.
+
+- Se envían a Mistral el texto, la fecha, la hora y la zona horaria actuales y los nombres de las listas. No se envían etiquetas, tareas ni datos de la cuenta CalDAV.
+
+- La clave se guarda cifrada con el almacén de claves de Android. El modelo por defecto es `mistral-small-latest` y se puede cambiar.
+
+- En el plan gratuito de Mistral los datos pueden usarse para entrenar sus modelos salvo que se desactive en la cuenta.
 
 ## Compilación
 

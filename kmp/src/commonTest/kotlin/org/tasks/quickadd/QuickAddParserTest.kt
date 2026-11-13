@@ -148,6 +148,11 @@ class QuickAddParserTest {
             parse("x *lunes").recurrence,
         )
         assertEquals(
+            Recur(Frequency.WEEKLY, byDay = listOf(ByDay(Weekday.MO), ByDay(Weekday.WE))),
+            parse("x *miércoles,lunes").recurrence,
+        )
+        assertEquals("x *lunes,nunca", parse("x *lunes,nunca").title)
+        assertEquals(
             listOf(Weekday.MO, Weekday.TU, Weekday.WE, Weekday.TH, Weekday.FR),
             parse("x *laborables").recurrence?.byDay?.map { it.day },
         )

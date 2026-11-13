@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -21,6 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import org.tasks.R
 import org.tasks.compose.settings.PreferenceRow
@@ -123,4 +126,88 @@ private fun QuickAddSyntaxDialog(
             }
         },
     )
+}
+
+/** Fila de ajustes de Mistral con el diálogo para la clave de API y el modelo. */
+@Composable
+fun MistralPreference(
+    configured: Boolean,
+    model: String,
+    onSave: (apiKey: String?, model: String) -> Unit,
+    onRemove: () -> Unit,
+) {
+    var editing by remember { mutableStateOf(false) }
+    Spacer(modifier = Modifier.height(SettingsContentPadding))
+    SettingsItemCard(modifier = Modifier.padding(horizontal = SettingsContentPadding)) {
+        PreferenceRow(
+            title = stringResource(R.string.mistral_title),
+            icon = TasksIcons.BOLT,
+            summary = if (configured) {
+                stringResource(R.string.mistral_summary_on, model)
+            } else {
+                stringResource(R.string.mistral_summary_off)
+            },
+            onClick = { editing = true },
+        )
+    }
+    if (editing) {
+        var key by remember { mutableStateOf("") }
+        var modelValue by remember { mutableStateOf(model) }
+        AlertDialog(
+            onDismissRequest = { editing = false },
+            title = { Text(stringResource(R.string.mistral_title)) },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = key,
+                        onValueChange = { key = it.trim() },
+                        label = { Text(stringResource(R.string.mistral_api_key)) },
+                        placeholder = if (configured) {
+                            { Text(stringResource(R.string.mistral_api_key_saved)) }
+                        } else {
+                            null
+                        },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = modelValue,
+                        onValueChange = { modelValue = it.trim() },
+                        label = { Text(stringResource(R.string.mistral_model)) },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(
+                        text = stringResource(R.string.mistral_privacy),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = configured || key.isNotEmpty(),
+                    onClick = {
+                        onSave(key.takeIf { it.isNotEmpty() }, modelValue)
+                        editing = false
+                    },
+                ) { Text(stringResource(R.string.ok)) }
+            },
+            dismissButton = {
+                Row {
+                    if (configured) {
+                        TextButton(onClick = {
+                            onRemove()
+                            editing = false
+                        }) { Text(stringResource(R.string.mistral_remove)) }
+                    }
+                    TextButton(onClick = { editing = false }) { Text(stringResource(R.string.cancel)) }
+                }
+            },
+        )
+    }
 }

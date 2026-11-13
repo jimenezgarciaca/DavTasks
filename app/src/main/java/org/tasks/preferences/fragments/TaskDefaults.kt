@@ -39,7 +39,9 @@ import org.tasks.location.LocationPickerActivity
 import org.tasks.location.LocationPickerActivity.Companion.EXTRA_PLACE
 import org.tasks.preferences.BasePreferences
 import org.tasks.preferences.Preferences
+import org.tasks.quickadd.MistralPreference
 import org.tasks.quickadd.QuickAddSyntaxPreference
+import org.tasks.security.KeyStoreEncryption
 import org.tasks.repeats.BasicRecurrenceDialog
 import org.tasks.tags.TagPickerActivity
 import org.tasks.tags.TagPickerActivity.Companion.EXTRA_SELECTED
@@ -54,6 +56,7 @@ class TaskDefaults : Fragment() {
 
     @Inject lateinit var theme: Theme
     @Inject lateinit var preferences: Preferences
+    @Inject lateinit var encryption: KeyStoreEncryption
 
     private val viewModel: TaskDefaultsHiltViewModel by viewModels()
 
@@ -147,6 +150,28 @@ class TaskDefaults : Fragment() {
                         onChange = {
                             preferences.quickAddSyntax = it
                             syntax = it
+                        },
+                    )
+                    var mistralConfigured by remember { mutableStateOf(preferences.mistralApiKeyEncrypted != null) }
+                    var mistralModel by remember { mutableStateOf(preferences.mistralModel) }
+                    MistralPreference(
+                        configured = mistralConfigured,
+                        model = mistralModel,
+                        onSave = { apiKey, model ->
+                            preferences.mistralModel = model
+                            mistralModel = preferences.mistralModel
+                            if (apiKey != null) {
+                                lifecycleScope.launch {
+                                    encryption.encrypt(apiKey)?.let {
+                                        preferences.mistralApiKeyEncrypted = it
+                                        mistralConfigured = true
+                                    }
+                                }
+                            }
+                        },
+                        onRemove = {
+                            preferences.mistralApiKeyEncrypted = null
+                            mistralConfigured = false
                         },
                     )
                 },

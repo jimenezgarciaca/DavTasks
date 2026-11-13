@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -20,6 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
@@ -33,6 +35,7 @@ import org.tasks.repeats.Frequency
 import org.tasks.time.DateTime
 import java.text.DateFormat
 import java.util.Locale
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -46,6 +49,7 @@ class QuickAddSheet : BottomSheetDialogFragment() {
     @Inject lateinit var preferences: Preferences
     @Inject lateinit var device: Device
     @Inject lateinit var caldavDao: CaldavDao
+    @Inject lateinit var mistral: MistralClient
 
     private var binding: SheetQuickAddBinding? = null
     private var listNames: List<String> = emptyList()
@@ -59,6 +63,12 @@ class QuickAddSheet : BottomSheetDialogFragment() {
             ?: return@registerForActivityResult
         binding?.quickAddInput?.let { input ->
             val current = input.text.toString().trimEnd()
+            if (mistral.isConfigured && current.isEmpty()) {
+                // Lo dictado es lenguaje natural: se interpreta y se deja en la caja para revisarlo.
+                input.setText(text.replaceFirstChar { it.uppercase() })
+                interpret()
+                return@let
+            }
             val spoken = if (current.isEmpty()) text.replaceFirstChar { it.uppercase() } else text
             input.setText(if (current.isEmpty()) spoken else "$current $spoken")
             input.setSelection(input.text.length)
@@ -89,6 +99,8 @@ class QuickAddSheet : BottomSheetDialogFragment() {
                     false
                 }
             }
+            quickAddAi.isVisible = mistral.isConfigured
+            quickAddAi.setOnClickListener { interpret() }
             quickAddVoice.isVisible = device.voiceInputAvailable()
             quickAddVoice.setOnClickListener {
                 speech.launch(
@@ -121,6 +133,39 @@ class QuickAddSheet : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    /** Envía el texto a Mistral y lo sustituye por la línea con marcadores que devuelve. */
+    private fun interpret() {
+        val binding = binding ?: return
+        val text = binding.quickAddInput.text.toString().trim()
+        if (text.isEmpty()) return
+        setBusy(true)
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val result = mistral.interpret(text)
+                this@QuickAddSheet.binding?.quickAddInput?.let { input ->
+                    input.setText(result)
+                    input.setSelection(input.text.length)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Timber.e(e)
+                val reason = e.message?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.quick_add_ai_unrecognized)
+                Toast.makeText(requireContext(), getString(R.string.quick_add_ai_error, reason), Toast.LENGTH_LONG).show()
+            } finally {
+                setBusy(false)
+            }
+        }
+    }
+
+    private fun setBusy(busy: Boolean) {
+        val binding = binding ?: return
+        binding.quickAddProgress.isVisible = busy
+        listOf(binding.quickAddInput, binding.quickAddAi, binding.quickAddVoice, binding.quickAddSave, binding.quickAddDetails)
+            .forEach { it.isEnabled = !busy }
     }
 
     private fun submit(openEditor: Boolean) {

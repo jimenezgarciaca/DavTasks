@@ -342,4 +342,15 @@
     <string name="quick_add_weekly">cada semana</string>
     <string name="quick_add_monthly">cada mes</string>
     <string name="quick_add_yearly">cada año</string>
+    <string name="quick_add_ai">Interpretar con IA</string>
+    <string name="quick_add_ai_error">No se pudo interpretar: %s</string>
+    <string name="quick_add_ai_unrecognized">respuesta con formato inesperado</string>
+    <string name="mistral_title">Interpretación con Mistral AI</string>
+    <string name="mistral_summary_on">Activada · %s</string>
+    <string name="mistral_summary_off">Desactivada. Añade una clave de API de Mistral</string>
+    <string name="mistral_api_key">Clave de API</string>
+    <string name="mistral_api_key_saved">Clave guardada. Escribe otra para sustituirla</string>
+    <string name="mistral_model">Modelo</string>
+    <string name="mistral_remove">Quitar clave</string>
+    <string name="mistral_privacy">El texto que interpretes y los nombres de tus listas se envían a Mistral AI. En el plan gratuito pueden usarse para entrenar sus modelos salvo que lo desactives en tu cuenta.</string>
 </resources>

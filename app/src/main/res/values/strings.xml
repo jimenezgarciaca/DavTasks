@@ -350,4 +350,15 @@ File %1$s contained %2$s.\n\n
     <string name="quick_add_weekly">weekly</string>
     <string name="quick_add_monthly">monthly</string>
     <string name="quick_add_yearly">yearly</string>
+    <string name="quick_add_ai">Interpret with AI</string>
+    <string name="quick_add_ai_error">Could not interpret: %s</string>
+    <string name="quick_add_ai_unrecognized">unexpected response format</string>
+    <string name="mistral_title">Mistral AI interpretation</string>
+    <string name="mistral_summary_on">On · %s</string>
+    <string name="mistral_summary_off">Off. Add a Mistral API key</string>
+    <string name="mistral_api_key">API key</string>
+    <string name="mistral_api_key_saved">Key saved. Type a new one to replace it</string>
+    <string name="mistral_model">Model</string>
+    <string name="mistral_remove">Remove key</string>
+    <string name="mistral_privacy">The text you interpret and your list names are sent to Mistral AI. On the free plan they may be used to train their models unless you opt out in your account.</string>
 </resources>

@@ -27,6 +27,16 @@
             android:textAppearance="?attr/textAppearanceBodyLarge" />
 
         <ImageButton
+            android:id="@+id/quick_add_ai"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/quick_add_ai"
+            android:src="@drawable/ic_outline_auto_awesome_24px"
+            android:tint="?attr/colorOnSurfaceVariant"
+            android:visibility="gone" />
+
+        <ImageButton
             android:id="@+id/quick_add_voice"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -44,6 +54,13 @@
             android:src="@drawable/ic_outline_help_outline_24px"
             android:tint="?attr/colorOnSurfaceVariant" />
     </LinearLayout>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/quick_add_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/quick_add_preview"

@@ -291,4 +291,6 @@
   <string name="p_multiline_title">multiline_title</string>
   <string name="p_dynamic_color">dynamic_color</string>
   <string name="p_quick_add_syntax">quick_add_syntax</string>
+  <string name="p_mistral_api_key">mistral_api_key</string>
+  <string name="p_mistral_model">mistral_model</string>
 </resources>
