@@ -64,6 +64,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.todoroo.andlib.utility.AndroidUtilities
@@ -489,6 +490,14 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
             imageTintList = ColorStateList.valueOf(themeColor.colorOnPrimary)
         }
         with (binding.bottomAppBar) {
+            // La caja de alta rápida va en una fila propia sobre la barra y se oculta con ella.
+            behavior.addOnScrollStateChangedListener { bar, state ->
+                val hidden = state == HideBottomViewOnScrollBehavior.STATE_SCROLLED_DOWN
+                binding.quickAdd.animate()
+                    .translationY(if (hidden) (bar.height + binding.quickAdd.height * 2).toFloat() else 0f)
+                    .setDuration(if (hidden) 175 else 225)
+                    .start()
+            }
             setOnMenuItemClickListener(this@TaskListFragment)
             setNavigationOnClickListener {
                 activity?.hideKeyboard()

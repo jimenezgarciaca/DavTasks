@@ -80,24 +80,32 @@
       app:hideOnScroll="true"
       app:navigationIcon="@drawable/ic_outline_menu_24px">
 
-    <TextView
-        android:id="@+id/quick_add"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginEnd="4dp"
-        android:background="@drawable/quick_add_background"
-        android:clickable="true"
-        android:ellipsize="end"
-        android:focusable="true"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:singleLine="true"
-        android:text="@string/quick_add_hint"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textColor="?attr/colorOnSurfaceVariant" />
-
   </com.google.android.material.bottomappbar.BottomAppBar>
+
+  <TextView
+      android:id="@+id/quick_add"
+      android:layout_width="match_parent"
+      android:layout_height="48dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:layout_marginBottom="4dp"
+      android:layout_gravity="top|center_horizontal"
+      android:background="@drawable/quick_add_background"
+      android:clickable="true"
+      android:drawablePadding="12dp"
+      android:ellipsize="end"
+      android:focusable="true"
+      android:gravity="center_vertical"
+      android:paddingStart="16dp"
+      android:paddingEnd="16dp"
+      android:singleLine="true"
+      android:text="@string/quick_add_hint"
+      android:textAppearance="?attr/textAppearanceBodyLarge"
+      android:textColor="?attr/colorOnSurfaceVariant"
+      app:drawableStartCompat="@drawable/ic_outline_add_24px"
+      app:drawableTint="?attr/colorOnSurfaceVariant"
+      app:layout_anchor="@id/bottomAppBar"
+      app:layout_anchorGravity="top|center_horizontal" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab"
