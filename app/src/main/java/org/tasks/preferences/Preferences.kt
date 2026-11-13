@@ -25,6 +25,7 @@ import org.tasks.data.entity.Task
 import org.tasks.data.entity.TaskAttachment
 import org.tasks.extensions.Context.getResourceUri
 import org.tasks.kmp.org.tasks.themes.ColorProvider.BLUE_500
+import org.tasks.quickadd.QuickAddSyntax
 import org.tasks.themes.ThemeBase
 import org.tasks.time.DateTime
 import timber.log.Timber
@@ -757,6 +758,15 @@ class Preferences @JvmOverloads constructor(
 
     val linkify: Boolean
         get() = getBoolean(R.string.p_linkify_task_edit, false)
+
+    /** Símbolos del alta rápida, guardados como cinco caracteres: etiqueta, fecha, lista, prioridad, repetición. */
+    var quickAddSyntax: QuickAddSyntax
+        get() = getStringValue(R.string.p_quick_add_syntax)
+            ?.takeIf { it.length == 5 }
+            ?.let { QuickAddSyntax(tag = it[0], date = it[1], list = it[2], priority = it[3], repeat = it[4]) }
+            ?.takeIf { it.isValid }
+            ?: QuickAddSyntax()
+        set(value) = setString(R.string.p_quick_add_syntax, value.symbols.joinToString(""))
 
     val multilineTitle: Boolean
         get() = getBoolean(R.string.p_multiline_title, false)

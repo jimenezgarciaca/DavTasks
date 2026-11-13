@@ -48,6 +48,26 @@ Gestor de tareas para Android con sincronización CalDAV, derivado de [Tasks.org
 
   - Menú lateral con las listas de las cuentas antes que etiquetas y lugares, y degradado inferior bajo el botón de búsqueda.
 
+## Alta rápida
+
+La barra inferior de la lista abre un cuadro para crear tareas en una línea. Los marcadores se interpretan solo al crear la tarea desde la app; las tareas que llegan del servidor no se analizan.
+
+- `#etiqueta` o `#(dos palabras)`: etiqueta.
+
+- `@hoy`, `@mañana`, `@pasado`, `@lunes`, `@finde`, `@semana`, `@3d`, `@2s`, `@1m`, `@15/12`, `@2026-12-24`: fecha.
+
+- `@17:30`, `@9h`, `@9pm`: hora. Sin fecha, hoy si aún no ha pasado; si no, mañana.
+
+- `+Lista` o `+(Lista con espacios)`: lista existente. Si no existe, el marcador se queda en el título.
+
+- `!`, `!!`, `!!!` o `!baja`, `!media`, `!alta`: prioridad.
+
+- `*diaria`, `*semanal`, `*mensual`, `*anual`, `*laborables`, `*lunes`, `*2s`, `*cada-3d`: repetición. Sin fecha, empieza hoy.
+
+- `\#12`: la barra invertida mantiene el símbolo como texto.
+
+Los marcadores solo cuentan al inicio de una palabra (`ana@correo.es` no se toca) y un valor no reconocido se queda en el título. Los símbolos se cambian en Ajustes > Valores predets. de tareas > Alta rápida. "Añadir" crea la tarea; "Más detalles" abre el formulario con los datos ya rellenos.
+
 ## Compilación
 
 Cada push a `main` compila el APK en GitHub Actions (workflow "Compilar APK"). Si existen los secretos `DAVTASKS_KEYSTORE`, `DAVTASKS_KEYSTORE_PASSWORD`, `DAVTASKS_KEY_ALIAS` y `DAVTASKS_KEY_PASSWORD`, genera el release firmado; si no, el de depuración. El APK se descarga desde la pestaña Actions, en los artefactos de la ejecución.

@@ -61,8 +61,8 @@ jobs:
           path: app/build/outputs/apk/**/*.apk
           if-no-files-found: error
 
-      - name: Pruebas de sincronización CalDAV
-        run: ./gradlew --stacktrace :kmp:jvmTest --tests 'org.tasks.caldav.*'
+      - name: Pruebas (CalDAV y alta rápida)
+        run: ./gradlew --stacktrace :kmp:jvmTest --tests 'org.tasks.caldav.*' --tests 'org.tasks.quickadd.*'
 
       - name: Publicar informe de pruebas
         if: ${{ always() }}

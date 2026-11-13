@@ -14,7 +14,6 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Parcelable
-import android.speech.RecognizerIntent
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.Menu
@@ -122,7 +121,6 @@ import org.tasks.extensions.Context.openAppNotificationSettings
 import org.tasks.extensions.Context.openReminderSettings
 import org.tasks.extensions.Context.openUri
 import org.tasks.extensions.Context.toast
-import org.tasks.extensions.Fragment.safeStartActivityForResult
 import org.tasks.extensions.hideKeyboard
 import org.tasks.extensions.setOnQueryTextListener
 import org.tasks.filters.AstridOrderingFilter
@@ -140,6 +138,7 @@ import org.tasks.kmp.org.tasks.time.DateFormatter
 import org.tasks.markdown.MarkdownProvider
 import org.tasks.TasksBuildConfig
 import org.tasks.preferences.Device
+import org.tasks.quickadd.QuickAddSheet
 import org.tasks.preferences.MainPreferences
 import org.tasks.preferences.Preferences
 import org.tasks.preferences.ResourceResolver.getData
@@ -166,7 +165,6 @@ import org.tasks.ui.TaskListViewModel
 import tasks.kmp.generated.resources.Res
 import tasks.kmp.generated.resources.action_open
 import timber.log.Timber
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.max
@@ -300,6 +298,11 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        parentFragmentManager.setFragmentResultListener(QuickAddSheet.REQUEST_KEY, viewLifecycleOwner) { _, result ->
+            val text = result.getString(QuickAddSheet.EXTRA_TEXT).orEmpty()
+            val openEditor = result.getBoolean(QuickAddSheet.EXTRA_OPEN_EDITOR)
+            lifecycleScope.launch { quickAdd(text, openEditor) }
+        }
         super.onViewCreated(view, savedInstanceState)
 
         taskListEventBus
@@ -395,6 +398,12 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
             recyclerView = bodyStandard.recyclerView
             fab.setOnClickListener { createNewTask() }
             fab.isVisible = filter.isWritable
+            quickAdd.isVisible = filter.isWritable
+            quickAdd.setOnClickListener {
+                if (parentFragmentManager.findFragmentByTag(QuickAddSheet.TAG) == null) {
+                    QuickAddSheet().show(parentFragmentManager, QuickAddSheet.TAG)
+                }
+            }
         }
         themeColor = if (filter.tint != 0) colorProvider.getThemeColor(filter.tint, true) else defaultThemeColor
         (filter as? AstridOrderingFilter)?.filterOverride = null
@@ -658,7 +667,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
             menu.findItem(R.id.menu_collapse_subtasks).isVisible = false
             menu.findItem(R.id.menu_expand_subtasks).isVisible = false
         }
-        menu.findItem(R.id.menu_voice_add).isVisible = device.voiceInputAvailable() && filter.isWritable
         menu.findItem(R.id.menu_clear_completed).isVisible = filter.isWritable
     }
 
@@ -674,23 +682,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
                     search.isVisible = true
                     search.expandActionView()
                 }
-                true
-            }
-            R.id.menu_voice_add -> {
-                safeStartActivityForResult(
-                        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                            putExtra(
-                                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                            )
-                            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-                            putExtra(
-                                    RecognizerIntent.EXTRA_PROMPT,
-                                    getString(R.string.voice_create_prompt)
-                            )
-                        },
-                        VOICE_RECOGNITION_REQUEST_CODE
-                )
                 true
             }
             R.id.menu_sort -> {
@@ -819,6 +810,20 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
         }
     }
 
+    /** Resultado de la hoja de alta rápida: crea la tarea o abre el formulario relleno con lo escrito. */
+    private suspend fun quickAdd(text: String, openEditor: Boolean) {
+        if (!hasWritableList) {
+            createNewTask()
+            return
+        }
+        if (openEditor) {
+            onTaskListItemClicked(addTask(text))
+        } else if (text.isNotBlank()) {
+            val task = taskCreator.basicQuickAddTask(text, filter)
+            onTaskCreated(task.uuid)
+        }
+    }
+
     private suspend fun addTask(title: String): Task {
         return taskCreator.createWithValues(filter, title)
     }
@@ -888,18 +893,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            VOICE_RECOGNITION_REQUEST_CODE -> if (resultCode == RESULT_OK) {
-                lifecycleScope.launch {
-                    val match: List<String>? = data!!.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-                    if (!match.isNullOrEmpty() && match[0].isNotEmpty()) {
-                        var recognizedSpeech = match[0]
-                        recognizedSpeech = (recognizedSpeech.substring(0, 1)
-                            .uppercase(Locale.getDefault())
-                                + recognizedSpeech.substring(1).lowercase(Locale.getDefault()))
-                        onTaskListItemClicked(addTask(recognizedSpeech))
-                    }
-                }
-            }
             REQUEST_TAG_TASKS -> if (resultCode == RESULT_OK) {
                 lifecycleScope.launch {
                     tagDataDao.applyTags(
@@ -1274,7 +1267,6 @@ class TaskListFragment : Fragment(), OnRefreshListener, Toolbar.OnMenuItemClickL
         const val ACTION_DELETED = "action_deleted"
         private const val EXTRA_SELECTED_TASK_IDS = "extra_selected_task_ids"
         private const val EXTRA_RECYCLER_STATE = "extra_recycler_state"
-        private const val VOICE_RECOGNITION_REQUEST_CODE = 1234
         const val EXTRA_FILTER = "extra_filter"
         private const val FRAG_TAG_DATE_TIME_PICKER = "frag_tag_date_time_picker"
         private const val FRAG_TAG_PRIORITY_PICKER = "frag_tag_priority_picker"

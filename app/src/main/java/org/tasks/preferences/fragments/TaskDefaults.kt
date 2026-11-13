@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -37,6 +38,8 @@ import org.tasks.extensions.Context.is24HourFormat
 import org.tasks.location.LocationPickerActivity
 import org.tasks.location.LocationPickerActivity.Companion.EXTRA_PLACE
 import org.tasks.preferences.BasePreferences
+import org.tasks.preferences.Preferences
+import org.tasks.quickadd.QuickAddSyntaxPreference
 import org.tasks.repeats.BasicRecurrenceDialog
 import org.tasks.tags.TagPickerActivity
 import org.tasks.tags.TagPickerActivity.Companion.EXTRA_SELECTED
@@ -50,6 +53,7 @@ private const val FRAG_TAG_CALENDAR_PICKER = "frag_tag_calendar_picker"
 class TaskDefaults : Fragment() {
 
     @Inject lateinit var theme: Theme
+    @Inject lateinit var preferences: Preferences
 
     private val viewModel: TaskDefaultsHiltViewModel by viewModels()
 
@@ -134,6 +138,16 @@ class TaskDefaults : Fragment() {
                 onLocation = {
                     locationLauncher.launch(
                         Intent(context, LocationPickerActivity::class.java),
+                    )
+                },
+                extraContent = {
+                    var syntax by remember { mutableStateOf(preferences.quickAddSyntax) }
+                    QuickAddSyntaxPreference(
+                        syntax = syntax,
+                        onChange = {
+                            preferences.quickAddSyntax = it
+                            syntax = it
+                        },
                     )
                 },
                 bottomInsets = {

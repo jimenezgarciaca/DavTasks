@@ -35,6 +35,7 @@ fun TaskDefaultsContent(
     onRecurrence: () -> Unit,
     onReminders: () -> Unit,
     onLocation: () -> Unit,
+    extraContent: @Composable () -> Unit = {},
     bottomInsets: @Composable () -> Unit = {},
 ) {
     if (!viewModel.loaded) {
@@ -78,6 +79,7 @@ fun TaskDefaultsContent(
         onLocationUpdateInterval = {
             viewModel.openListPicker(ListPickerTarget.LOCATION_UPDATE_INTERVAL)
         },
+        extraContent = extraContent,
         bottomInsets = bottomInsets,
     )
 

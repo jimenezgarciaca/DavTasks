@@ -2,7 +2,6 @@ package com.todoroo.astrid.service
 
 import com.todoroo.astrid.api.PermaSql
 import com.todoroo.astrid.gcal.GCalHelper
-import com.todoroo.astrid.utility.TitleParser.parse
 import org.tasks.R
 import org.tasks.Strings.isNullOrEmpty
 import org.tasks.data.TaskSaver
@@ -34,6 +33,11 @@ import org.tasks.preferences.Preferences
 import org.tasks.time.DateTimeUtils2.currentTimeMillis
 import org.tasks.time.startOfDay
 import timber.log.Timber
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import org.tasks.data.setRecurrence
+import org.tasks.quickadd.parseQuickAdd
+import org.tasks.time.DateTime
 import javax.inject.Inject
 
 class TaskCreator @Inject constructor(
@@ -100,8 +104,9 @@ class TaskCreator @Inject constructor(
         return task
     }
 
+    /** Para texto compartido desde otras apps: no se interpretan marcadores de alta rápida. */
     suspend fun createWithValues(title: String?): Task {
-        return create(null, title)
+        return create(null, title, parseTitle = false)
     }
 
     suspend fun createWithValues(
@@ -177,13 +182,59 @@ class TaskCreator @Inject constructor(
         }
         if (parseTitle) {
             try {
-                parse(tagDataDao, task, tags)
+                applyQuickAdd(task, tags)
             } catch (e: Throwable) {
                 Timber.e(e)
             }
         }
         task.putTransitory(Tag.KEY, tags)
         return task
+    }
+
+
+    /** Interpreta los marcadores del alta rápida (ver [parseQuickAdd]) y los aplica a la tarea. */
+    private suspend fun applyQuickAdd(task: Task, tags: ArrayList<String>) {
+        val text = task.title ?: return
+        val syntax = preferences.quickAddSyntax
+        val now = DateTime()
+        val result = parseQuickAdd(
+            text = text,
+            today = LocalDate(now.year, now.monthOfYear, now.dayOfMonth),
+            now = LocalTime(now.hourOfDay, now.minuteOfHour),
+            syntax = syntax,
+        )
+        if (!result.hasData) return
+        var title = result.title
+        result.tags.forEach { name ->
+            val tag = tagDataDao.getTagWithCase(name)
+            if (tags.none { it.equals(tag, ignoreCase = true) }) tags.add(tag)
+        }
+        result.list?.let { name ->
+            val calendar = caldavDao.getCalendars().firstOrNull { it.name.equals(name, ignoreCase = true) }
+            if (calendar?.uuid != null) {
+                task.putTransitory(CaldavTask.KEY, calendar.uuid!!)
+            } else {
+                // Lista desconocida: el marcador vuelve al título para no perder el dato.
+                title = "$title ${syntax.list}$name".trim()
+            }
+        }
+        result.priority?.let { task.priority = it }
+        result.dueDate?.let { date ->
+            val time = result.dueTime
+            val millis = DateTime(
+                year = date.year,
+                month = date.monthNumber,
+                day = date.dayOfMonth,
+                hour = time?.hour ?: 12,
+                minute = time?.minute ?: 0,
+            ).millis
+            task.dueDate = createDueDate(
+                if (time != null) Task.URGENCY_SPECIFIC_DAY_TIME else Task.URGENCY_SPECIFIC_DAY,
+                millis,
+            )
+        }
+        result.recurrence?.let { task.setRecurrence(it) }
+        task.title = title
     }
 
     companion object {

@@ -158,6 +158,7 @@ fun TaskDefaultsScreen(
     onDeleteLocation: () -> Unit,
     onLocationReminder: () -> Unit,
     onLocationUpdateInterval: () -> Unit,
+    extraContent: @Composable () -> Unit = {},
     bottomInsets: @Composable () -> Unit = {},
 ) {
     Column(
@@ -336,6 +337,7 @@ fun TaskDefaultsScreen(
             }
         }
 
+        extraContent()
         Spacer(modifier = Modifier.height(SettingsContentPadding))
         bottomInsets()
     }

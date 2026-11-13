@@ -16,5 +16,4 @@
     <string name="android" translatable="false">Android</string>
     <string name="ios" translatable="false">iOS</string>
     <string name="etesync" translatable="false">EteSync</string>
-    <string name="microsoft" translatable="false">Microsoft To&#xA0;Do</string>
 </resources>

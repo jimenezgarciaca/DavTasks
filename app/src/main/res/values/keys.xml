@@ -7,7 +7,6 @@
   <string name="backup_api_key">AEdPqrEAAAAI49v5bBusi_bq1bgLBB1LIsepNV0eBrFkQrBZkw</string>
   <string name="FSA_label">Tasks Shortcut</string>
   <string name="caldav">CalDAV</string>
-  <string name="microsoft">Microsoft To&#xA0;Do</string>
 
   <string name="url_davx5">https://manual.davx5.com/tasks_notes.html</string>
 
@@ -291,4 +290,5 @@
   <string name="p_last_sync">last_sync_time</string>
   <string name="p_multiline_title">multiline_title</string>
   <string name="p_dynamic_color">dynamic_color</string>
+  <string name="p_quick_add_syntax">quick_add_syntax</string>
 </resources>
