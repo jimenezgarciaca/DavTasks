@@ -20,7 +20,8 @@ import kotlinx.serialization.json.putJsonObject
  */
 object MistralQuickAdd {
     const val ENDPOINT = "https://api.mistral.ai/v1/chat/completions"
-    const val DEFAULT_MODEL = "mistral-small-latest"
+    // En el plan gratuito, mistral-small y mistral-medium tienen límite 0; ministral-8b admite 2 por minuto.
+    const val DEFAULT_MODEL = "ministral-8b-latest"
 
     private val json = Json {
         ignoreUnknownKeys = true

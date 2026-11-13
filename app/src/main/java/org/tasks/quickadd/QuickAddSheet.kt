@@ -150,6 +150,8 @@ class QuickAddSheet : BottomSheetDialogFragment() {
                 }
             } catch (e: CancellationException) {
                 throw e
+            } catch (e: MistralClient.ModelUnavailableException) {
+                Toast.makeText(requireContext(), getString(R.string.mistral_model_unavailable, e.model), Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
                 Timber.e(e)
                 val reason = e.message?.takeIf { it.isNotBlank() }

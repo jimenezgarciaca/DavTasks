@@ -361,4 +361,5 @@ File %1$s contained %2$s.\n\n
     <string name="mistral_model">Model</string>
     <string name="mistral_remove">Remove key</string>
     <string name="mistral_privacy">The text you interpret and your list names are sent to Mistral AI. On the free plan they may be used to train their models unless you opt out in your account.</string>
+    <string name="mistral_model_unavailable">The model %s is not available on your Mistral plan (limit 0). Change it in Settings, for example to ministral-8b-latest.</string>
 </resources>

@@ -34,10 +34,13 @@ class MistralClient @Inject constructor(
     val isConfigured: Boolean
         get() = preferences.mistralApiKeyEncrypted != null
 
-    class MistralException(message: String) : Exception(message)
+    open class MistralException(message: String) : Exception(message)
+
+    /** El plan de la cuenta no permite ninguna petición con este modelo (límite 0). */
+    class ModelUnavailableException(val model: String) : MistralException(model)
 
     private companion object {
-        val RETRY_DELAYS = longArrayOf(1_500, 3_000, 6_000)
+        val RETRY_DELAYS = longArrayOf(2_000, 5_000)
         const val MAX_RETRY_AFTER_MS = 10_000L
     }
 
@@ -71,8 +74,13 @@ class MistralClient @Inject constructor(
                 }
                 status = response.status
                 responseBody = response.bodyAsText()
-                // El plan gratuito admite 1 petición por segundo para toda la organización: si otra
-                // aplicación con la misma clave acaba de llamar, se espera y se reintenta.
+                // Los límites del plan gratuito son por modelo y muy bajos (p. ej. 2 por minuto) y se
+                // comparten con otras aplicaciones que usen la misma cuenta: se espera y se reintenta.
+                if (status == HttpStatusCode.TooManyRequests &&
+                    response.headers["x-ratelimit-limit-req-minute"] == "0"
+                ) {
+                    throw ModelUnavailableException(preferences.mistralModel)
+                }
                 if (status != HttpStatusCode.TooManyRequests || attempt >= RETRY_DELAYS.size) break
                 val wait = response.headers[HttpHeaders.RetryAfter]?.toLongOrNull()
                     ?.let { (it * 1000).coerceAtMost(MAX_RETRY_AFTER_MS) }

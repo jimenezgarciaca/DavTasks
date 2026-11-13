@@ -353,4 +353,5 @@
     <string name="mistral_model">Modelo</string>
     <string name="mistral_remove">Quitar clave</string>
     <string name="mistral_privacy">El texto que interpretes y los nombres de tus listas se envían a Mistral AI. En el plan gratuito pueden usarse para entrenar sus modelos salvo que lo desactives en tu cuenta.</string>
+    <string name="mistral_model_unavailable">El modelo %s no está disponible en tu plan de Mistral (límite 0). Cámbialo en Ajustes, por ejemplo por ministral-8b-latest.</string>
 </resources>
